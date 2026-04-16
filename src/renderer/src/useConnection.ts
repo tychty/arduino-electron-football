@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { PINS } from './pins'
 
 export interface PortInfo {
   path: string
@@ -17,7 +16,7 @@ export interface Connection {
   disconnect: () => Promise<void>
 }
 
-export function useConnection(): Connection {
+export function useConnection(allPins: number[]): Connection {
   const [ports, setPorts] = useState<PortInfo[]>([])
   const [selected, setSelected] = useState('')
   const [connected, setConnected] = useState(false)
@@ -42,7 +41,7 @@ export function useConnection(): Connection {
     setError(null)
     await window.arduino.connect(selected)
     setConnected(true)
-    for (const pin of PINS) {
+    for (const pin of allPins) {
       const debounce = Number(localStorage.getItem(`pin_${pin}_debounce`) ?? 200)
       const noise = Number(localStorage.getItem(`pin_${pin}_noise`) ?? 5)
       await window.arduino.setDebounce(debounce, pin)

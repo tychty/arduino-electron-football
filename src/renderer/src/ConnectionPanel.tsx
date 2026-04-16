@@ -1,28 +1,32 @@
-import { useConnection } from './useConnection'
+import { PortInfo } from './useConnection'
 
 interface Props {
-  onConnectedChange: (connected: boolean) => void
+  ports: PortInfo[]
+  selected: string
+  connected: boolean
+  error: string | null
+  onSetSelected: (port: string) => void
+  onRefresh: () => Promise<void>
+  onConnect: () => Promise<void>
+  onDisconnect: () => void
 }
 
-export default function ConnectionPanel({ onConnectedChange }: Props): JSX.Element {
-  const { ports, selected, connected, error, setSelected, refresh, connect, disconnect } = useConnection()
-
-  const handleConnect = async (): Promise<void> => {
-    await connect()
-    onConnectedChange(true)
-  }
-
-  const handleDisconnect = async (): Promise<void> => {
-    await disconnect()
-    onConnectedChange(false)
-  }
-
+export default function ConnectionPanel({
+  ports,
+  selected,
+  connected,
+  error,
+  onSetSelected,
+  onRefresh,
+  onConnect,
+  onDisconnect,
+}: Props): JSX.Element {
   return (
     <div style={{ marginBottom: 24 }}>
       <div style={{ marginBottom: 12 }}>
         <select
           value={selected}
-          onChange={(e) => setSelected(e.target.value)}
+          onChange={(e) => onSetSelected(e.target.value)}
           disabled={connected}
         >
           <option value="">-- select port --</option>
@@ -33,24 +37,22 @@ export default function ConnectionPanel({ onConnectedChange }: Props): JSX.Eleme
             </option>
           ))}
         </select>
-        <button onClick={refresh} disabled={connected} style={{ marginLeft: 8 }}>
+        <button onClick={onRefresh} disabled={connected} style={{ marginLeft: 8 }}>
           Refresh
         </button>
       </div>
 
       <div>
         {!connected ? (
-          <button onClick={handleConnect} disabled={!selected}>
+          <button onClick={onConnect} disabled={!selected}>
             Connect
           </button>
         ) : (
-          <button onClick={handleDisconnect}>Disconnect</button>
+          <button onClick={onDisconnect}>Disconnect</button>
         )}
       </div>
 
-      {error && (
-        <div style={{ marginTop: 8, color: '#c0392b' }}>Error: {error}</div>
-      )}
+      {error && <div style={{ marginTop: 8, color: '#c0392b' }}>Error: {error}</div>}
     </div>
   )
 }
