@@ -39,11 +39,21 @@ ipcMain.handle('serial:list', async () => {
 })
 
 ipcMain.handle('serial:connect', async (_event, portPath: string) => {
-  await serial.connect(portPath, (value: number) => {
-    mainWindow?.webContents.send('serial:data', value)
-  })
+  await serial.connect(
+    portPath,
+    (pin: number, peak: number) => {
+      mainWindow?.webContents.send('serial:data', pin, peak)
+    },
+    (msg: string) => {
+      mainWindow?.webContents.send('serial:error', msg)
+    }
+  )
 })
 
 ipcMain.handle('serial:disconnect', async () => {
   serial.disconnect()
+})
+
+ipcMain.handle('serial:command', async (_event, command: string) => {
+  serial.sendCommand(command)
 })

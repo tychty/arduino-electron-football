@@ -1,41 +1,72 @@
-const int pin = A0;
+const int pins[] = {A0};
+const int pinCount = sizeof(pins) / sizeof(pins[0]);
 
-int prev = 0;
-int peak = 0;
+int prev[pinCount];
+int peak[pinCount];
+unsigned long lastActivity[pinCount];
 
-unsigned long lastActivity = 0;
-const int debounceMs = 200;
-const int noiseTollerance = 5;
+int debounceMs = 200;
+int noiseTollerance = 5;
 
 void setup()
 {
-    Serial.begin(9600);
+    Serial.begin(57600);
+    for (int i = 0; i < pinCount; i++)
+    {
+        prev[i] = 0;
+        peak[i] = 0;
+        lastActivity[i] = 0;
+    }
+}
+
+void readCommands()
+{
+    while (Serial.available() > 0)
+    {
+        String line = Serial.readStringUntil('\n');
+        line.trim();
+        if (line.length() < 3) continue;
+
+        char key = line.charAt(0);
+        if (line.charAt(1) != ':') continue;
+        int value = line.substring(2).toInt();
+
+        if (key == 'D') debounceMs = value;
+        else if (key == 'N') noiseTollerance = value;
+    }
 }
 
 void loop()
 {
-    int current = analogRead(pin);
+    readCommands();
+
     unsigned long now = millis();
 
-    // detect meaningful change (signal active)
-    if (abs(current - prev) > noiseTollerance)
+    for (int i = 0; i < pinCount; i++)
     {
-        lastActivity = now;
+        int current = analogRead(pins[i]);
 
-        if (current > peak)
+        // detect meaningful change above noise floor
+        if (abs(current - prev[i]) > noiseTollerance)
         {
-            peak = current;
+            // only extend debounce window when a new peak is found
+            if (current > peak[i])
+            {
+                peak[i] = current;
+                lastActivity[i] = now;
+            }
         }
+
+        // signal has been quiet long enough → finalize peak
+        if (peak[i] > 0 && (now - lastActivity[i] > (unsigned long)debounceMs))
+        {
+            Serial.print(i);
+            Serial.print(":");
+            Serial.println(peak[i]);
+
+            peak[i] = 0;
+        }
+
+        prev[i] = current;
     }
-
-    // if signal has been quiet long enough → finalize peak
-    if (peak > 0 && (now - lastActivity > debounceMs))
-    {
-        Serial.print("peak: ");
-        Serial.println(peak);
-
-        peak = 0;
-    }
-
-    prev = current;
 }

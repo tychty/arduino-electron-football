@@ -3,7 +3,11 @@ interface ArduinoAPI {
   connect: (port: string) => Promise<void>
   disconnect: () => Promise<void>
   /** Returns unsubscribe function */
-  onData: (callback: (value: number) => void) => () => void
+  onData: (callback: (pin: number, peak: number) => void) => () => void
+  /** Returns unsubscribe function */
+  onError: (callback: (msg: string) => void) => () => void
+  setDebounce: (ms: number) => Promise<void>
+  setNoiseTolerance: (value: number) => Promise<void>
 }
 
 declare global {

@@ -11,9 +11,21 @@ contextBridge.exposeInMainWorld('arduino', {
     ipcRenderer.invoke('serial:disconnect'),
 
   // Returns an unsubscribe function — call it on cleanup
-  onData: (callback: (value: number) => void): (() => void) => {
-    const handler = (_: unknown, value: number): void => callback(value)
+  onData: (callback: (pin: number, peak: number) => void): (() => void) => {
+    const handler = (_: unknown, pin: number, peak: number): void => callback(pin, peak)
     ipcRenderer.on('serial:data', handler)
     return () => ipcRenderer.off('serial:data', handler)
-  }
+  },
+
+  onError: (callback: (msg: string) => void): (() => void) => {
+    const handler = (_: unknown, msg: string): void => callback(msg)
+    ipcRenderer.on('serial:error', handler)
+    return () => ipcRenderer.off('serial:error', handler)
+  },
+
+  setDebounce: (ms: number): Promise<void> =>
+    ipcRenderer.invoke('serial:command', `D:${ms}`),
+
+  setNoiseTolerance: (value: number): Promise<void> =>
+    ipcRenderer.invoke('serial:command', `N:${value}`)
 })
