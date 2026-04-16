@@ -2,6 +2,9 @@ import { app, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { SerialManager } from './serial'
 
+declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string | undefined
+declare const MAIN_WINDOW_VITE_NAME: string
+
 let mainWindow: BrowserWindow | null = null
 const serial = new SerialManager()
 
@@ -10,15 +13,15 @@ function createWindow(): void {
     width: 800,
     height: 600,
     webPreferences: {
-      preload: join(__dirname, '../preload/index.js'),
+      preload: join(__dirname, 'preload.js'),
       sandbox: false
     }
   })
 
-  if (process.env['ELECTRON_RENDERER_URL']) {
-    mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
+  if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
+    mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL)
   } else {
-    mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
+    mainWindow.loadFile(join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`))
   }
 }
 
