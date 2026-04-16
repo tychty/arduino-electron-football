@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
-import { PINS } from './pins'
 import ConnectionPanel from './ConnectionPanel'
-import PinSettings from './PinSettings'
+import PinsGrid from './PinsGrid'
 
 export default function App(): JSX.Element {
   const [connected, setConnected] = useState(false)
@@ -26,14 +25,7 @@ export default function App(): JSX.Element {
         onConnectedChange={(c) => (c ? setConnected(true) : handleDisconnect())}
       />
 
-      {PINS.map((pin) => (
-        <PinSettings
-          key={pin}
-          pin={pin}
-          peak={peaks[pin]}
-          connected={connected}
-        />
-      ))}
+      <PinsGrid peaks={peaks} connected={connected} />
     </div>
   )
 }
