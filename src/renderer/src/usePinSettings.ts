@@ -1,7 +1,5 @@
 import { useState } from 'react'
-
-const DEBOUNCE_DEFAULT = 200
-const NOISE_DEFAULT = 5
+import { DEBOUNCE_DEFAULT, NOISE_DEFAULT } from './config'
 
 interface PinSettings {
   debounce: number

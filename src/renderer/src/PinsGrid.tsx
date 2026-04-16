@@ -6,6 +6,7 @@ interface Props {
   peaks: Record<number, number>
   connected: boolean
   pinConfigs: Record<number, PinConfig>
+  canAddPin: boolean
   onAddPin: () => void
   onDeletePin: (pin: number) => void
   onConfigChange: (pin: number, updates: Partial<PinConfig>) => void
@@ -16,6 +17,7 @@ export default function PinsGrid({
   peaks,
   connected,
   pinConfigs,
+  canAddPin,
   onAddPin,
   onDeletePin,
   onConfigChange,
@@ -43,14 +45,16 @@ export default function PinsGrid({
       </div>
       <button
         onClick={onAddPin}
+        disabled={!canAddPin}
         style={{
           marginTop: 12,
           padding: '6px 14px',
           fontSize: 13,
-          cursor: 'pointer',
+          cursor: canAddPin ? 'pointer' : 'not-allowed',
           borderRadius: 4,
           border: '1px solid #ccc',
           background: '#fff',
+          opacity: canAddPin ? 1 : 0.4,
         }}
       >
         + Add Pin

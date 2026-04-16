@@ -1,9 +1,11 @@
 import { useState } from 'react'
+import { MAX_PINS } from './config'
 
 const PINS_KEY = 'allPins'
 
 interface UsePins {
   allPins: number[]
+  canAddPin: boolean
   addPin: () => void
   deletePin: (pin: number) => void
 }
@@ -20,6 +22,7 @@ export function usePins(): UsePins {
   }
 
   const addPin = (): void => {
+    if (allPins.length >= MAX_PINS) return
     save([...allPins, allPins.length])
   }
 
@@ -27,5 +30,5 @@ export function usePins(): UsePins {
     save(allPins.filter((p) => p !== pin))
   }
 
-  return { allPins, addPin, deletePin }
+  return { allPins, canAddPin: allPins.length < MAX_PINS, addPin, deletePin }
 }

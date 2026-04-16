@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { PinConfig } from './usePinConfigs'
+import { VIRTUAL_MISS_PIN } from './config'
 
 interface HitEvent {
   pin: number
@@ -12,14 +13,14 @@ interface GameState {
   flashPin: number | null
   flashMiss: boolean
   resetScore: () => void
+  injectHit: (pin: number, peak: number, debounceMs: number) => void
 }
-
-const FLASH_DURATION = 350
 
 export function useGame(
   connected: boolean,
   allPins: number[],
   hitDebounceMs: number,
+  flashDuration: number,
   pinConfigs: Record<number, PinConfig>
 ): GameState {
   const [hits, setHits] = useState<Record<number, number>>({})
@@ -29,10 +30,15 @@ export function useGame(
   const pendingRef = useRef<HitEvent[]>([])
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const pinConfigsRef = useRef(pinConfigs)
+  const flashDurationRef = useRef(flashDuration)
 
   useEffect(() => {
     pinConfigsRef.current = pinConfigs
   }, [pinConfigs])
+
+  useEffect(() => {
+    flashDurationRef.current = flashDuration
+  }, [flashDuration])
 
   const resolveHit = useCallback(() => {
     const events = pendingRef.current
@@ -41,28 +47,42 @@ export function useGame(
     if (events.length === 0) return
 
     const winner = events.reduce((best, e) => (e.peak > best.peak ? e : best))
-    const config = pinConfigsRef.current[winner.pin]
+    const duration = flashDurationRef.current
 
+    if (winner.pin === VIRTUAL_MISS_PIN) {
+      setFlashMiss(true)
+      setTimeout(() => setFlashMiss(false), duration)
+      return
+    }
+
+    const config = pinConfigsRef.current[winner.pin]
     if (!config || !config.active) return
 
     if (config.miss) {
       setFlashMiss(true)
-      setTimeout(() => setFlashMiss(false), FLASH_DURATION)
+      setTimeout(() => setFlashMiss(false), duration)
       return
     }
 
     setHits((prev) => ({ ...prev, [winner.pin]: (prev[winner.pin] ?? 0) + 1 }))
     setFlashPin(winner.pin)
-    setTimeout(() => setFlashPin(null), FLASH_DURATION)
+    setTimeout(() => setFlashPin(null), duration)
   }, [])
+
+  const injectHit = useCallback(
+    (pin: number, peak: number, debounceMs: number) => {
+      pendingRef.current.push({ pin, peak })
+      if (timerRef.current) clearTimeout(timerRef.current)
+      timerRef.current = setTimeout(resolveHit, debounceMs)
+    },
+    [resolveHit]
+  )
 
   useEffect(() => {
     if (!connected) return
     const unsub = window.arduino.onData((pin, peak) => {
       if (!allPins.includes(pin)) return
-      pendingRef.current.push({ pin, peak })
-      if (timerRef.current) clearTimeout(timerRef.current)
-      timerRef.current = setTimeout(resolveHit, hitDebounceMs)
+      injectHit(pin, peak, hitDebounceMs)
     })
     return () => {
       unsub()
@@ -71,7 +91,7 @@ export function useGame(
         timerRef.current = null
       }
     }
-  }, [connected, allPins, hitDebounceMs, resolveHit])
+  }, [connected, allPins, hitDebounceMs, injectHit])
 
   const score = useMemo(
     () =>
@@ -85,5 +105,5 @@ export function useGame(
 
   const resetScore = (): void => setHits({})
 
-  return { hits, score, flashPin, flashMiss, resetScore }
+  return { hits, score, flashPin, flashMiss, resetScore, injectHit }
 }

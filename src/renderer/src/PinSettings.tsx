@@ -1,5 +1,15 @@
 import { usePinSettings } from './usePinSettings'
 import { PinConfig } from './usePinConfigs'
+import SliderSetting from './SliderSetting'
+import {
+  DEBOUNCE_MIN,
+  DEBOUNCE_MAX,
+  DEBOUNCE_STEP,
+  NOISE_MIN,
+  NOISE_MAX,
+  NOISE_STEP,
+  SCORE_POINTS_MIN,
+} from './config'
 
 interface Props {
   pin: number
@@ -8,6 +18,10 @@ interface Props {
   config: PinConfig
   onConfigChange: (updates: Partial<PinConfig>) => void
   onDelete: () => void
+}
+
+function keybindLabel(pin: number): string {
+  return `key: ${(pin + 1) % 10}`
 }
 
 export default function PinSettings({
@@ -19,13 +33,26 @@ export default function PinSettings({
   onDelete,
 }: Props): JSX.Element {
   const { debounce, noise, setDebounce, setNoise } = usePinSettings(pin, connected)
+  const pinTooHigh = pin > 9
 
   return (
     <div style={{ padding: 16, border: '1px solid #ccc', borderRadius: 6 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'flex-start',
+          marginBottom: 12,
+        }}
+      >
         <div>
           <div style={{ fontSize: 11, color: '#888' }}>pin {pin}</div>
           <div style={{ fontSize: 48, lineHeight: 1 }}>{peak ?? '—'}</div>
+          {pinTooHigh ? (
+            <div style={{ fontSize: 11, color: '#c0392b', marginTop: 2 }}>no keybind (pin &gt; 9)</div>
+          ) : (
+            <div style={{ fontSize: 11, color: '#888', marginTop: 2 }}>{keybindLabel(pin)}</div>
+          )}
         </div>
         <button
           onClick={onDelete}
@@ -45,7 +72,9 @@ export default function PinSettings({
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         <div style={{ display: 'flex', gap: 16 }}>
-          <label style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, cursor: 'pointer' }}>
+          <label
+            style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, cursor: 'pointer' }}
+          >
             <input
               type="checkbox"
               checked={config.active}
@@ -53,7 +82,9 @@ export default function PinSettings({
             />
             active
           </label>
-          <label style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, cursor: 'pointer' }}>
+          <label
+            style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, cursor: 'pointer' }}
+          >
             <input
               type="checkbox"
               checked={config.miss}
@@ -67,56 +98,33 @@ export default function PinSettings({
           <div style={{ fontSize: 11, color: '#888', marginBottom: 2 }}>score points</div>
           <input
             type="number"
-            min={1}
+            min={SCORE_POINTS_MIN}
             value={config.scorePoints}
             style={{ width: 60 }}
             onChange={(e) => onConfigChange({ scorePoints: Number(e.target.value) })}
           />
         </div>
 
-        <div>
-          <div style={{ fontSize: 11, color: '#888', marginBottom: 2 }}>debounce {debounce}ms</div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <input
-              type="range"
-              min={100}
-              max={500}
-              step={10}
-              value={debounce}
-              style={{ flex: 1 }}
-              onChange={(e) => setDebounce(Number(e.target.value))}
-            />
-            <input
-              type="number"
-              min={1}
-              value={debounce}
-              style={{ width: 52 }}
-              onChange={(e) => setDebounce(Number(e.target.value))}
-            />
-          </div>
-        </div>
+        <SliderSetting
+          label="debounce"
+          value={debounce}
+          min={DEBOUNCE_MIN}
+          max={DEBOUNCE_MAX}
+          step={DEBOUNCE_STEP}
+          unit="ms"
+          inputWidth={52}
+          onChange={setDebounce}
+        />
 
-        <div>
-          <div style={{ fontSize: 11, color: '#888', marginBottom: 2 }}>noise {noise}</div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-            <input
-              type="range"
-              min={0}
-              max={10}
-              step={1}
-              value={Math.min(noise, 10)}
-              style={{ flex: 1 }}
-              onChange={(e) => setNoise(Number(e.target.value))}
-            />
-            <input
-              type="number"
-              min={0}
-              value={noise}
-              style={{ width: 52 }}
-              onChange={(e) => setNoise(Number(e.target.value))}
-            />
-          </div>
-        </div>
+        <SliderSetting
+          label="noise"
+          value={Math.min(noise, NOISE_MAX)}
+          min={NOISE_MIN}
+          max={NOISE_MAX}
+          step={NOISE_STEP}
+          inputWidth={52}
+          onChange={setNoise}
+        />
       </div>
     </div>
   )
