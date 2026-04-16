@@ -5,6 +5,11 @@ interface Port {
   manufacturer?: string
 }
 
+interface PinConfig {
+  debounce: number
+  noise: number
+}
+
 const DEBOUNCE_DEFAULT = 200
 const NOISE_DEFAULT = 5
 
@@ -15,6 +20,19 @@ function loadConfig(): { debounce: number; noise: number } {
   }
 }
 
+function loadPinConfigs(): Record<number, PinConfig> {
+  try {
+    const raw = localStorage.getItem('pinConfigs')
+    return raw ? JSON.parse(raw) : {}
+  } catch {
+    return {}
+  }
+}
+
+function savePinConfigs(configs: Record<number, PinConfig>): void {
+  localStorage.setItem('pinConfigs', JSON.stringify(configs))
+}
+
 export default function App(): JSX.Element {
   const [ports, setPorts] = useState<Port[]>([])
   const [selected, setSelected] = useState('')
@@ -23,6 +41,15 @@ export default function App(): JSX.Element {
   const [error, setError] = useState<string | null>(null)
   const [debounce, setDebounce] = useState(() => loadConfig().debounce)
   const [noise, setNoise] = useState(() => loadConfig().noise)
+  const [pinConfigs, setPinConfigs] = useState<Record<number, PinConfig>>(() => loadPinConfigs())
+
+  const knownPins = [...new Set([
+    ...Object.keys(peaks).map(Number),
+    ...Object.keys(pinConfigs).map(Number)
+  ])].sort((a, b) => a - b)
+
+  const getPinDebounce = (pin: number): number => pinConfigs[pin]?.debounce ?? debounce
+  const getPinNoise = (pin: number): number => pinConfigs[pin]?.noise ?? noise
 
   const refresh = async (): Promise<void> => {
     const list = await window.arduino.listPorts()
@@ -51,6 +78,10 @@ export default function App(): JSX.Element {
     setConnected(true)
     await window.arduino.setDebounce(debounce)
     await window.arduino.setNoiseTolerance(noise)
+    for (const [pin, cfg] of Object.entries(pinConfigs)) {
+      await window.arduino.setDebounce(cfg.debounce, Number(pin))
+      await window.arduino.setNoiseTolerance(cfg.noise, Number(pin))
+    }
   }
 
   const disconnect = async (): Promise<void> => {
@@ -69,6 +100,20 @@ export default function App(): JSX.Element {
     setNoise(value)
     localStorage.setItem('noiseTolerance', String(value))
     if (connected) await window.arduino.setNoiseTolerance(value)
+  }
+
+  const handlePinDebounceChange = async (pin: number, value: number): Promise<void> => {
+    const next = { ...pinConfigs, [pin]: { ...pinConfigs[pin] ?? { debounce, noise }, debounce: value } }
+    setPinConfigs(next)
+    savePinConfigs(next)
+    if (connected) await window.arduino.setDebounce(value, pin)
+  }
+
+  const handlePinNoiseChange = async (pin: number, value: number): Promise<void> => {
+    const next = { ...pinConfigs, [pin]: { ...pinConfigs[pin] ?? { debounce, noise }, noise: value } }
+    setPinConfigs(next)
+    savePinConfigs(next)
+    if (connected) await window.arduino.setNoiseTolerance(value, pin)
   }
 
   return (
@@ -129,47 +174,104 @@ export default function App(): JSX.Element {
       <div style={{ marginTop: 32 }}>
         <h3 style={{ marginBottom: 12 }}>Settings</h3>
 
-        <div style={{ marginBottom: 16 }}>
-          <label>Debounce: {debounce}ms</label>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
-            <input
-              type="range"
-              min={100}
-              max={500}
-              step={10}
-              value={debounce}
-              onChange={(e) => handleDebounceChange(Number(e.target.value))}
-            />
-            <input
-              type="number"
-              min={1}
-              value={debounce}
-              style={{ width: 64 }}
-              onChange={(e) => handleDebounceChange(Number(e.target.value))}
-            />
+        <div style={{ marginBottom: 24 }}>
+          <h4 style={{ marginBottom: 8 }}>All pins</h4>
+
+          <div style={{ marginBottom: 16 }}>
+            <label>Debounce: {debounce}ms</label>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
+              <input
+                type="range"
+                min={100}
+                max={500}
+                step={10}
+                value={debounce}
+                onChange={(e) => handleDebounceChange(Number(e.target.value))}
+              />
+              <input
+                type="number"
+                min={1}
+                value={debounce}
+                style={{ width: 64 }}
+                onChange={(e) => handleDebounceChange(Number(e.target.value))}
+              />
+            </div>
+          </div>
+
+          <div>
+            <label>Noise tolerance: {noise}</label>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
+              <input
+                type="range"
+                min={0}
+                max={10}
+                step={1}
+                value={Math.min(noise, 10)}
+                onChange={(e) => handleNoiseChange(Number(e.target.value))}
+              />
+              <input
+                type="number"
+                min={0}
+                value={noise}
+                style={{ width: 64 }}
+                onChange={(e) => handleNoiseChange(Number(e.target.value))}
+              />
+            </div>
           </div>
         </div>
 
-        <div>
-          <label>Noise tolerance: {noise}</label>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
-            <input
-              type="range"
-              min={0}
-              max={10}
-              step={1}
-              value={Math.min(noise, 10)}
-              onChange={(e) => handleNoiseChange(Number(e.target.value))}
-            />
-            <input
-              type="number"
-              min={0}
-              value={noise}
-              style={{ width: 64 }}
-              onChange={(e) => handleNoiseChange(Number(e.target.value))}
-            />
+        {knownPins.length > 0 && (
+          <div>
+            <h4 style={{ marginBottom: 8 }}>Per-pin overrides</h4>
+            {knownPins.map((pin) => (
+              <div key={pin} style={{ marginBottom: 20, paddingLeft: 12, borderLeft: '2px solid #ccc' }}>
+                <div style={{ marginBottom: 8, fontWeight: 'bold' }}>Pin {pin}</div>
+
+                <div style={{ marginBottom: 12 }}>
+                  <label>Debounce: {getPinDebounce(pin)}ms</label>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
+                    <input
+                      type="range"
+                      min={100}
+                      max={500}
+                      step={10}
+                      value={getPinDebounce(pin)}
+                      onChange={(e) => handlePinDebounceChange(pin, Number(e.target.value))}
+                    />
+                    <input
+                      type="number"
+                      min={1}
+                      value={getPinDebounce(pin)}
+                      style={{ width: 64 }}
+                      onChange={(e) => handlePinDebounceChange(pin, Number(e.target.value))}
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label>Noise tolerance: {getPinNoise(pin)}</label>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
+                    <input
+                      type="range"
+                      min={0}
+                      max={10}
+                      step={1}
+                      value={Math.min(getPinNoise(pin), 10)}
+                      onChange={(e) => handlePinNoiseChange(pin, Number(e.target.value))}
+                    />
+                    <input
+                      type="number"
+                      min={0}
+                      value={getPinNoise(pin)}
+                      style={{ width: 64 }}
+                      onChange={(e) => handlePinNoiseChange(pin, Number(e.target.value))}
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
-        </div>
+        )}
       </div>
     </div>
   )

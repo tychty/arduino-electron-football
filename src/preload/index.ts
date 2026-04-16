@@ -23,9 +23,9 @@ contextBridge.exposeInMainWorld('arduino', {
     return () => ipcRenderer.off('serial:error', handler)
   },
 
-  setDebounce: (ms: number): Promise<void> =>
-    ipcRenderer.invoke('serial:command', `D:${ms}`),
+  setDebounce: (ms: number, pin?: number): Promise<void> =>
+    ipcRenderer.invoke('serial:command', pin !== undefined ? `D:${pin}:${ms}` : `D:${ms}`),
 
-  setNoiseTolerance: (value: number): Promise<void> =>
-    ipcRenderer.invoke('serial:command', `N:${value}`)
+  setNoiseTolerance: (value: number, pin?: number): Promise<void> =>
+    ipcRenderer.invoke('serial:command', pin !== undefined ? `N:${pin}:${value}` : `N:${value}`)
 })

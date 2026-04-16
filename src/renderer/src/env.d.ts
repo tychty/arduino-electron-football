@@ -6,8 +6,8 @@ interface ArduinoAPI {
   onData: (callback: (pin: number, peak: number) => void) => () => void
   /** Returns unsubscribe function */
   onError: (callback: (msg: string) => void) => () => void
-  setDebounce: (ms: number) => Promise<void>
-  setNoiseTolerance: (value: number) => Promise<void>
+  setDebounce: (ms: number, pin?: number) => Promise<void>
+  setNoiseTolerance: (value: number, pin?: number) => Promise<void>
 }
 
 declare global {
