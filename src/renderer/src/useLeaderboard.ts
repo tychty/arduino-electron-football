@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
-import type { LeaderboardEntry } from './env.d'
+import { arduinoService } from './services/arduinoService'
+import type { LeaderboardEntry } from './services/arduinoService'
 
 interface UseLeaderboard {
   entries: LeaderboardEntry[]
@@ -11,7 +12,7 @@ export function useLeaderboard(): UseLeaderboard {
   const [entries, setEntries] = useState<LeaderboardEntry[]>([])
 
   const reload = async (): Promise<void> => {
-    const data = await window.arduino.leaderboard.read()
+    const data = await arduinoService.readLeaderboard()
     setEntries([...data].sort((a, b) => b.score - a.score))
   }
 
@@ -21,7 +22,7 @@ export function useLeaderboard(): UseLeaderboard {
 
   const append = async (name: string, score: number): Promise<void> => {
     const date = new Date().toISOString()
-    await window.arduino.leaderboard.append(name, score, date)
+    await arduinoService.appendLeaderboard(name, score, date)
     await reload()
   }
 

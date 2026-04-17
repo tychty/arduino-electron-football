@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { arduinoService } from './services/arduinoService'
 
 export interface PortInfo {
   path: string
@@ -23,7 +24,7 @@ export function useConnection(allPins: number[]): Connection {
   const [error, setError] = useState<string | null>(null)
 
   const refresh = async (): Promise<void> => {
-    const list = await window.arduino.listPorts()
+    const list = await arduinoService.listPorts()
     setPorts(list)
   }
 
@@ -31,8 +32,8 @@ export function useConnection(allPins: number[]): Connection {
     for (const pin of pins) {
       const debounce = Number(localStorage.getItem(`pin_${pin}_debounce`) ?? 200)
       const noise = Number(localStorage.getItem(`pin_${pin}_noise`) ?? 5)
-      await window.arduino.setDebounce(debounce, pin)
-      await window.arduino.setNoiseTolerance(noise, pin)
+      await arduinoService.setDebounce(debounce, pin)
+      await arduinoService.setNoiseTolerance(noise, pin)
     }
   }
 
@@ -41,13 +42,11 @@ export function useConnection(allPins: number[]): Connection {
   }, [])
 
   useEffect(() => {
-    const unsub = window.arduino.onError((msg) => setError(msg))
-    return unsub
+    return arduinoService.onError((msg) => setError(msg))
   }, [])
 
-  // auto-connect on startup: scan all ports and try each
   useEffect(() => {
-    window.arduino.autoConnect().then(async (portPath) => {
+    arduinoService.autoConnect().then(async (portPath) => {
       if (!portPath) return
       setSelected(portPath)
       setConnected(true)
@@ -58,13 +57,13 @@ export function useConnection(allPins: number[]): Connection {
   const connect = async (): Promise<void> => {
     if (!selected) return
     setError(null)
-    await window.arduino.connect(selected)
+    await arduinoService.connect(selected)
     setConnected(true)
     await sendPinConfigs(allPins)
   }
 
   const disconnect = async (): Promise<void> => {
-    await window.arduino.disconnect()
+    await arduinoService.disconnect()
     setConnected(false)
   }
 

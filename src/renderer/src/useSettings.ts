@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { arduinoService } from './services/arduinoService'
 import {
   HIT_DEBOUNCE_DEFAULT,
   HIT_DEBOUNCE_MIN,
@@ -145,12 +146,12 @@ export function useSettings(allPins: number[]): SettingsService {
     if (updates.debounce !== undefined) {
       clamped.debounce = Math.max(DEBOUNCE_MIN, Math.min(DEBOUNCE_MAX, updates.debounce))
       localStorage.setItem(`pin_${pin}_debounce`, String(clamped.debounce))
-      if (connected) await window.arduino.setDebounce(clamped.debounce, pin)
+      if (connected) await arduinoService.setDebounce(clamped.debounce, pin)
     }
     if (updates.noise !== undefined) {
       clamped.noise = Math.max(NOISE_MIN, Math.min(NOISE_MAX, updates.noise))
       localStorage.setItem(`pin_${pin}_noise`, String(clamped.noise))
-      if (connected) await window.arduino.setNoiseTolerance(clamped.noise, pin)
+      if (connected) await arduinoService.setNoiseTolerance(clamped.noise, pin)
     }
     setPinHardwares((prev) => ({ ...prev, [pin]: { ...prev[pin], ...clamped } }))
   }

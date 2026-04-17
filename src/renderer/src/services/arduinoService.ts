@@ -1,0 +1,78 @@
+export type HitHandler = (pin: number, peak: number) => void
+export type ErrorHandler = (message: string) => void
+
+export interface PortInfo {
+  path: string
+  manufacturer?: string
+}
+
+export interface LeaderboardEntry {
+  name: string
+  score: number
+  date: string
+}
+
+export interface IArduinoService {
+  listPorts(): Promise<PortInfo[]>
+  connect(port: string): Promise<void>
+  disconnect(): Promise<void>
+  autoConnect(): Promise<string | null>
+  onHit(handler: HitHandler): () => void
+  onError(handler: ErrorHandler): () => void
+  setDebounce(ms: number, pin: number): Promise<void>
+  setNoiseTolerance(val: number, pin: number): Promise<void>
+  readLeaderboard(): Promise<LeaderboardEntry[]>
+  appendLeaderboard(name: string, score: number, date: string): Promise<void>
+}
+
+class ElectronArduinoService implements IArduinoService {
+  listPorts = (): Promise<PortInfo[]> => window.arduino.listPorts()
+  connect = (port: string): Promise<void> => window.arduino.connect(port)
+  disconnect = (): Promise<void> => window.arduino.disconnect()
+  autoConnect = (): Promise<string | null> => window.arduino.autoConnect()
+  onHit = (cb: HitHandler): (() => void) => window.arduino.onData(cb)
+  onError = (cb: ErrorHandler): (() => void) => window.arduino.onError(cb)
+  setDebounce = (ms: number, pin: number): Promise<void> => window.arduino.setDebounce(ms, pin)
+  setNoiseTolerance = (val: number, pin: number): Promise<void> =>
+    window.arduino.setNoiseTolerance(val, pin)
+  readLeaderboard = (): Promise<LeaderboardEntry[]> => window.arduino.leaderboard.read()
+  appendLeaderboard = (name: string, score: number, date: string): Promise<void> =>
+    window.arduino.leaderboard.append(name, score, date)
+}
+
+export class MockArduinoService implements IArduinoService {
+  private hitHandlers = new Set<HitHandler>()
+  private errorHandlers = new Set<ErrorHandler>()
+  private _entries: LeaderboardEntry[] = []
+
+  simulateHit(pin: number, peak: number): void {
+    this.hitHandlers.forEach((h) => h(pin, peak))
+  }
+  simulateError(msg: string): void {
+    this.errorHandlers.forEach((h) => h(msg))
+  }
+
+  listPorts = async (): Promise<PortInfo[]> => [{ path: '/dev/mock0' }]
+  connect = async (): Promise<void> => {}
+  disconnect = async (): Promise<void> => {}
+  autoConnect = async (): Promise<string | null> => '/dev/mock0'
+  onHit(h: HitHandler): () => void {
+    this.hitHandlers.add(h)
+    return () => this.hitHandlers.delete(h)
+  }
+  onError(h: ErrorHandler): () => void {
+    this.errorHandlers.add(h)
+    return () => this.errorHandlers.delete(h)
+  }
+  setDebounce = async (): Promise<void> => {}
+  setNoiseTolerance = async (): Promise<void> => {}
+  readLeaderboard = async (): Promise<LeaderboardEntry[]> => [...this._entries]
+  appendLeaderboard = async (name: string, score: number, date: string): Promise<void> => {
+    this._entries.push({ name, score, date })
+  }
+}
+
+export let arduinoService: IArduinoService = new ElectronArduinoService()
+export const _setArduinoService = (s: IArduinoService): void => {
+  arduinoService = s
+}

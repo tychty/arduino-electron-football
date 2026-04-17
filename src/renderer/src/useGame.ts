@@ -7,6 +7,7 @@ import {
   GameState,
   GameStateMachine,
 } from './gameStateMachine'
+import { arduinoService } from './services/arduinoService'
 
 const INITIAL_STATE: GameState = {
   totalHits: 0,
@@ -43,7 +44,7 @@ export function useGame(
 
   useEffect(() => {
     if (!connected) return
-    return window.arduino.onData((pin, peak) => {
+    return arduinoService.onHit((pin, peak) => {
       if (!allPins.includes(pin)) return
       machineRef.current?.hit(pin, peak, Date.now())
     })

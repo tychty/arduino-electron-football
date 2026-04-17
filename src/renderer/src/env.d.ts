@@ -1,18 +1,12 @@
-export interface LeaderboardEntry {
-  name: string
-  score: number
-  date: string
-}
+import type { HitHandler, ErrorHandler, PortInfo, LeaderboardEntry } from './services/arduinoService'
 
 interface ArduinoAPI {
-  listPorts: () => Promise<{ path: string; manufacturer?: string }[]>
+  listPorts: () => Promise<PortInfo[]>
   connect: (port: string) => Promise<void>
   disconnect: () => Promise<void>
   autoConnect: () => Promise<string | null>
-  /** Returns unsubscribe function */
-  onData: (callback: (pin: number, peak: number) => void) => () => void
-  /** Returns unsubscribe function */
-  onError: (callback: (msg: string) => void) => () => void
+  onData: (callback: HitHandler) => () => void
+  onError: (callback: ErrorHandler) => () => void
   setDebounce: (ms: number, pin?: number) => Promise<void>
   setNoiseTolerance: (value: number, pin?: number) => Promise<void>
   leaderboard: {

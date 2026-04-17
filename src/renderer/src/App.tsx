@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
+import { arduinoService } from './services/arduinoService'
 import { usePins } from './usePins'
 import { useSettings } from './useSettings'
 import { useConnection } from './useConnection'
@@ -26,10 +27,9 @@ export default function App(): JSX.Element {
 
   useEffect(() => {
     if (!connected) return
-    const unsub = window.arduino.onData((pin, peak) =>
+    return arduinoService.onHit((pin, peak) =>
       setPeaks((prev) => ({ ...prev, [pin]: peak }))
     )
-    return unsub
   }, [connected])
 
   const handleDisconnect = (): void => {
