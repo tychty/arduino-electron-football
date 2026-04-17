@@ -32,6 +32,38 @@ export class SerialManager {
     })
   }
 
+  async tryConnect(path: string, onData: (pin: number, peak: number) => void, onError: (msg: string) => void): Promise<boolean> {
+    if (this.port?.isOpen) {
+      this.port.close()
+      this.port = null
+    }
+
+    const port = new SerialPort({ path, baudRate: 57600, autoOpen: false })
+
+    try {
+      await new Promise<void>((resolve, reject) => {
+        port.open((err) => {
+          if (err) reject(err)
+          else resolve()
+        })
+      })
+    } catch {
+      return false
+    }
+
+    this.port = port
+    this.port.on('error', (err) => onError(err.message))
+    const parser = this.port.pipe(new ReadlineParser({ delimiter: '\r\n' }))
+    parser.on('data', (line: string) => {
+      const match = line.trim().match(/^(\d+):(\d+)$/)
+      if (match) {
+        onData(parseInt(match[1], 10), parseInt(match[2], 10))
+      }
+    })
+
+    return true
+  }
+
   sendCommand(command: string): void {
     if (this.port?.isOpen) {
       this.port.write(command + '\n')

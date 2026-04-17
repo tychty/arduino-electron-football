@@ -10,6 +10,9 @@ contextBridge.exposeInMainWorld('arduino', {
   disconnect: (): Promise<void> =>
     ipcRenderer.invoke('serial:disconnect'),
 
+  autoConnect: (): Promise<string | null> =>
+    ipcRenderer.invoke('serial:autoConnect'),
+
   // Returns an unsubscribe function — call it on cleanup
   onData: (callback: (pin: number, peak: number) => void): (() => void) => {
     const handler = (_: unknown, pin: number, peak: number): void => callback(pin, peak)
@@ -27,5 +30,13 @@ contextBridge.exposeInMainWorld('arduino', {
     ipcRenderer.invoke('serial:command', pin !== undefined ? `D:${pin}:${ms}` : `D:${ms}`),
 
   setNoiseTolerance: (value: number, pin?: number): Promise<void> =>
-    ipcRenderer.invoke('serial:command', pin !== undefined ? `N:${pin}:${value}` : `N:${value}`)
+    ipcRenderer.invoke('serial:command', pin !== undefined ? `N:${pin}:${value}` : `N:${value}`),
+
+  leaderboard: {
+    read: (): Promise<{ name: string; score: number; date: string }[]> =>
+      ipcRenderer.invoke('leaderboard:read'),
+
+    append: (name: string, score: number, date: string): Promise<void> =>
+      ipcRenderer.invoke('leaderboard:append', name, score, date),
+  },
 })

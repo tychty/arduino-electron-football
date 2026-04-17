@@ -9,7 +9,9 @@ interface HitEvent {
 
 interface GameState {
   hits: Record<number, number>
+  totalHits: number
   score: number
+  gameOver: boolean
   flashPin: number | null
   flashMiss: boolean
   resetScore: () => void
@@ -21,9 +23,11 @@ export function useGame(
   allPins: number[],
   hitDebounceMs: number,
   flashDuration: number,
-  pinConfigs: Record<number, PinConfig>
+  pinConfigs: Record<number, PinConfig>,
+  hitLimit: number
 ): GameState {
   const [hits, setHits] = useState<Record<number, number>>({})
+  const [totalHits, setTotalHits] = useState(0)
   const [flashPin, setFlashPin] = useState<number | null>(null)
   const [flashMiss, setFlashMiss] = useState(false)
 
@@ -31,14 +35,12 @@ export function useGame(
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const pinConfigsRef = useRef(pinConfigs)
   const flashDurationRef = useRef(flashDuration)
+  const totalHitsRef = useRef(0)
+  const hitLimitRef = useRef(hitLimit)
 
-  useEffect(() => {
-    pinConfigsRef.current = pinConfigs
-  }, [pinConfigs])
-
-  useEffect(() => {
-    flashDurationRef.current = flashDuration
-  }, [flashDuration])
+  useEffect(() => { pinConfigsRef.current = pinConfigs }, [pinConfigs])
+  useEffect(() => { flashDurationRef.current = flashDuration }, [flashDuration])
+  useEffect(() => { hitLimitRef.current = hitLimit }, [hitLimit])
 
   const resolveHit = useCallback(() => {
     const events = pendingRef.current
@@ -50,6 +52,8 @@ export function useGame(
     const duration = flashDurationRef.current
 
     if (winner.pin === VIRTUAL_MISS_PIN) {
+      totalHitsRef.current += 1
+      setTotalHits(totalHitsRef.current)
       setFlashMiss(true)
       setTimeout(() => setFlashMiss(false), duration)
       return
@@ -59,11 +63,15 @@ export function useGame(
     if (!config || !config.active) return
 
     if (config.miss) {
+      totalHitsRef.current += 1
+      setTotalHits(totalHitsRef.current)
       setFlashMiss(true)
       setTimeout(() => setFlashMiss(false), duration)
       return
     }
 
+    totalHitsRef.current += 1
+    setTotalHits(totalHitsRef.current)
     setHits((prev) => ({ ...prev, [winner.pin]: (prev[winner.pin] ?? 0) + 1 }))
     setFlashPin(winner.pin)
     setTimeout(() => setFlashPin(null), duration)
@@ -71,6 +79,7 @@ export function useGame(
 
   const injectHit = useCallback(
     (pin: number, peak: number, debounceMs: number) => {
+      if (totalHitsRef.current >= hitLimitRef.current) return
       pendingRef.current.push({ pin, peak })
       if (timerRef.current) clearTimeout(timerRef.current)
       timerRef.current = setTimeout(resolveHit, debounceMs)
@@ -103,7 +112,13 @@ export function useGame(
     [hits, pinConfigs, allPins]
   )
 
-  const resetScore = (): void => setHits({})
+  const gameOver = totalHits >= hitLimit
 
-  return { hits, score, flashPin, flashMiss, resetScore, injectHit }
+  const resetScore = (): void => {
+    setHits({})
+    setTotalHits(0)
+    totalHitsRef.current = 0
+  }
+
+  return { hits, totalHits, score, gameOver, flashPin, flashMiss, resetScore, injectHit }
 }

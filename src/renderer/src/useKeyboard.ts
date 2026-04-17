@@ -4,7 +4,8 @@ import { VIRTUAL_MISS_PIN, KB_SYNTHETIC_PEAK } from './config'
 export function useKeyboard(
   allPins: number[],
   kbDebounceMs: number,
-  injectHit: (pin: number, peak: number, debounceMs: number) => void
+  injectHit: (pin: number, peak: number, debounceMs: number) => void,
+  enabled: boolean = true
 ): void {
   const allPinsRef = useRef(allPins)
   const kbDebounceRef = useRef(kbDebounceMs)
@@ -19,6 +20,8 @@ export function useKeyboard(
   }, [kbDebounceMs])
 
   useEffect(() => {
+    if (!enabled) return
+
     const handleKeyDown = (e: KeyboardEvent): void => {
       if (e.repeat) return
 
@@ -43,5 +46,5 @@ export function useKeyboard(
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [injectHit])
+  }, [injectHit, enabled])
 }

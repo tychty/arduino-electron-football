@@ -36,3 +36,6 @@ export const FLASH_DURATION_DEFAULT = 350
 export const FLASH_DURATION_MIN = 100
 export const FLASH_DURATION_MAX = 1500
 export const FLASH_DURATION_STEP = 10
+
+// Hit limit (game length)
+export const HIT_LIMIT_DEFAULT = 5
