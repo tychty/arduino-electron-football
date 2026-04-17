@@ -4,24 +4,22 @@ import { PinConfig } from '../useSettings'
 interface Props {
   allPins: number[]
   pinConfigs: Record<number, PinConfig>
-  hits: Record<number, number>
+  scores: Readonly<Record<number, number>>
   totalHits: number
   hitLimit: number
   score: number
-  flashPin: number | null
-  flashMiss: boolean
+  flashingPins: ReadonlySet<number>
   onEndGame: () => void
 }
 
 export default function GamePage({
   allPins,
   pinConfigs,
-  hits,
+  scores,
   totalHits,
   hitLimit,
   score,
-  flashPin,
-  flashMiss,
+  flashingPins,
   onEndGame,
 }: Props): JSX.Element {
   return (
@@ -55,9 +53,8 @@ export default function GamePage({
       <FootballGoal
         allPins={allPins}
         pinConfigs={pinConfigs}
-        hits={hits}
-        flashPin={flashPin}
-        flashMiss={flashMiss}
+        scores={scores}
+        flashingPins={flashingPins}
       />
 
       <button

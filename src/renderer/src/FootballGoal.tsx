@@ -1,25 +1,26 @@
 import GoalCircle from './GoalCircle'
 import { PinConfig } from './useSettings'
+import { VIRTUAL_MISS_PIN } from '../../shared/config'
 
 interface Props {
   allPins: number[]
   pinConfigs: Record<number, PinConfig>
-  hits: Record<number, number>
-  flashPin: number | null
-  flashMiss: boolean
+  scores: Readonly<Record<number, number>>
+  flashingPins: ReadonlySet<number>
 }
 
 export default function FootballGoal({
   allPins,
   pinConfigs,
-  hits,
-  flashPin,
-  flashMiss,
+  scores,
+  flashingPins,
 }: Props): JSX.Element {
   const activeScoringPins = allPins.filter((pin) => {
     const config = pinConfigs[pin]
     return config?.active && !config?.miss
   })
+
+  const flashMiss = flashingPins.has(VIRTUAL_MISS_PIN)
 
   return (
     <div
@@ -45,8 +46,8 @@ export default function FootballGoal({
           <GoalCircle
             key={pin}
             scorePoints={pinConfigs[pin]?.scorePoints ?? 1}
-            hitCount={hits[pin] ?? 0}
-            flashing={flashPin === pin}
+            hitCount={scores[pin] ?? 0}
+            flashing={flashingPins.has(pin)}
           />
         ))
       )}

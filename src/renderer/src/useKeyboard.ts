@@ -4,7 +4,7 @@ import { VIRTUAL_MISS_PIN, KB_SYNTHETIC_PEAK } from '../../shared/config'
 export function useKeyboard(
   allPins: number[],
   kbDebounceMs: number,
-  injectHit: (pin: number, peak: number, debounceMs: number) => void,
+  hit: (pin: number, peak: number) => void,
   enabled: boolean = true
 ): void {
   const allPinsRef = useRef(allPins)
@@ -32,19 +32,18 @@ export function useKeyboard(
 
       if (e.code === 'Space') {
         e.preventDefault()
-        injectHit(VIRTUAL_MISS_PIN, KB_SYNTHETIC_PEAK, kbDebounceRef.current)
+        hit(VIRTUAL_MISS_PIN, KB_SYNTHETIC_PEAK)
         return
       }
 
       if (e.key >= '0' && e.key <= '9') {
-        // key = (pin + 1) % 10  →  pin = (key - 1 + 10) % 10
         const pin = (Number(e.key) - 1 + 10) % 10
         if (!allPinsRef.current.includes(pin)) return
-        injectHit(pin, KB_SYNTHETIC_PEAK, kbDebounceRef.current)
+        hit(pin, KB_SYNTHETIC_PEAK)
       }
     }
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [injectHit, enabled])
+  }, [hit, enabled])
 }

@@ -25,45 +25,53 @@ export default function App(): JSX.Element {
 
   const [peaks, setPeaks] = useState<Record<number, number>>({})
 
+  const { game } = settings
+
+  const gameConfig = useMemo(
+    () => ({
+      pinConfig: settings.pinConfigs,
+      hitDebounceMs: game.hitDebounceMs,
+      flashDurationMs: game.flashDuration,
+      hitLimit: game.hitLimit,
+    }),
+    [settings.pinConfigs, game.hitDebounceMs, game.flashDuration, game.hitLimit]
+  )
+
+  const { scores, totalHits, flashingPins, isGameOver, hit, reset } = useGame(gameConfig)
+
   useEffect(() => {
     if (!connected) return
-    return arduinoService.onHit((pin, peak) =>
+    return arduinoService.onHit((pin, peak) => {
       setPeaks((prev) => ({ ...prev, [pin]: peak }))
-    )
-  }, [connected])
+      if (allPins.includes(pin)) hit(pin, peak)
+    })
+  }, [connected, allPins, hit])
+
+  useKeyboard(allPins, game.kbDebounceMs, hit, page === 'game' && !modalOpen)
+
+  const score = useMemo(
+    () =>
+      allPins.reduce((total, pin) => {
+        return total + (scores[pin] ?? 0) * (settings.pinConfigs[pin]?.scorePoints ?? 1)
+      }, 0),
+    [scores, allPins, settings.pinConfigs]
+  )
+
+  const { entries, append, reload } = useLeaderboard()
+
+  useEffect(() => {
+    if (isGameOver && page === 'game' && !modalOpen) {
+      setModalOpen(true)
+    }
+  }, [isGameOver, page, modalOpen])
 
   const handleDisconnect = (): void => {
     void disconnect()
     setPeaks({})
   }
 
-  const { game } = settings
-  const configs = useMemo(
-    () => Object.fromEntries(allPins.map((p) => [p, settings.pinConfigs[p] ?? settings.pinConfig(p)])),
-    [allPins, settings.pinConfigs]
-  )
-
-  const { hits, totalHits, score, gameOver, flashPin, flashMiss, resetScore, injectHit } = useGame(
-    connected,
-    allPins,
-    game.hitDebounceMs,
-    game.flashDuration,
-    configs,
-    game.hitLimit
-  )
-
-  useKeyboard(allPins, game.kbDebounceMs, injectHit, page === 'game' && !modalOpen)
-
-  const { entries, append, reload } = useLeaderboard()
-
-  useEffect(() => {
-    if (gameOver && page === 'game' && !modalOpen) {
-      setModalOpen(true)
-    }
-  }, [gameOver, page])
-
   const handleNewGame = (): void => {
-    resetScore()
+    reset()
     setPage('game')
   }
 
@@ -78,7 +86,7 @@ export default function App(): JSX.Element {
       await reload()
     }
     setModalOpen(false)
-    resetScore()
+    reset()
     setPage('leaderboard')
   }
 
@@ -97,13 +105,12 @@ export default function App(): JSX.Element {
       {page === 'game' && (
         <GamePage
           allPins={allPins}
-          pinConfigs={configs}
-          hits={hits}
+          pinConfigs={settings.pinConfigs}
+          scores={scores}
           totalHits={totalHits}
           hitLimit={game.hitLimit}
           score={score}
-          flashPin={flashPin}
-          flashMiss={flashMiss}
+          flashingPins={flashingPins}
           onEndGame={handleEndGame}
         />
       )}
@@ -128,9 +135,7 @@ export default function App(): JSX.Element {
         />
       )}
 
-      {modalOpen && (
-        <EndGameModal score={score} onDone={handleModalDone} />
-      )}
+      {modalOpen && <EndGameModal score={score} onDone={handleModalDone} />}
     </>
   )
 }
