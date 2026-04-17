@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { arduinoService } from './services/arduinoService'
-import { usePins } from './usePins'
-import { useSettings } from './useSettings'
+import { useSettingsCtx } from './SettingsContext'
 import { useConnection } from './useConnection'
 import { useGame } from './useGame'
 import { useKeyboard } from './useKeyboard'
@@ -17,27 +16,12 @@ type Page = 'leaderboard' | 'game' | 'settings'
 export default function App(): JSX.Element {
   const [page, setPage] = useState<Page>('leaderboard')
   const [modalOpen, setModalOpen] = useState(false)
-
-  const { allPins, canAddPin, addPin, deletePin } = usePins()
-  const settings = useSettings(allPins)
-  const { ports, selected, connected, error, setSelected, refresh, connect, disconnect } =
-    useConnection(allPins)
-
   const [peaks, setPeaks] = useState<Record<number, number>>({})
 
-  const { game } = settings
-
-  const gameConfig = useMemo(
-    () => ({
-      pinConfig: settings.pinConfigs,
-      hitDebounceMs: game.hitDebounceMs,
-      flashDurationMs: game.flashDuration,
-      hitLimit: game.hitLimit,
-    }),
-    [settings.pinConfigs, game.hitDebounceMs, game.flashDuration, game.hitLimit]
-  )
-
-  const { scores, totalHits, flashingPins, isGameOver, hit, reset } = useGame(gameConfig)
+  const { allPins, settings } = useSettingsCtx()
+  const { ports, selected, connected, error, setSelected, refresh, connect, disconnect } =
+    useConnection()
+  const { scores, totalHits, flashingPins, isGameOver, hit, reset } = useGame()
 
   useEffect(() => {
     if (!connected) return
@@ -47,7 +31,7 @@ export default function App(): JSX.Element {
     })
   }, [connected, allPins, hit])
 
-  useKeyboard(allPins, game.kbDebounceMs, hit, page === 'game' && !modalOpen)
+  useKeyboard(hit, page === 'game' && !modalOpen)
 
   const score = useMemo(
     () =>
@@ -104,11 +88,8 @@ export default function App(): JSX.Element {
 
       {page === 'game' && (
         <GamePage
-          allPins={allPins}
-          pinConfigs={settings.pinConfigs}
           scores={scores}
           totalHits={totalHits}
-          hitLimit={game.hitLimit}
           score={score}
           flashingPins={flashingPins}
           onEndGame={handleEndGame}
@@ -121,16 +102,11 @@ export default function App(): JSX.Element {
           selected={selected}
           connected={connected}
           connectionError={error}
-          allPins={allPins}
           peaks={peaks}
-          settings={settings}
-          canAddPin={canAddPin}
           onSetSelected={setSelected}
           onRefresh={refresh}
           onConnect={connect}
           onDisconnect={handleDisconnect}
-          onAddPin={addPin}
-          onDeletePin={deletePin}
           onBack={() => setPage('leaderboard')}
         />
       )}

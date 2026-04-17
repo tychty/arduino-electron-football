@@ -1,5 +1,6 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { createGameStateMachine, GameConfig, GameState, GameStateMachine } from './gameStateMachine'
+import { useSettingsCtx } from './SettingsContext'
 
 const INITIAL_STATE: GameState = {
   totalHits: 0,
@@ -9,7 +10,19 @@ const INITIAL_STATE: GameState = {
   version: 0,
 }
 
-export function useGame(config: GameConfig) {
+export function useGame() {
+  const { configs, hitDebounceMs, flashDuration, hitLimit } = useSettingsCtx()
+
+  const config = useMemo<GameConfig>(
+    () => ({
+      pinConfig: configs,
+      hitDebounceMs,
+      flashDurationMs: flashDuration,
+      hitLimit,
+    }),
+    [configs, hitDebounceMs, flashDuration, hitLimit]
+  )
+
   const [gameState, setGameState] = useState<GameState>(INITIAL_STATE)
   const machineRef = useRef<GameStateMachine | null>(null)
 

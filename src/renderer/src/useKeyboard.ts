@@ -1,12 +1,12 @@
 import { useEffect, useRef } from 'react'
 import { VIRTUAL_MISS_PIN, KB_SYNTHETIC_PEAK } from '../../shared/config'
+import { useSettingsCtx } from './SettingsContext'
 
 export function useKeyboard(
-  allPins: number[],
-  kbDebounceMs: number,
   hit: (pin: number, peak: number) => void,
   enabled: boolean = true
 ): void {
+  const { allPins, kbDebounceMs } = useSettingsCtx()
   const allPinsRef = useRef(allPins)
   const kbDebounceRef = useRef(kbDebounceMs)
   const lastFireRef = useRef<Record<string, number>>({})

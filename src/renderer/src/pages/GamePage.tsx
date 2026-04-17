@@ -1,27 +1,23 @@
 import FootballGoal from '../FootballGoal'
-import { PinConfig } from '../useSettings'
+import { useSettingsCtx } from '../SettingsContext'
 
 interface Props {
-  allPins: number[]
-  pinConfigs: Record<number, PinConfig>
   scores: Readonly<Record<number, number>>
   totalHits: number
-  hitLimit: number
   score: number
   flashingPins: ReadonlySet<number>
   onEndGame: () => void
 }
 
 export default function GamePage({
-  allPins,
-  pinConfigs,
   scores,
   totalHits,
-  hitLimit,
   score,
   flashingPins,
   onEndGame,
 }: Props): JSX.Element {
+  const { allPins, configs, hitLimit } = useSettingsCtx()
+
   return (
     <div
       style={{
@@ -52,7 +48,7 @@ export default function GamePage({
 
       <FootballGoal
         allPins={allPins}
-        pinConfigs={pinConfigs}
+        pinConfigs={configs}
         scores={scores}
         flashingPins={flashingPins}
       />

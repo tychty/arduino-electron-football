@@ -5,23 +5,18 @@ import KeyboardDebounceSettings from '../KeyboardDebounceSettings'
 import FlashDurationSettings from '../FlashDurationSettings'
 import HitLimitSettings from '../HitLimitSettings'
 import { PortInfo } from '../useConnection'
-import { SettingsService } from '../useSettings'
+import { useSettingsCtx } from '../SettingsContext'
 
 interface Props {
   ports: PortInfo[]
   selected: string
   connected: boolean
   connectionError: string | null
-  allPins: number[]
   peaks: Record<number, number>
-  settings: SettingsService
-  canAddPin: boolean
   onSetSelected: (port: string) => void
   onRefresh: () => Promise<void>
   onConnect: () => Promise<void>
   onDisconnect: () => void
-  onAddPin: () => void
-  onDeletePin: (pin: number) => void
   onBack: () => void
 }
 
@@ -30,18 +25,15 @@ export default function SettingsPage({
   selected,
   connected,
   connectionError,
-  allPins,
   peaks,
-  settings,
-  canAddPin,
   onSetSelected,
   onRefresh,
   onConnect,
   onDisconnect,
-  onAddPin,
-  onDeletePin,
   onBack,
 }: Props): JSX.Element {
+  const { allPins, canAddPin, addPin, deletePin, settings } = useSettingsCtx()
+
   return (
     <div
       style={{
@@ -116,8 +108,8 @@ export default function SettingsPage({
           connected={connected}
           settings={settings}
           canAddPin={canAddPin}
-          onAddPin={onAddPin}
-          onDeletePin={onDeletePin}
+          onAddPin={addPin}
+          onDeletePin={deletePin}
         />
       </section>
     </div>

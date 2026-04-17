@@ -1,0 +1,52 @@
+import { createContext, useContext, ReactNode } from 'react'
+import { usePins } from './usePins'
+import { useSettings, SettingsService, PinConfig } from './useSettings'
+
+interface SettingsContextValue {
+  allPins: number[]
+  canAddPin: boolean
+  addPin: () => void
+  deletePin: (pin: number) => void
+  configs: Record<number, PinConfig>
+  hitDebounceMs: number
+  setHitDebounceMs: (v: number) => void
+  kbDebounceMs: number
+  setKbDebounceMs: (v: number) => void
+  flashDuration: number
+  setFlashDuration: (v: number) => void
+  hitLimit: number
+  setHitLimit: (v: number) => void
+  settings: SettingsService
+}
+
+const SettingsContext = createContext<SettingsContextValue | null>(null)
+
+export function SettingsProvider({ children }: { children: ReactNode }): JSX.Element {
+  const { allPins, canAddPin, addPin, deletePin } = usePins()
+  const settings = useSettings(allPins)
+
+  const value: SettingsContextValue = {
+    allPins,
+    canAddPin,
+    addPin,
+    deletePin,
+    configs: settings.pinConfigs,
+    hitDebounceMs: settings.game.hitDebounceMs,
+    setHitDebounceMs: (v) => settings.setGame('hitDebounceMs', v),
+    kbDebounceMs: settings.game.kbDebounceMs,
+    setKbDebounceMs: (v) => settings.setGame('kbDebounceMs', v),
+    flashDuration: settings.game.flashDuration,
+    setFlashDuration: (v) => settings.setGame('flashDuration', v),
+    hitLimit: settings.game.hitLimit,
+    setHitLimit: (v) => settings.setGame('hitLimit', v),
+    settings,
+  }
+
+  return <SettingsContext.Provider value={value}>{children}</SettingsContext.Provider>
+}
+
+export function useSettingsCtx(): SettingsContextValue {
+  const ctx = useContext(SettingsContext)
+  if (!ctx) throw new Error('useSettingsCtx must be used within a SettingsProvider')
+  return ctx
+}

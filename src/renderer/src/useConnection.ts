@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { arduinoService } from './services/arduinoService'
+import { useSettingsCtx } from './SettingsContext'
 
 export interface PortInfo {
   path: string
@@ -17,7 +18,8 @@ export interface Connection {
   disconnect: () => Promise<void>
 }
 
-export function useConnection(allPins: number[]): Connection {
+export function useConnection(): Connection {
+  const { allPins } = useSettingsCtx()
   const [ports, setPorts] = useState<PortInfo[]>([])
   const [selected, setSelected] = useState('')
   const [connected, setConnected] = useState(false)
