@@ -1,5 +1,5 @@
 import GoalCircle from './GoalCircle'
-import { PinConfig } from './usePinConfigs'
+import { PinConfig } from './useSettings'
 
 interface Props {
   allPins: number[]

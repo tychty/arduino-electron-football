@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { usePins } from './usePins'
 import { useSettings } from './useSettings'
 import { useConnection } from './useConnection'
@@ -38,7 +38,10 @@ export default function App(): JSX.Element {
   }
 
   const { game } = settings
-  const configs = Object.fromEntries(allPins.map((p) => [p, settings.pinConfig(p)]))
+  const configs = useMemo(
+    () => Object.fromEntries(allPins.map((p) => [p, settings.pinConfigs[p] ?? settings.pinConfig(p)])),
+    [allPins, settings.pinConfigs]
+  )
 
   const { hits, totalHits, score, gameOver, flashPin, flashMiss, resetScore, injectHit } = useGame(
     connected,

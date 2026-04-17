@@ -1,5 +1,5 @@
 import FootballGoal from '../FootballGoal'
-import { PinConfig } from '../usePinConfigs'
+import { PinConfig } from '../useSettings'
 
 interface Props {
   allPins: number[]

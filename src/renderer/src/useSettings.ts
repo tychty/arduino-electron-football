@@ -41,6 +41,7 @@ export interface GameSettings {
 export interface SettingsService {
   game: GameSettings
   setGame: <K extends keyof GameSettings>(key: K, value: GameSettings[K]) => void
+  pinConfigs: Record<number, PinConfig>
   pinConfig: (pin: number) => PinConfig
   setPinConfig: (pin: number, updates: Partial<PinConfig>) => void
   pinHardware: (pin: number) => PinHardware
@@ -154,5 +155,5 @@ export function useSettings(allPins: number[]): SettingsService {
     setPinHardwares((prev) => ({ ...prev, [pin]: { ...prev[pin], ...clamped } }))
   }
 
-  return { game, setGame, pinConfig, setPinConfig, pinHardware, setPinHardware }
+  return { game, setGame, pinConfigs, pinConfig, setPinConfig, pinHardware, setPinHardware }
 }
