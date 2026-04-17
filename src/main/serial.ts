@@ -1,5 +1,6 @@
 import { SerialPort } from 'serialport'
 import { ReadlineParser } from '@serialport/parser-readline'
+import { BAUD_RATE, SERIAL_DELIMITER } from '../shared/config'
 
 export interface PortInfo {
   path: string
@@ -20,9 +21,9 @@ export class SerialManager {
       this.port = null
     }
 
-    this.port = new SerialPort({ path, baudRate: 57600 })
+    this.port = new SerialPort({ path, baudRate: BAUD_RATE })
     this.port.on('error', (err) => onError(err.message))
-    const parser = this.port.pipe(new ReadlineParser({ delimiter: '\r\n' }))
+    const parser = this.port.pipe(new ReadlineParser({ delimiter: SERIAL_DELIMITER }))
 
     parser.on('data', (line: string) => {
       const match = line.trim().match(/^(\d+):(\d+)$/)
@@ -38,7 +39,7 @@ export class SerialManager {
       this.port = null
     }
 
-    const port = new SerialPort({ path, baudRate: 57600, autoOpen: false })
+    const port = new SerialPort({ path, baudRate: BAUD_RATE, autoOpen: false })
 
     try {
       await new Promise<void>((resolve, reject) => {
@@ -53,7 +54,7 @@ export class SerialManager {
 
     this.port = port
     this.port.on('error', (err) => onError(err.message))
-    const parser = this.port.pipe(new ReadlineParser({ delimiter: '\r\n' }))
+    const parser = this.port.pipe(new ReadlineParser({ delimiter: SERIAL_DELIMITER }))
     parser.on('data', (line: string) => {
       const match = line.trim().match(/^(\d+):(\d+)$/)
       if (match) {

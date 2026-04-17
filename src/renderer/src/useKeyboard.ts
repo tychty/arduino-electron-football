@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { VIRTUAL_MISS_PIN, KB_SYNTHETIC_PEAK } from './config'
+import { VIRTUAL_MISS_PIN, KB_SYNTHETIC_PEAK } from '../../shared/config'
 
 export function useKeyboard(
   allPins: number[],

@@ -9,7 +9,7 @@ import {
   NOISE_MAX,
   NOISE_STEP,
   SCORE_POINTS_MIN,
-} from './config'
+} from '../../shared/config'
 
 interface Props {
   pin: number

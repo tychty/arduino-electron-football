@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { PinConfig } from './usePinConfigs'
-import { VIRTUAL_MISS_PIN } from './config'
+import { VIRTUAL_MISS_PIN } from '../../shared/config'
 
 interface HitEvent {
   pin: number

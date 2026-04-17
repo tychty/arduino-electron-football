@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { MAX_PINS } from './config'
+import { MAX_PINS } from '../../shared/config'
 
 const PINS_KEY = 'allPins'
 

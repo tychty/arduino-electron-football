@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { HIT_LIMIT_DEFAULT } from './config'
+import { HIT_LIMIT_DEFAULT } from '../../shared/config'
 
 const KEY = 'hitLimit'
 

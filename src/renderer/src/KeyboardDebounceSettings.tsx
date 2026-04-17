@@ -5,7 +5,7 @@ import {
   KB_DEBOUNCE_MIN,
   KB_DEBOUNCE_MAX,
   KB_DEBOUNCE_STEP,
-} from './config'
+} from '../../shared/config'
 
 const KEY = 'kbDebounceMs'
 

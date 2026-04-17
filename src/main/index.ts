@@ -2,6 +2,7 @@ import { app, BrowserWindow, ipcMain } from 'electron'
 import { join } from 'path'
 import { readFileSync, appendFileSync, existsSync } from 'fs'
 import { SerialManager } from './serial'
+import { WINDOW_WIDTH, WINDOW_HEIGHT, LEADERBOARD_FILENAME } from '../shared/config'
 
 declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string | undefined
 declare const MAIN_WINDOW_VITE_NAME: string
@@ -10,13 +11,13 @@ let mainWindow: BrowserWindow | null = null
 const serial = new SerialManager()
 
 function leaderboardPath(): string {
-  return join(app.getPath('userData'), 'leaderboard.csv')
+  return join(app.getPath('userData'), LEADERBOARD_FILENAME)
 }
 
 function createWindow(): void {
   mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: WINDOW_WIDTH,
+    height: WINDOW_HEIGHT,
     webPreferences: {
       preload: join(__dirname, 'preload.js'),
       sandbox: false

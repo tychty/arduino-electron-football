@@ -1,3 +1,14 @@
+// Window
+export const WINDOW_WIDTH = 800
+export const WINDOW_HEIGHT = 600
+
+// Serial
+export const BAUD_RATE = 57600
+export const SERIAL_DELIMITER = '\r\n'
+
+// Leaderboard
+export const LEADERBOARD_FILENAME = 'leaderboard.csv'
+
 // Pin limits
 export const MAX_PINS = 8
 export const VIRTUAL_MISS_PIN = -1

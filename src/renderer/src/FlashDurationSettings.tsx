@@ -5,7 +5,7 @@ import {
   FLASH_DURATION_MIN,
   FLASH_DURATION_MAX,
   FLASH_DURATION_STEP,
-} from './config'
+} from '../../shared/config'
 
 const KEY = 'flashDuration'
 

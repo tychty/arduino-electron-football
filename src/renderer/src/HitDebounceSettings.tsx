@@ -5,7 +5,7 @@ import {
   HIT_DEBOUNCE_MIN,
   HIT_DEBOUNCE_MAX,
   HIT_DEBOUNCE_STEP,
-} from './config'
+} from '../../shared/config'
 
 const KEY = 'hitDebounceMs'
 
