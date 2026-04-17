@@ -5,7 +5,7 @@ import KeyboardDebounceSettings from '../KeyboardDebounceSettings'
 import FlashDurationSettings from '../FlashDurationSettings'
 import HitLimitSettings from '../HitLimitSettings'
 import { PortInfo } from '../useConnection'
-import { PinConfig } from '../usePinConfigs'
+import { SettingsService } from '../useSettings'
 
 interface Props {
   ports: PortInfo[]
@@ -14,23 +14,14 @@ interface Props {
   connectionError: string | null
   allPins: number[]
   peaks: Record<number, number>
-  pinConfigs: Record<number, PinConfig>
+  settings: SettingsService
   canAddPin: boolean
-  hitDebounceMs: number
-  kbDebounceMs: number
-  flashDuration: number
-  hitLimit: number
   onSetSelected: (port: string) => void
   onRefresh: () => Promise<void>
   onConnect: () => Promise<void>
   onDisconnect: () => void
   onAddPin: () => void
   onDeletePin: (pin: number) => void
-  onConfigChange: (pin: number, updates: Partial<PinConfig>) => void
-  onHitDebounceChange: (v: number) => void
-  onKbDebounceChange: (v: number) => void
-  onFlashDurationChange: (v: number) => void
-  onHitLimitChange: (v: number) => void
   onBack: () => void
 }
 
@@ -41,23 +32,14 @@ export default function SettingsPage({
   connectionError,
   allPins,
   peaks,
-  pinConfigs,
+  settings,
   canAddPin,
-  hitDebounceMs,
-  kbDebounceMs,
-  flashDuration,
-  hitLimit,
   onSetSelected,
   onRefresh,
   onConnect,
   onDisconnect,
   onAddPin,
   onDeletePin,
-  onConfigChange,
-  onHitDebounceChange,
-  onKbDebounceChange,
-  onFlashDurationChange,
-  onHitLimitChange,
   onBack,
 }: Props): JSX.Element {
   return (
@@ -107,10 +89,22 @@ export default function SettingsPage({
       <section style={{ marginBottom: 32 }}>
         <h3 style={{ margin: '0 0 12px', fontSize: 14, color: '#555', fontWeight: 600 }}>Game</h3>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          <HitLimitSettings value={hitLimit} onChange={onHitLimitChange} />
-          <HitDebounceSettings value={hitDebounceMs} onChange={onHitDebounceChange} />
-          <KeyboardDebounceSettings value={kbDebounceMs} onChange={onKbDebounceChange} />
-          <FlashDurationSettings value={flashDuration} onChange={onFlashDurationChange} />
+          <HitLimitSettings
+            value={settings.game.hitLimit}
+            onChange={(v) => settings.setGame('hitLimit', v)}
+          />
+          <HitDebounceSettings
+            value={settings.game.hitDebounceMs}
+            onChange={(v) => settings.setGame('hitDebounceMs', v)}
+          />
+          <KeyboardDebounceSettings
+            value={settings.game.kbDebounceMs}
+            onChange={(v) => settings.setGame('kbDebounceMs', v)}
+          />
+          <FlashDurationSettings
+            value={settings.game.flashDuration}
+            onChange={(v) => settings.setGame('flashDuration', v)}
+          />
         </div>
       </section>
 
@@ -120,11 +114,10 @@ export default function SettingsPage({
           allPins={allPins}
           peaks={peaks}
           connected={connected}
-          pinConfigs={pinConfigs}
+          settings={settings}
           canAddPin={canAddPin}
           onAddPin={onAddPin}
           onDeletePin={onDeletePin}
-          onConfigChange={onConfigChange}
         />
       </section>
     </div>

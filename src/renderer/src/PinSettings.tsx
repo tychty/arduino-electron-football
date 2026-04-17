@@ -1,5 +1,4 @@
-import { usePinSettings } from './usePinSettings'
-import { PinConfig } from './usePinConfigs'
+import { PinConfig, PinHardware } from './useSettings'
 import SliderSetting from './SliderSetting'
 import {
   DEBOUNCE_MIN,
@@ -16,7 +15,9 @@ interface Props {
   peak: number | undefined
   connected: boolean
   config: PinConfig
+  hardware: PinHardware
   onConfigChange: (updates: Partial<PinConfig>) => void
+  onHardwareChange: (updates: Partial<PinHardware>) => void
   onDelete: () => void
 }
 
@@ -29,10 +30,11 @@ export default function PinSettings({
   peak,
   connected,
   config,
+  hardware,
   onConfigChange,
+  onHardwareChange,
   onDelete,
 }: Props): JSX.Element {
-  const { debounce, noise, setDebounce, setNoise } = usePinSettings(pin, connected)
   const pinTooHigh = pin > 9
 
   return (
@@ -107,23 +109,23 @@ export default function PinSettings({
 
         <SliderSetting
           label="debounce"
-          value={debounce}
+          value={hardware.debounce}
           min={DEBOUNCE_MIN}
           max={DEBOUNCE_MAX}
           step={DEBOUNCE_STEP}
           unit="ms"
           inputWidth={52}
-          onChange={setDebounce}
+          onChange={(v) => onHardwareChange({ debounce: v })}
         />
 
         <SliderSetting
           label="noise"
-          value={Math.min(noise, NOISE_MAX)}
+          value={Math.min(hardware.noise, NOISE_MAX)}
           min={NOISE_MIN}
           max={NOISE_MAX}
           step={NOISE_STEP}
           inputWidth={52}
-          onChange={setNoise}
+          onChange={(v) => onHardwareChange({ noise: v })}
         />
       </div>
     </div>

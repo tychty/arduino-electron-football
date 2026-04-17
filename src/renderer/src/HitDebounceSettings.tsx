@@ -1,26 +1,5 @@
-import { useState } from 'react'
 import SliderSetting from './SliderSetting'
-import {
-  HIT_DEBOUNCE_DEFAULT,
-  HIT_DEBOUNCE_MIN,
-  HIT_DEBOUNCE_MAX,
-  HIT_DEBOUNCE_STEP,
-} from '../../shared/config'
-
-const KEY = 'hitDebounceMs'
-
-export function useHitDebounce(): { hitDebounceMs: number; setHitDebounceMs: (v: number) => void } {
-  const [hitDebounceMs, setHitDebounceState] = useState<number>(
-    () => Number(localStorage.getItem(KEY) ?? HIT_DEBOUNCE_DEFAULT)
-  )
-
-  const setHitDebounceMs = (v: number): void => {
-    setHitDebounceState(v)
-    localStorage.setItem(KEY, String(v))
-  }
-
-  return { hitDebounceMs, setHitDebounceMs }
-}
+import { HIT_DEBOUNCE_MIN, HIT_DEBOUNCE_MAX, HIT_DEBOUNCE_STEP } from '../../shared/config'
 
 interface Props {
   value: number

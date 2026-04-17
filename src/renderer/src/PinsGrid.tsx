@@ -1,26 +1,24 @@
 import PinSettings from './PinSettings'
-import { PinConfig } from './usePinConfigs'
+import { SettingsService } from './useSettings'
 
 interface Props {
   allPins: number[]
   peaks: Record<number, number>
   connected: boolean
-  pinConfigs: Record<number, PinConfig>
+  settings: SettingsService
   canAddPin: boolean
   onAddPin: () => void
   onDeletePin: (pin: number) => void
-  onConfigChange: (pin: number, updates: Partial<PinConfig>) => void
 }
 
 export default function PinsGrid({
   allPins,
   peaks,
   connected,
-  pinConfigs,
+  settings,
   canAddPin,
   onAddPin,
   onDeletePin,
-  onConfigChange,
 }: Props): JSX.Element {
   return (
     <div>
@@ -37,8 +35,10 @@ export default function PinsGrid({
             pin={pin}
             peak={peaks[pin]}
             connected={connected}
-            config={pinConfigs[pin] ?? { active: true, miss: false, scorePoints: 1 }}
-            onConfigChange={(updates) => onConfigChange(pin, updates)}
+            config={settings.pinConfig(pin)}
+            hardware={settings.pinHardware(pin)}
+            onConfigChange={(updates) => settings.setPinConfig(pin, updates)}
+            onHardwareChange={(updates) => void settings.setPinHardware(pin, updates, connected)}
             onDelete={() => onDeletePin(pin)}
           />
         ))}

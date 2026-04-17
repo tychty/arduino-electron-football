@@ -1,29 +1,5 @@
-import { useState } from 'react'
 import SliderSetting from './SliderSetting'
-import {
-  KB_DEBOUNCE_DEFAULT,
-  KB_DEBOUNCE_MIN,
-  KB_DEBOUNCE_MAX,
-  KB_DEBOUNCE_STEP,
-} from '../../shared/config'
-
-const KEY = 'kbDebounceMs'
-
-export function useKeyboardDebounce(): {
-  kbDebounceMs: number
-  setKbDebounceMs: (v: number) => void
-} {
-  const [kbDebounceMs, setKbDebounceState] = useState<number>(
-    () => Number(localStorage.getItem(KEY) ?? KB_DEBOUNCE_DEFAULT)
-  )
-
-  const setKbDebounceMs = (v: number): void => {
-    setKbDebounceState(v)
-    localStorage.setItem(KEY, String(v))
-  }
-
-  return { kbDebounceMs, setKbDebounceMs }
-}
+import { KB_DEBOUNCE_MIN, KB_DEBOUNCE_MAX, KB_DEBOUNCE_STEP } from '../../shared/config'
 
 interface Props {
   value: number

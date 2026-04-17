@@ -1,22 +1,3 @@
-import { useState } from 'react'
-import { HIT_LIMIT_DEFAULT } from '../../shared/config'
-
-const KEY = 'hitLimit'
-
-export function useHitLimit(): { hitLimit: number; setHitLimit: (v: number) => void } {
-  const [hitLimit, setHitLimitState] = useState<number>(
-    () => Number(localStorage.getItem(KEY) ?? HIT_LIMIT_DEFAULT)
-  )
-
-  const setHitLimit = (v: number): void => {
-    const clamped = Math.max(1, Math.floor(v))
-    setHitLimitState(clamped)
-    localStorage.setItem(KEY, String(clamped))
-  }
-
-  return { hitLimit, setHitLimit }
-}
-
 interface Props {
   value: number
   onChange: (value: number) => void

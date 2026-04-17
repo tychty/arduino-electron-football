@@ -1,10 +1,6 @@
 import { useState, useEffect } from 'react'
 import { usePins } from './usePins'
-import { usePinConfigs } from './usePinConfigs'
-import { useHitDebounce } from './HitDebounceSettings'
-import { useKeyboardDebounce } from './KeyboardDebounceSettings'
-import { useFlashDuration } from './FlashDurationSettings'
-import { useHitLimit } from './HitLimitSettings'
+import { useSettings } from './useSettings'
 import { useConnection } from './useConnection'
 import { useGame } from './useGame'
 import { useKeyboard } from './useKeyboard'
@@ -22,11 +18,7 @@ export default function App(): JSX.Element {
   const [modalOpen, setModalOpen] = useState(false)
 
   const { allPins, canAddPin, addPin, deletePin } = usePins()
-  const { configs, updateConfig } = usePinConfigs(allPins)
-  const { hitDebounceMs, setHitDebounceMs } = useHitDebounce()
-  const { kbDebounceMs, setKbDebounceMs } = useKeyboardDebounce()
-  const { flashDuration, setFlashDuration } = useFlashDuration()
-  const { hitLimit, setHitLimit } = useHitLimit()
+  const settings = useSettings(allPins)
   const { ports, selected, connected, error, setSelected, refresh, connect, disconnect } =
     useConnection(allPins)
 
@@ -45,20 +37,22 @@ export default function App(): JSX.Element {
     setPeaks({})
   }
 
+  const { game } = settings
+  const configs = Object.fromEntries(allPins.map((p) => [p, settings.pinConfig(p)]))
+
   const { hits, totalHits, score, gameOver, flashPin, flashMiss, resetScore, injectHit } = useGame(
     connected,
     allPins,
-    hitDebounceMs,
-    flashDuration,
+    game.hitDebounceMs,
+    game.flashDuration,
     configs,
-    hitLimit
+    game.hitLimit
   )
 
-  useKeyboard(allPins, kbDebounceMs, injectHit, page === 'game' && !modalOpen)
+  useKeyboard(allPins, game.kbDebounceMs, injectHit, page === 'game' && !modalOpen)
 
   const { entries, append, reload } = useLeaderboard()
 
-  // open modal when game ends naturally
   useEffect(() => {
     if (gameOver && page === 'game' && !modalOpen) {
       setModalOpen(true)
@@ -103,7 +97,7 @@ export default function App(): JSX.Element {
           pinConfigs={configs}
           hits={hits}
           totalHits={totalHits}
-          hitLimit={hitLimit}
+          hitLimit={game.hitLimit}
           score={score}
           flashPin={flashPin}
           flashMiss={flashMiss}
@@ -119,23 +113,14 @@ export default function App(): JSX.Element {
           connectionError={error}
           allPins={allPins}
           peaks={peaks}
-          pinConfigs={configs}
+          settings={settings}
           canAddPin={canAddPin}
-          hitDebounceMs={hitDebounceMs}
-          kbDebounceMs={kbDebounceMs}
-          flashDuration={flashDuration}
-          hitLimit={hitLimit}
           onSetSelected={setSelected}
           onRefresh={refresh}
           onConnect={connect}
           onDisconnect={handleDisconnect}
           onAddPin={addPin}
           onDeletePin={deletePin}
-          onConfigChange={updateConfig}
-          onHitDebounceChange={setHitDebounceMs}
-          onKbDebounceChange={setKbDebounceMs}
-          onFlashDurationChange={setFlashDuration}
-          onHitLimitChange={setHitLimit}
           onBack={() => setPage('leaderboard')}
         />
       )}
