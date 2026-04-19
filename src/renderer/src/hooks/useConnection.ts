@@ -19,7 +19,7 @@ export interface Connection {
 }
 
 export function useConnection(): Connection {
-  const { allPins } = useSettingsCtx()
+  const { allPins, settings } = useSettingsCtx()
   const [ports, setPorts] = useState<PortInfo[]>([])
   const [selected, setSelected] = useState('')
   const [connected, setConnected] = useState(false)
@@ -32,8 +32,7 @@ export function useConnection(): Connection {
 
   const sendPinConfigs = async (pins: number[]): Promise<void> => {
     for (const pin of pins) {
-      const debounce = Number(localStorage.getItem(`pin_${pin}_debounce`) ?? 200)
-      const noise = Number(localStorage.getItem(`pin_${pin}_noise`) ?? 5)
+      const { debounce, noise } = settings.pinHardware(pin)
       await arduinoService.setDebounce(debounce, pin)
       await arduinoService.setNoiseTolerance(noise, pin)
     }
