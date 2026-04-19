@@ -2,7 +2,7 @@ import ConnectionPanel from '../components/ConnectionPanel'
 import PinsGrid from '../components/PinsGrid'
 import HitLimitSettings from '../components/HitLimitSettings'
 import SliderSetting from '../components/SliderSetting'
-import { PortInfo } from '../hooks/useConnection'
+import { PortInfo } from '../services/arduinoService'
 import { useSettingsCtx } from '../context/SettingsContext'
 import {
   HIT_DEBOUNCE_MIN, HIT_DEBOUNCE_MAX, HIT_DEBOUNCE_STEP,

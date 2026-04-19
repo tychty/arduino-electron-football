@@ -1,11 +1,6 @@
 import { useState, useEffect } from 'react'
-import { arduinoService } from '../services/arduinoService'
+import { arduinoService, PortInfo } from '../services/arduinoService'
 import { useSettingsCtx } from '../context/SettingsContext'
-
-export interface PortInfo {
-  path: string
-  manufacturer?: string
-}
 
 export interface Connection {
   ports: PortInfo[]

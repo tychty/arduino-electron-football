@@ -1,4 +1,4 @@
-import { PortInfo } from '../hooks/useConnection'
+import { PortInfo } from '../services/arduinoService'
 
 interface Props {
   ports: PortInfo[]
