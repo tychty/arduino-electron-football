@@ -1,6 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
-import { arduinoService } from './services/arduinoService'
-import { useSettingsCtx } from './context/SettingsContext'
+import { useState, useEffect } from 'react'
 import { useConnection } from './hooks/useConnection'
 import { useGame } from './hooks/useGame'
 import { useKeyboard } from './hooks/useKeyboard'
@@ -16,30 +14,12 @@ type Page = 'leaderboard' | 'game' | 'settings'
 export default function App(): JSX.Element {
   const [page, setPage] = useState<Page>('leaderboard')
   const [modalOpen, setModalOpen] = useState(false)
-  const [peaks, setPeaks] = useState<Record<number, number>>({})
 
-  const { allPins, settings } = useSettingsCtx()
   const { ports, selected, connected, error, setSelected, refresh, connect, disconnect } =
     useConnection()
-  const { scores, totalHits, flashingPins, isGameOver, hit, reset } = useGame()
-
-  useEffect(() => {
-    if (!connected) return
-    return arduinoService.onHit((pin, peak) => {
-      setPeaks((prev) => ({ ...prev, [pin]: peak }))
-      if (allPins.includes(pin)) hit(pin, peak)
-    })
-  }, [connected, allPins, hit])
+  const { scores, totalHits, flashingPins, isGameOver, hit, reset, peaks, score } = useGame(connected)
 
   useKeyboard(hit, page === 'game' && !modalOpen)
-
-  const score = useMemo(
-    () =>
-      allPins.reduce((total, pin) => {
-        return total + (scores[pin] ?? 0) * (settings.pinConfigs[pin]?.scorePoints ?? 1)
-      }, 0),
-    [scores, allPins, settings.pinConfigs]
-  )
 
   const { entries, append, reload } = useLeaderboard()
 
@@ -51,7 +31,6 @@ export default function App(): JSX.Element {
 
   const handleDisconnect = (): void => {
     void disconnect()
-    setPeaks({})
   }
 
   const handleNewGame = (): void => {
