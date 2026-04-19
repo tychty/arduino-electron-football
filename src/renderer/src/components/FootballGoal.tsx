@@ -89,6 +89,14 @@ export default function FootballGoal({
   const { goal, setGoal, getPinRect, setPinRect } = useGoalLayout(activeScoringPins)
   const flashMiss = flashingPins.has(VIRTUAL_MISS_PIN)
 
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent): void => {
+      if (e.key === 'Escape') onEndGame()
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [onEndGame])
+
   const dragRef = useRef<DragState | null>(null)
   const goalRef = useRef(goal)
   goalRef.current = goal
