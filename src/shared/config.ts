@@ -31,19 +31,13 @@ export const SCORE_POINTS_DEFAULT = 1
 export const SCORE_POINTS_MIN = 1
 
 // Hit debounce window (hardware hits)
-export const HIT_DEBOUNCE_DEFAULT = 300
+export const HIT_DEBOUNCE_DEFAULT = 500
 export const HIT_DEBOUNCE_MIN = 10
 export const HIT_DEBOUNCE_MAX = 1000
 export const HIT_DEBOUNCE_STEP = 10
 
-// Keyboard debounce window
-export const KB_DEBOUNCE_DEFAULT = 500
-export const KB_DEBOUNCE_MIN = 200
-export const KB_DEBOUNCE_MAX = 1500
-export const KB_DEBOUNCE_STEP = 10
-
 // Flash duration
-export const FLASH_DURATION_DEFAULT = 350
+export const FLASH_DURATION_DEFAULT = 400
 export const FLASH_DURATION_MIN = 100
 export const FLASH_DURATION_MAX = 1500
 export const FLASH_DURATION_STEP = 10

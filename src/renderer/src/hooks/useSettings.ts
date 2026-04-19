@@ -7,9 +7,6 @@ import {
   FLASH_DURATION_DEFAULT,
   FLASH_DURATION_MIN,
   FLASH_DURATION_MAX,
-  KB_DEBOUNCE_DEFAULT,
-  KB_DEBOUNCE_MIN,
-  KB_DEBOUNCE_MAX,
   HIT_LIMIT_DEFAULT,
   DEBOUNCE_DEFAULT,
   DEBOUNCE_MIN,
@@ -36,7 +33,6 @@ export interface GameSettings {
   hitDebounceMs: number
   flashDuration: number
   hitLimit: number
-  kbDebounceMs: number
 }
 
 export interface SettingsService {
@@ -53,7 +49,6 @@ const GAME_KEYS: Record<keyof GameSettings, string> = {
   hitDebounceMs: 'hitDebounceMs',
   flashDuration: 'flashDuration',
   hitLimit: 'hitLimit',
-  kbDebounceMs: 'kbDebounceMs',
 }
 
 const GAME_CLAMP: Record<keyof GameSettings, (v: number) => number> = {
@@ -62,8 +57,6 @@ const GAME_CLAMP: Record<keyof GameSettings, (v: number) => number> = {
   flashDuration: (v) =>
     Math.max(FLASH_DURATION_MIN, Math.min(FLASH_DURATION_MAX, isNaN(v) ? FLASH_DURATION_DEFAULT : v)),
   hitLimit: (v) => Math.max(1, Math.floor(isNaN(v) ? HIT_LIMIT_DEFAULT : v)),
-  kbDebounceMs: (v) =>
-    Math.max(KB_DEBOUNCE_MIN, Math.min(KB_DEBOUNCE_MAX, isNaN(v) ? KB_DEBOUNCE_DEFAULT : v)),
 }
 
 function load<K extends keyof GameSettings>(key: K, def: GameSettings[K]): GameSettings[K] {
@@ -75,7 +68,6 @@ function loadGame(): GameSettings {
     hitDebounceMs: load('hitDebounceMs', HIT_DEBOUNCE_DEFAULT),
     flashDuration: load('flashDuration', FLASH_DURATION_DEFAULT),
     hitLimit: load('hitLimit', HIT_LIMIT_DEFAULT),
-    kbDebounceMs: load('kbDebounceMs', KB_DEBOUNCE_DEFAULT),
   }
 }
 

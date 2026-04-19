@@ -6,7 +6,6 @@ import { PortInfo } from '../services/arduinoService'
 import { useSettingsCtx } from '../context/SettingsContext'
 import {
   HIT_DEBOUNCE_MIN, HIT_DEBOUNCE_MAX, HIT_DEBOUNCE_STEP,
-  KB_DEBOUNCE_MIN, KB_DEBOUNCE_MAX, KB_DEBOUNCE_STEP,
   FLASH_DURATION_MIN, FLASH_DURATION_MAX, FLASH_DURATION_STEP,
 } from '../../../shared/config'
 
@@ -94,13 +93,6 @@ export default function SettingsPage({
             min={HIT_DEBOUNCE_MIN} max={HIT_DEBOUNCE_MAX} step={HIT_DEBOUNCE_STEP}
             unit="ms"
             onChange={(v) => settings.setGame('hitDebounceMs', v)}
-          />
-          <SliderSetting
-            label="keyboard debounce"
-            value={settings.game.kbDebounceMs}
-            min={KB_DEBOUNCE_MIN} max={KB_DEBOUNCE_MAX} step={KB_DEBOUNCE_STEP}
-            unit="ms"
-            onChange={(v) => settings.setGame('kbDebounceMs', v)}
           />
           <SliderSetting
             label="flash duration"

@@ -40,8 +40,9 @@ export function createGameStateMachine(
   let gameOverFired = false
   let destroyed = false
 
-  const pendingPeaks = new Map<number, number>()
-  const debounceTimers = new Map<number, ReturnType<typeof setTimeout>>()
+  let pendingPin: number | null = null
+  let pendingPeak = -Infinity
+  let pendingTimer: ReturnType<typeof setTimeout> | null = null
   const flashTimers = new Map<number, ReturnType<typeof setTimeout>>()
 
   function snapshot(): GameState {
@@ -64,10 +65,7 @@ export function createGameStateMachine(
     }
   }
 
-  function resolvePin(pin: number): void {
-    pendingPeaks.delete(pin)
-    debounceTimers.delete(pin)
-
+  function resolveHit(pin: number): void {
     if (destroyed || isGameOver) return
 
     totalHits += 1
@@ -108,13 +106,18 @@ export function createGameStateMachine(
 
   function hit(pin: number, peak: number, _timestampMs: number): void {
     if (destroyed || isGameOver) return
+    if (peak < pendingPeak) return
 
-    const currentBest = pendingPeaks.get(pin) ?? -Infinity
-    pendingPeaks.set(pin, Math.max(currentBest, peak))
-
-    const existing = debounceTimers.get(pin)
-    if (existing) clearTimeout(existing)
-    debounceTimers.set(pin, setTimeout(() => resolvePin(pin), config.hitDebounceMs))
+    if (pendingTimer !== null) clearTimeout(pendingTimer)
+    pendingPin = pin
+    pendingPeak = peak
+    pendingTimer = setTimeout(() => {
+      pendingTimer = null
+      const p = pendingPin
+      pendingPin = null
+      pendingPeak = -Infinity
+      if (p !== null) resolveHit(p)
+    }, config.hitDebounceMs)
   }
 
   function getState(): GameState {
@@ -124,11 +127,15 @@ export function createGameStateMachine(
   function reset(): void {
     if (destroyed) return
 
-    debounceTimers.forEach(clearTimeout)
-    debounceTimers.clear()
+    if (pendingTimer !== null) {
+      clearTimeout(pendingTimer)
+      pendingTimer = null
+    }
+    pendingPin = null
+    pendingPeak = -Infinity
+
     flashTimers.forEach(clearTimeout)
     flashTimers.clear()
-    pendingPeaks.clear()
 
     totalHits = 0
     scores = {}
@@ -142,11 +149,12 @@ export function createGameStateMachine(
 
   function destroy(): void {
     destroyed = true
-    debounceTimers.forEach(clearTimeout)
-    debounceTimers.clear()
+    if (pendingTimer !== null) {
+      clearTimeout(pendingTimer)
+      pendingTimer = null
+    }
     flashTimers.forEach(clearTimeout)
     flashTimers.clear()
-    pendingPeaks.clear()
   }
 
   return { hit, getState, reset, destroy }

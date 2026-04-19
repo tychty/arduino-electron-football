@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useConnection } from './hooks/useConnection'
 import { useGame } from './hooks/useGame'
-import { useKeyboard } from './hooks/useKeyboard'
 import { useLeaderboard } from './hooks/useLeaderboard'
 import ConnectionIndicator from './components/ConnectionIndicator'
 import EndGameModal from './components/EndGameModal'
@@ -17,9 +16,7 @@ export default function App(): JSX.Element {
 
   const { ports, selected, connected, error, setSelected, refresh, connect, disconnect } =
     useConnection()
-  const { scores, totalHits, flashingPins, isGameOver, hit, reset, peaks, score } = useGame(connected)
-
-  useKeyboard(hit, page === 'game' && !modalOpen)
+  const { scores, totalHits, flashingPins, isGameOver, reset, peaks, score } = useGame(connected, page === 'game' && !modalOpen)
 
   const { entries, append, reload } = useLeaderboard()
 
@@ -29,17 +26,9 @@ export default function App(): JSX.Element {
     }
   }, [isGameOver, page, modalOpen])
 
-  const handleDisconnect = (): void => {
-    void disconnect()
-  }
-
   const handleNewGame = (): void => {
     reset()
     setPage('game')
-  }
-
-  const handleEndGame = (): void => {
-    setModalOpen(true)
   }
 
   const handleModalDone = async (name: string | null): Promise<void> => {
@@ -71,7 +60,7 @@ export default function App(): JSX.Element {
           totalHits={totalHits}
           score={score}
           flashingPins={flashingPins}
-          onEndGame={handleEndGame}
+          onEndGame={() => setModalOpen(true)}
         />
       )}
 
@@ -85,7 +74,7 @@ export default function App(): JSX.Element {
           onSetSelected={setSelected}
           onRefresh={refresh}
           onConnect={connect}
-          onDisconnect={handleDisconnect}
+          onDisconnect={() => void disconnect()}
           onBack={() => setPage('leaderboard')}
         />
       )}
