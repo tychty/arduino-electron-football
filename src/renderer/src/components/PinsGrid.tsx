@@ -1,5 +1,6 @@
 import PinSettings from './PinSettings'
 import { SettingsService } from '../hooks/useSettings'
+import { useLocaleCtx } from '../context/LocaleContext'
 
 interface Props {
   allPins: number[]
@@ -20,6 +21,8 @@ export default function PinsGrid({
   onAddPin,
   onDeletePin,
 }: Props): JSX.Element {
+  const { t } = useLocaleCtx()
+
   return (
     <div>
       <div
@@ -57,7 +60,7 @@ export default function PinsGrid({
           opacity: canAddPin ? 1 : 0.4,
         }}
       >
-        + Add Pin
+        {t((l) => l.pins.addPin)}
       </button>
     </div>
   )

@@ -1,4 +1,5 @@
 import { PortInfo } from '../services/arduinoService'
+import { useLocaleCtx } from '../context/LocaleContext'
 
 interface Props {
   ports: PortInfo[]
@@ -21,6 +22,8 @@ export default function ConnectionPanel({
   onConnect,
   onDisconnect,
 }: Props): JSX.Element {
+  const { t } = useLocaleCtx()
+
   return (
     <div style={{ marginBottom: 24 }}>
       <div style={{ marginBottom: 12 }}>
@@ -29,7 +32,7 @@ export default function ConnectionPanel({
           onChange={(e) => onSetSelected(e.target.value)}
           disabled={connected}
         >
-          <option value="">-- select port --</option>
+          <option value="">{t((l) => l.connection.selectPort)}</option>
           {ports.map((p) => (
             <option key={p.path} value={p.path}>
               {p.path}
@@ -38,21 +41,25 @@ export default function ConnectionPanel({
           ))}
         </select>
         <button onClick={onRefresh} disabled={connected} style={{ marginLeft: 8 }}>
-          Refresh
+          {t((l) => l.connection.refresh)}
         </button>
       </div>
 
       <div>
         {!connected ? (
           <button onClick={onConnect} disabled={!selected}>
-            Connect
+            {t((l) => l.connection.connect)}
           </button>
         ) : (
-          <button onClick={onDisconnect}>Disconnect</button>
+          <button onClick={onDisconnect}>{t((l) => l.connection.disconnect)}</button>
         )}
       </div>
 
-      {error && <div style={{ marginTop: 8, color: '#c0392b' }}>Error: {error}</div>}
+      {error && (
+        <div style={{ marginTop: 8, color: '#c0392b' }}>
+          {t((l) => l.connection.error)}: {error}
+        </div>
+      )}
     </div>
   )
 }

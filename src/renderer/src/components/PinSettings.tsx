@@ -1,5 +1,6 @@
 import { PinConfig, PinHardware } from '../hooks/useSettings'
 import SliderSetting from './SliderSetting'
+import { useLocaleCtx } from '../context/LocaleContext'
 import {
   DEBOUNCE_MIN,
   DEBOUNCE_MAX,
@@ -21,10 +22,6 @@ interface Props {
   onDelete: () => void
 }
 
-function keybindLabel(pin: number): string {
-  return `key: ${(pin + 1) % 10}`
-}
-
 export default function PinSettings({
   pin,
   peak,
@@ -35,6 +32,7 @@ export default function PinSettings({
   onHardwareChange,
   onDelete,
 }: Props): JSX.Element {
+  const { t } = useLocaleCtx()
   const pinTooHigh = pin > 9
 
   return (
@@ -48,12 +46,16 @@ export default function PinSettings({
         }}
       >
         <div>
-          <div style={{ fontSize: 11, color: '#888' }}>pin {pin}</div>
+          <div style={{ fontSize: 11, color: '#888' }}>{t((l) => l.pins.pin)} {pin}</div>
           <div style={{ fontSize: 48, lineHeight: 1 }}>{peak ?? '—'}</div>
           {pinTooHigh ? (
-            <div style={{ fontSize: 11, color: '#c0392b', marginTop: 2 }}>no keybind (pin &gt; 9)</div>
+            <div style={{ fontSize: 11, color: '#c0392b', marginTop: 2 }}>
+              {t((l) => l.pins.noKeybind)}
+            </div>
           ) : (
-            <div style={{ fontSize: 11, color: '#888', marginTop: 2 }}>{keybindLabel(pin)}</div>
+            <div style={{ fontSize: 11, color: '#888', marginTop: 2 }}>
+              {t((l) => l.pins.key)}: {(pin + 1) % 10}
+            </div>
           )}
         </div>
         <button
@@ -82,7 +84,7 @@ export default function PinSettings({
               checked={config.active}
               onChange={(e) => onConfigChange({ active: e.target.checked })}
             />
-            active
+            {t((l) => l.pins.active)}
           </label>
           <label
             style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, cursor: 'pointer' }}
@@ -92,12 +94,12 @@ export default function PinSettings({
               checked={config.miss}
               onChange={(e) => onConfigChange({ miss: e.target.checked })}
             />
-            miss
+            {t((l) => l.pins.miss)}
           </label>
         </div>
 
         <div>
-          <div style={{ fontSize: 11, color: '#888', marginBottom: 2 }}>score points</div>
+          <div style={{ fontSize: 11, color: '#888', marginBottom: 2 }}>{t((l) => l.pins.scorePoints)}</div>
           <input
             type="number"
             min={SCORE_POINTS_MIN}
@@ -108,7 +110,7 @@ export default function PinSettings({
         </div>
 
         <SliderSetting
-          label="debounce"
+          label={t((l) => l.pins.debounce)}
           value={hardware.debounce}
           min={DEBOUNCE_MIN}
           max={DEBOUNCE_MAX}
@@ -119,7 +121,7 @@ export default function PinSettings({
         />
 
         <SliderSetting
-          label="noise"
+          label={t((l) => l.pins.noise)}
           value={Math.min(hardware.noise, NOISE_MAX)}
           min={NOISE_MIN}
           max={NOISE_MAX}

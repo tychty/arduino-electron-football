@@ -1,4 +1,5 @@
 import type { LeaderboardEntry } from '../services/arduinoService'
+import { useLocaleCtx } from '../context/LocaleContext'
 
 interface Props {
   entries: LeaderboardEntry[]
@@ -16,6 +17,8 @@ function formatDate(iso: string): string {
 }
 
 export default function LeaderboardPage({ entries, onNewGame, onSettings }: Props): JSX.Element {
+  const { t } = useLocaleCtx()
+
   return (
     <div
       style={{
@@ -29,11 +32,13 @@ export default function LeaderboardPage({ entries, onNewGame, onSettings }: Prop
       }}
     >
       <h1 style={{ margin: '0 0 32px', fontSize: 28, fontWeight: 'bold', letterSpacing: 1 }}>
-        Leaderboard
+        {t((l) => l.leaderboard.title)}
       </h1>
 
       {entries.length === 0 ? (
-        <div style={{ color: '#aaa', fontSize: 14, marginBottom: 32 }}>no scores yet</div>
+        <div style={{ color: '#aaa', fontSize: 14, marginBottom: 32 }}>
+          {t((l) => l.leaderboard.noScoresYet)}
+        </div>
       ) : (
         <table
           style={{
@@ -46,10 +51,10 @@ export default function LeaderboardPage({ entries, onNewGame, onSettings }: Prop
         >
           <thead>
             <tr style={{ borderBottom: '2px solid #eee', color: '#888', textAlign: 'left' }}>
-              <th style={{ padding: '6px 12px', fontWeight: 600 }}>#</th>
-              <th style={{ padding: '6px 12px', fontWeight: 600 }}>name</th>
-              <th style={{ padding: '6px 12px', fontWeight: 600, textAlign: 'right' }}>score</th>
-              <th style={{ padding: '6px 12px', fontWeight: 600, textAlign: 'right' }}>date</th>
+              <th style={{ padding: '6px 12px', fontWeight: 600 }}>{t((l) => l.leaderboard.colNumber)}</th>
+              <th style={{ padding: '6px 12px', fontWeight: 600 }}>{t((l) => l.leaderboard.colName)}</th>
+              <th style={{ padding: '6px 12px', fontWeight: 600, textAlign: 'right' }}>{t((l) => l.leaderboard.colScore)}</th>
+              <th style={{ padding: '6px 12px', fontWeight: 600, textAlign: 'right' }}>{t((l) => l.leaderboard.colDate)}</th>
             </tr>
           </thead>
           <tbody>
@@ -86,7 +91,7 @@ export default function LeaderboardPage({ entries, onNewGame, onSettings }: Prop
             fontWeight: 600,
           }}
         >
-          New Game
+          {t((l) => l.leaderboard.newGame)}
         </button>
         <button
           onClick={onSettings}
@@ -100,7 +105,7 @@ export default function LeaderboardPage({ entries, onNewGame, onSettings }: Prop
             color: '#333',
           }}
         >
-          Settings
+          {t((l) => l.leaderboard.settings)}
         </button>
       </div>
     </div>

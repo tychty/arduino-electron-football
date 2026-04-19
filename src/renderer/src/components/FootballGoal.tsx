@@ -1,6 +1,7 @@
 import GoalCircle from './GoalCircle'
 import { PinConfig } from '../hooks/useSettings'
 import { VIRTUAL_MISS_PIN } from '../../../shared/config'
+import { useLocaleCtx } from '../context/LocaleContext'
 
 interface Props {
   allPins: number[]
@@ -15,6 +16,8 @@ export default function FootballGoal({
   scores,
   flashingPins,
 }: Props): JSX.Element {
+  const { t } = useLocaleCtx()
+
   const activeScoringPins = allPins.filter((pin) => {
     const config = pinConfigs[pin]
     return config?.active && !config?.miss
@@ -40,7 +43,9 @@ export default function FootballGoal({
       }}
     >
       {activeScoringPins.length === 0 ? (
-        <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: 14 }}>no active scoring pins</div>
+        <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: 14 }}>
+          {t((l) => l.game.noActiveScoringPins)}
+        </div>
       ) : (
         activeScoringPins.map((pin) => (
           <GoalCircle
@@ -62,7 +67,7 @@ export default function FootballGoal({
             pointerEvents: 'none',
           }}
         >
-          MISS
+          {t((l) => l.game.miss)}
         </div>
       )}
     </div>

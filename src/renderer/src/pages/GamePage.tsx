@@ -1,5 +1,6 @@
 import FootballGoal from '../components/FootballGoal'
 import { useSettingsCtx } from '../context/SettingsContext'
+import { useLocaleCtx } from '../context/LocaleContext'
 
 interface Props {
   scores: Readonly<Record<number, number>>
@@ -17,6 +18,7 @@ export default function GamePage({
   onEndGame,
 }: Props): JSX.Element {
   const { allPins, configs, hitLimit } = useSettingsCtx()
+  const { t } = useLocaleCtx()
 
   return (
     <div
@@ -34,11 +36,11 @@ export default function GamePage({
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
         <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: 11, color: '#888' }}>score</div>
+          <div style={{ fontSize: 11, color: '#888' }}>{t((l) => l.game.score)}</div>
           <div style={{ fontSize: 56, fontWeight: 'bold', lineHeight: 1 }}>{score}</div>
         </div>
         <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: 11, color: '#888' }}>hits</div>
+          <div style={{ fontSize: 11, color: '#888' }}>{t((l) => l.game.hits)}</div>
           <div style={{ fontSize: 56, fontWeight: 'bold', lineHeight: 1, color: '#555' }}>
             {totalHits}
             <span style={{ fontSize: 20, color: '#aaa', fontWeight: 400 }}>/{hitLimit}</span>
@@ -66,7 +68,7 @@ export default function GamePage({
           marginTop: 8,
         }}
       >
-        End Game
+        {t((l) => l.game.endGame)}
       </button>
     </div>
   )

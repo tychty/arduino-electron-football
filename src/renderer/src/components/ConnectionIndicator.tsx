@@ -1,8 +1,12 @@
+import { useLocaleCtx } from '../context/LocaleContext'
+
 interface Props {
   connected: boolean
 }
 
 export default function ConnectionIndicator({ connected }: Props): JSX.Element {
+  const { t } = useLocaleCtx()
+
   return (
     <div
       style={{
@@ -26,7 +30,7 @@ export default function ConnectionIndicator({ connected }: Props): JSX.Element {
           backgroundColor: connected ? '#2d8a2d' : '#bbb',
         }}
       />
-      {connected ? 'deck connected' : 'deck not connected'}
+      {connected ? t((l) => l.connection.deckConnected) : t((l) => l.connection.deckNotConnected)}
     </div>
   )
 }
