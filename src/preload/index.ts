@@ -38,5 +38,14 @@ contextBridge.exposeInMainWorld('arduino', {
 
     append: (name: string, score: number, date: string): Promise<void> =>
       ipcRenderer.invoke('leaderboard:append', name, score, date),
+
+    clear: (): Promise<void> =>
+      ipcRenderer.invoke('leaderboard:clear'),
+
+    path: (): Promise<string> =>
+      ipcRenderer.invoke('leaderboard:path'),
+
+    showInFolder: (): Promise<void> =>
+      ipcRenderer.invoke('leaderboard:showInFolder'),
   },
 })

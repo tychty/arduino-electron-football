@@ -23,6 +23,8 @@ export interface IArduinoService {
   setNoiseTolerance(val: number, pin: number): Promise<void>
   readLeaderboard(): Promise<LeaderboardEntry[]>
   appendLeaderboard(name: string, score: number, date: string): Promise<void>
+  clearLeaderboard(): Promise<void>
+  getLeaderboardPath(): Promise<string>
 }
 
 class ElectronArduinoService implements IArduinoService {
@@ -38,6 +40,8 @@ class ElectronArduinoService implements IArduinoService {
   readLeaderboard = (): Promise<LeaderboardEntry[]> => window.arduino.leaderboard.read()
   appendLeaderboard = (name: string, score: number, date: string): Promise<void> =>
     window.arduino.leaderboard.append(name, score, date)
+  clearLeaderboard = (): Promise<void> => window.arduino.leaderboard.clear()
+  getLeaderboardPath = (): Promise<string> => window.arduino.leaderboard.path()
 }
 
 export class MockArduinoService implements IArduinoService {
@@ -70,6 +74,10 @@ export class MockArduinoService implements IArduinoService {
   appendLeaderboard = async (name: string, score: number, date: string): Promise<void> => {
     this._entries.push({ name, score, date })
   }
+  clearLeaderboard = async (): Promise<void> => {
+    this._entries = []
+  }
+  getLeaderboardPath = async (): Promise<string> => '(mock)'
 }
 
 export let arduinoService: IArduinoService = new ElectronArduinoService()

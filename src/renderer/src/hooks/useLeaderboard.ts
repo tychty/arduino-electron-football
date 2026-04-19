@@ -6,6 +6,7 @@ interface UseLeaderboard {
   entries: LeaderboardEntry[]
   append: (name: string, score: number) => Promise<void>
   reload: () => Promise<void>
+  clear: () => Promise<void>
 }
 
 export function useLeaderboard(): UseLeaderboard {
@@ -26,5 +27,10 @@ export function useLeaderboard(): UseLeaderboard {
     await reload()
   }
 
-  return { entries, append, reload }
+  const clear = async (): Promise<void> => {
+    await arduinoService.clearLeaderboard()
+    setEntries([])
+  }
+
+  return { entries, append, reload, clear }
 }

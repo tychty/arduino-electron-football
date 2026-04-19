@@ -12,6 +12,9 @@ interface ArduinoAPI {
   leaderboard: {
     read: () => Promise<LeaderboardEntry[]>
     append: (name: string, score: number, date: string) => Promise<void>
+    clear: () => Promise<void>
+    path: () => Promise<string>
+    showInFolder: () => Promise<void>
   }
 }
 

@@ -1,6 +1,6 @@
-import { app, BrowserWindow, ipcMain } from 'electron'
+import { app, BrowserWindow, ipcMain, shell } from 'electron'
 import { join } from 'path'
-import { readFileSync, appendFileSync, existsSync } from 'fs'
+import { readFileSync, appendFileSync, writeFileSync, copyFileSync, existsSync, statSync } from 'fs'
 import { SerialManager } from './serial'
 import { WINDOW_WIDTH, WINDOW_HEIGHT, LEADERBOARD_FILENAME } from '../shared/config'
 
@@ -96,4 +96,20 @@ ipcMain.handle('leaderboard:read', () => {
 
 ipcMain.handle('leaderboard:append', (_event, name: string, score: number, date: string) => {
   appendFileSync(leaderboardPath(), `${name},${score},${date}\n`, 'utf8')
+})
+
+ipcMain.handle('leaderboard:path', () => leaderboardPath())
+
+ipcMain.handle('leaderboard:showInFolder', () => {
+  shell.showItemInFolder(leaderboardPath())
+})
+
+ipcMain.handle('leaderboard:clear', () => {
+  const path = leaderboardPath()
+  if (existsSync(path) && statSync(path).size > 0) {
+    const ts = new Date().toISOString().replace(/:/g, '-')
+    const backup = path.replace(/\.csv$/, `.${ts}.csv`)
+    copyFileSync(path, backup)
+  }
+  writeFileSync(path, '', 'utf8')
 })
