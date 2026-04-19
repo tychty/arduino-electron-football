@@ -1,5 +1,5 @@
 import SliderSetting from './SliderSetting'
-import { HIT_DEBOUNCE_MIN, HIT_DEBOUNCE_MAX, HIT_DEBOUNCE_STEP } from '../../shared/config'
+import { HIT_DEBOUNCE_MIN, HIT_DEBOUNCE_MAX, HIT_DEBOUNCE_STEP } from '../../../shared/config'
 
 interface Props {
   value: number

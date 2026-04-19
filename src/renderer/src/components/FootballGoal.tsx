@@ -1,6 +1,6 @@
 import GoalCircle from './GoalCircle'
-import { PinConfig } from './useSettings'
-import { VIRTUAL_MISS_PIN } from '../../shared/config'
+import { PinConfig } from '../hooks/useSettings'
+import { VIRTUAL_MISS_PIN } from '../../../shared/config'
 
 interface Props {
   allPins: number[]

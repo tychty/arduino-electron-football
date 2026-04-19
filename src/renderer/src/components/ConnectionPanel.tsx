@@ -1,4 +1,4 @@
-import { PortInfo } from './useConnection'
+import { PortInfo } from '../hooks/useConnection'
 
 interface Props {
   ports: PortInfo[]

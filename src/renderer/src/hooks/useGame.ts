@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
-import { createGameStateMachine, GameConfig, GameState, GameStateMachine } from './gameStateMachine'
-import { useSettingsCtx } from './SettingsContext'
+import { createGameStateMachine, GameConfig, GameState, GameStateMachine } from '../game/gameStateMachine'
+import { useSettingsCtx } from '../context/SettingsContext'
 
 const INITIAL_STATE: GameState = {
   totalHits: 0,

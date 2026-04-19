@@ -1,5 +1,5 @@
-import { VIRTUAL_MISS_PIN } from '../../shared/config'
-import { PinConfig } from './useSettings'
+import { VIRTUAL_MISS_PIN } from '../../../shared/config'
+import { PinConfig } from '../hooks/useSettings'
 
 export interface GameConfig {
   pinConfig: Record<number, PinConfig>

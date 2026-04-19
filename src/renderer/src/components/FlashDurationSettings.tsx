@@ -1,5 +1,5 @@
 import SliderSetting from './SliderSetting'
-import { FLASH_DURATION_MIN, FLASH_DURATION_MAX, FLASH_DURATION_STEP } from '../../shared/config'
+import { FLASH_DURATION_MIN, FLASH_DURATION_MAX, FLASH_DURATION_STEP } from '../../../shared/config'
 
 interface Props {
   value: number

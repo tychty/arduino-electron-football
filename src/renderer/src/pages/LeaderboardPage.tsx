@@ -1,4 +1,4 @@
-import type { LeaderboardEntry } from '../env.d'
+import type { LeaderboardEntry } from '../services/arduinoService'
 
 interface Props {
   entries: LeaderboardEntry[]

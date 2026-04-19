@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { arduinoService } from './services/arduinoService'
+import { arduinoService } from '../services/arduinoService'
 import {
   HIT_DEBOUNCE_DEFAULT,
   HIT_DEBOUNCE_MIN,
@@ -19,7 +19,7 @@ import {
   NOISE_MAX,
   SCORE_POINTS_DEFAULT,
   SCORE_POINTS_MIN,
-} from '../../shared/config'
+} from '../../../shared/config'
 
 export interface PinConfig {
   active: boolean

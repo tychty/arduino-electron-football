@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
-import { VIRTUAL_MISS_PIN, KB_SYNTHETIC_PEAK } from '../../shared/config'
-import { useSettingsCtx } from './SettingsContext'
+import { VIRTUAL_MISS_PIN, KB_SYNTHETIC_PEAK } from '../../../shared/config'
+import { useSettingsCtx } from '../context/SettingsContext'
 
 export function useKeyboard(
   hit: (pin: number, peak: number) => void,

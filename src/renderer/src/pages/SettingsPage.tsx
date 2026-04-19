@@ -1,11 +1,11 @@
-import ConnectionPanel from '../ConnectionPanel'
-import PinsGrid from '../PinsGrid'
-import HitDebounceSettings from '../HitDebounceSettings'
-import KeyboardDebounceSettings from '../KeyboardDebounceSettings'
-import FlashDurationSettings from '../FlashDurationSettings'
-import HitLimitSettings from '../HitLimitSettings'
-import { PortInfo } from '../useConnection'
-import { useSettingsCtx } from '../SettingsContext'
+import ConnectionPanel from '../components/ConnectionPanel'
+import PinsGrid from '../components/PinsGrid'
+import HitDebounceSettings from '../components/HitDebounceSettings'
+import KeyboardDebounceSettings from '../components/KeyboardDebounceSettings'
+import FlashDurationSettings from '../components/FlashDurationSettings'
+import HitLimitSettings from '../components/HitLimitSettings'
+import { PortInfo } from '../hooks/useConnection'
+import { useSettingsCtx } from '../context/SettingsContext'
 
 interface Props {
   ports: PortInfo[]

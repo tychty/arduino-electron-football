@@ -1,6 +1,6 @@
 import { createContext, useContext, ReactNode } from 'react'
-import { usePins } from './usePins'
-import { useSettings, SettingsService, PinConfig } from './useSettings'
+import { usePins } from '../hooks/usePins'
+import { useSettings, SettingsService, PinConfig } from '../hooks/useSettings'
 
 interface SettingsContextValue {
   allPins: number[]

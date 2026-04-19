@@ -1,4 +1,4 @@
-import { PinConfig, PinHardware } from './useSettings'
+import { PinConfig, PinHardware } from '../hooks/useSettings'
 import SliderSetting from './SliderSetting'
 import {
   DEBOUNCE_MIN,
@@ -8,7 +8,7 @@ import {
   NOISE_MAX,
   NOISE_STEP,
   SCORE_POINTS_MIN,
-} from '../../shared/config'
+} from '../../../shared/config'
 
 interface Props {
   pin: number

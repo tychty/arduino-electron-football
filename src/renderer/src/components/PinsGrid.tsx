@@ -1,5 +1,5 @@
 import PinSettings from './PinSettings'
-import { SettingsService } from './useSettings'
+import { SettingsService } from '../hooks/useSettings'
 
 interface Props {
   allPins: number[]

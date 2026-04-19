@@ -1,5 +1,5 @@
-import FootballGoal from '../FootballGoal'
-import { useSettingsCtx } from '../SettingsContext'
+import FootballGoal from '../components/FootballGoal'
+import { useSettingsCtx } from '../context/SettingsContext'
 
 interface Props {
   scores: Readonly<Record<number, number>>

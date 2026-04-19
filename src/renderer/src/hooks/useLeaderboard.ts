@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { arduinoService } from './services/arduinoService'
-import type { LeaderboardEntry } from './services/arduinoService'
+import { arduinoService } from '../services/arduinoService'
+import type { LeaderboardEntry } from '../services/arduinoService'
 
 interface UseLeaderboard {
   entries: LeaderboardEntry[]
