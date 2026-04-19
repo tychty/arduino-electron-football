@@ -1,11 +1,14 @@
 import ConnectionPanel from '../components/ConnectionPanel'
 import PinsGrid from '../components/PinsGrid'
-import HitDebounceSettings from '../components/HitDebounceSettings'
-import KeyboardDebounceSettings from '../components/KeyboardDebounceSettings'
-import FlashDurationSettings from '../components/FlashDurationSettings'
 import HitLimitSettings from '../components/HitLimitSettings'
+import SliderSetting from '../components/SliderSetting'
 import { PortInfo } from '../hooks/useConnection'
 import { useSettingsCtx } from '../context/SettingsContext'
+import {
+  HIT_DEBOUNCE_MIN, HIT_DEBOUNCE_MAX, HIT_DEBOUNCE_STEP,
+  KB_DEBOUNCE_MIN, KB_DEBOUNCE_MAX, KB_DEBOUNCE_STEP,
+  FLASH_DURATION_MIN, FLASH_DURATION_MAX, FLASH_DURATION_STEP,
+} from '../../../shared/config'
 
 interface Props {
   ports: PortInfo[]
@@ -85,16 +88,25 @@ export default function SettingsPage({
             value={settings.game.hitLimit}
             onChange={(v) => settings.setGame('hitLimit', v)}
           />
-          <HitDebounceSettings
+          <SliderSetting
+            label="hit debounce"
             value={settings.game.hitDebounceMs}
+            min={HIT_DEBOUNCE_MIN} max={HIT_DEBOUNCE_MAX} step={HIT_DEBOUNCE_STEP}
+            unit="ms"
             onChange={(v) => settings.setGame('hitDebounceMs', v)}
           />
-          <KeyboardDebounceSettings
+          <SliderSetting
+            label="keyboard debounce"
             value={settings.game.kbDebounceMs}
+            min={KB_DEBOUNCE_MIN} max={KB_DEBOUNCE_MAX} step={KB_DEBOUNCE_STEP}
+            unit="ms"
             onChange={(v) => settings.setGame('kbDebounceMs', v)}
           />
-          <FlashDurationSettings
+          <SliderSetting
+            label="flash duration"
             value={settings.game.flashDuration}
+            min={FLASH_DURATION_MIN} max={FLASH_DURATION_MAX} step={FLASH_DURATION_STEP}
+            unit="ms"
             onChange={(v) => settings.setGame('flashDuration', v)}
           />
         </div>
