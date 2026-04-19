@@ -44,3 +44,6 @@ export const FLASH_DURATION_STEP = 10
 
 // Hit limit (game length)
 export const HIT_LIMIT_DEFAULT = 5
+
+// Language
+export const LANGUAGE_DEFAULT = 'ru'

@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import { Language, LocaleStrings, locales } from '../locales'
+import { LANGUAGE_DEFAULT } from '../../../shared/config'
 
 const STORAGE_KEY = 'language'
 
 function readLanguage(): Language {
   const stored = localStorage.getItem(STORAGE_KEY)
   if (stored === 'en' || stored === 'ru' || stored === 'kz') return stored
-  return 'en'
+  return LANGUAGE_DEFAULT as Language
 }
 
 export interface LocaleService {
