@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useConnection } from './hooks/useConnection'
 import { useGame } from './hooks/useGame'
-import { useLeaderboard } from './hooks/useLeaderboard'
+import { useLeaderboardCtx } from './context/LeaderboardContext'
 import ConnectionIndicator from './components/ConnectionIndicator'
 import EndGameModal from './components/EndGameModal'
 import LeaderboardPage from './pages/LeaderboardPage'
@@ -18,7 +18,7 @@ export default function App(): JSX.Element {
     useConnection()
   const { scores, totalHits, flashingPins, isGameOver, reset, peaks, score } = useGame(connected, page === 'game' && !modalOpen)
 
-  const { entries, append, reload } = useLeaderboard()
+  const { entries, append, reload } = useLeaderboardCtx()
 
   useEffect(() => {
     if (isGameOver && page === 'game' && !modalOpen) {
