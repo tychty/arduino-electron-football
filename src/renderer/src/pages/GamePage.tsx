@@ -1,6 +1,5 @@
 import FootballGoal from '../components/FootballGoal'
 import { useSettingsCtx } from '../context/SettingsContext'
-import { useLocaleCtx } from '../context/LocaleContext'
 
 interface Props {
   scores: Readonly<Record<number, number>>
@@ -22,61 +21,21 @@ export default function GamePage({
   editLayout,
 }: Props): JSX.Element {
   const { allPins, configs, hitLimit } = useSettingsCtx()
-  const { t } = useLocaleCtx()
 
   return (
-    <div
-      style={{
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '24px',
-        fontFamily: 'sans-serif',
-        boxSizing: 'border-box',
-        gap: 24,
-      }}
-    >
-      <div style={{ display: 'flex', alignItems: 'center', gap: 32 }}>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: 11, color: '#888' }}>{t((l) => l.game.score)}</div>
-          <div style={{ fontSize: 56, fontWeight: 'bold', lineHeight: 1 }}>{score}</div>
-        </div>
-        {!endless && (
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 11, color: '#888' }}>{t((l) => l.game.hits)}</div>
-            <div style={{ fontSize: 56, fontWeight: 'bold', lineHeight: 1, color: '#555' }}>
-              {totalHits}
-              <span style={{ fontSize: 20, color: '#aaa', fontWeight: 400 }}>/{hitLimit}</span>
-            </div>
-          </div>
-        )}
-      </div>
-
+    <div style={{ position: 'fixed', inset: 0 }}>
       <FootballGoal
         allPins={allPins}
         pinConfigs={configs}
         scores={scores}
         flashingPins={flashingPins}
         editMode={editLayout}
+        score={score}
+        totalHits={totalHits}
+        hitLimit={hitLimit}
+        endless={endless}
+        onEndGame={onEndGame}
       />
-
-      <button
-        onClick={onEndGame}
-        style={{
-          padding: '10px 28px',
-          fontSize: 14,
-          cursor: 'pointer',
-          borderRadius: 4,
-          border: '1px solid #ccc',
-          background: '#fff',
-          color: '#555',
-          marginTop: 8,
-        }}
-      >
-        {endless ? t((l) => l.game.done) : t((l) => l.game.endGame)}
-      </button>
     </div>
   )
 }

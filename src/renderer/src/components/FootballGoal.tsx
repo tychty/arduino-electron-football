@@ -16,6 +16,11 @@ interface Props {
   scores: Readonly<Record<number, number>>
   flashingPins: ReadonlySet<number>
   editMode?: boolean
+  score: number
+  totalHits: number
+  hitLimit: number
+  endless?: boolean
+  onEndGame: () => void
 }
 
 type DragTarget =
@@ -68,6 +73,11 @@ export default function FootballGoal({
   scores,
   flashingPins,
   editMode,
+  score,
+  totalHits,
+  hitLimit,
+  endless,
+  onEndGame,
 }: Props): JSX.Element {
   const { t } = useLocaleCtx()
 
@@ -185,6 +195,7 @@ export default function FootballGoal({
         boxSizing: 'border-box',
         cursor: editMode ? 'move' : 'default',
         userSelect: 'none',
+        pointerEvents: 'auto',
       }}
       onMouseDown={editMode ? (e) => startDrag(e, { kind: 'goal-move' }) : undefined}
     >
@@ -272,6 +283,51 @@ export default function FootballGoal({
           {t((l) => l.game.miss)}
         </div>
       )}
+
+      <div
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 24,
+          padding: '8px 16px',
+          pointerEvents: 'none',
+        }}
+      >
+        <div style={{ textAlign: 'center', color: '#fff' }}>
+          <div style={{ fontSize: 10, opacity: 0.7 }}>{t((l) => l.game.score)}</div>
+          <div style={{ fontSize: 28, fontWeight: 'bold', lineHeight: 1 }}>{score}</div>
+        </div>
+        {!endless && (
+          <div style={{ textAlign: 'center', color: '#fff' }}>
+            <div style={{ fontSize: 10, opacity: 0.7 }}>{t((l) => l.game.hits)}</div>
+            <div style={{ fontSize: 28, fontWeight: 'bold', lineHeight: 1 }}>
+              {totalHits}
+              <span style={{ fontSize: 14, opacity: 0.6, fontWeight: 400 }}>/{hitLimit}</span>
+            </div>
+          </div>
+        )}
+        <button
+          onClick={onEndGame}
+          onMouseDown={(e) => e.stopPropagation()}
+          style={{
+            padding: '6px 16px',
+            fontSize: 12,
+            cursor: 'pointer',
+            borderRadius: 4,
+            border: '1px solid rgba(255,255,255,0.4)',
+            background: 'rgba(255,255,255,0.15)',
+            color: '#fff',
+            pointerEvents: 'auto',
+          }}
+        >
+          {endless ? t((l) => l.game.done) : t((l) => l.game.endGame)}
+        </button>
+      </div>
     </div>
   )
 }
