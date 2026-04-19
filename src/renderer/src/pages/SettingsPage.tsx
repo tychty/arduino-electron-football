@@ -23,6 +23,7 @@ interface Props {
   onConnect: () => Promise<void>
   onDisconnect: () => void
   onBack: () => void
+  onEditLayout: () => void
 }
 
 const LANGUAGE_LABELS: Record<Language, string> = { en: 'EN', ru: 'RU', kz: 'ҚАЗ' }
@@ -39,6 +40,7 @@ export default function SettingsPage({
   onConnect,
   onDisconnect,
   onBack,
+  onEditLayout,
 }: Props): JSX.Element {
   const { allPins, canAddPin, addPin, deletePin, settings } = useSettingsCtx()
   const { t, language, setLanguage } = useLocaleCtx()
@@ -53,7 +55,7 @@ export default function SettingsPage({
         boxSizing: 'border-box',
       }}
     >
-      <div style={{ marginBottom: 24 }}>
+      <div style={{ marginBottom: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <button
           onClick={onBack}
           style={{
@@ -66,6 +68,21 @@ export default function SettingsPage({
           }}
         >
           {t((l) => l.settings.back)}
+        </button>
+        <button
+          onClick={onEditLayout}
+          style={{
+            padding: '6px 14px',
+            fontSize: 12,
+            cursor: 'pointer',
+            borderRadius: 4,
+            border: '1px solid #ccc',
+            background: '#fff',
+            color: '#555',
+            fontFamily: 'monospace',
+          }}
+        >
+          {t((l) => l.settings.editLayout)}
         </button>
       </div>
 

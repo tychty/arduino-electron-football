@@ -8,6 +8,8 @@ interface Props {
   score: number
   flashingPins: ReadonlySet<number>
   onEndGame: () => void
+  endless?: boolean
+  editLayout?: boolean
 }
 
 export default function GamePage({
@@ -16,6 +18,8 @@ export default function GamePage({
   score,
   flashingPins,
   onEndGame,
+  endless,
+  editLayout,
 }: Props): JSX.Element {
   const { allPins, configs, hitLimit } = useSettingsCtx()
   const { t } = useLocaleCtx()
@@ -39,13 +43,15 @@ export default function GamePage({
           <div style={{ fontSize: 11, color: '#888' }}>{t((l) => l.game.score)}</div>
           <div style={{ fontSize: 56, fontWeight: 'bold', lineHeight: 1 }}>{score}</div>
         </div>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: 11, color: '#888' }}>{t((l) => l.game.hits)}</div>
-          <div style={{ fontSize: 56, fontWeight: 'bold', lineHeight: 1, color: '#555' }}>
-            {totalHits}
-            <span style={{ fontSize: 20, color: '#aaa', fontWeight: 400 }}>/{hitLimit}</span>
+        {!endless && (
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: 11, color: '#888' }}>{t((l) => l.game.hits)}</div>
+            <div style={{ fontSize: 56, fontWeight: 'bold', lineHeight: 1, color: '#555' }}>
+              {totalHits}
+              <span style={{ fontSize: 20, color: '#aaa', fontWeight: 400 }}>/{hitLimit}</span>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       <FootballGoal
@@ -53,6 +59,7 @@ export default function GamePage({
         pinConfigs={configs}
         scores={scores}
         flashingPins={flashingPins}
+        editMode={editLayout}
       />
 
       <button
@@ -68,7 +75,7 @@ export default function GamePage({
           marginTop: 8,
         }}
       >
-        {t((l) => l.game.endGame)}
+        {endless ? t((l) => l.game.done) : t((l) => l.game.endGame)}
       </button>
     </div>
   )

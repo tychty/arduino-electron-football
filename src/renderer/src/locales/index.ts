@@ -3,6 +3,7 @@ export interface LocaleStrings {
     score: string
     hits: string
     endGame: string
+    done: string
     gameOver: string
     points: string
     enterYourName: string
@@ -36,6 +37,7 @@ export interface LocaleStrings {
     clearAllEntries: string
     yesClear: string
     cancel: string
+    editLayout: string
   }
   connection: {
     selectPort: string
@@ -66,6 +68,7 @@ const en: LocaleStrings = {
     score: 'score',
     hits: 'hits',
     endGame: 'End Game',
+    done: 'Done',
     gameOver: 'game over',
     points: 'points',
     enterYourName: 'enter your name',
@@ -99,6 +102,7 @@ const en: LocaleStrings = {
     clearAllEntries: 'clear all entries?',
     yesClear: 'yes, clear',
     cancel: 'cancel',
+    editLayout: 'Edit Layout',
   },
   connection: {
     selectPort: '-- select port --',
@@ -127,6 +131,7 @@ const ru: LocaleStrings = {
     score: 'очки',
     hits: 'удары',
     endGame: 'Завершить игру',
+    done: 'Готово',
     gameOver: 'игра окончена',
     points: 'очков',
     enterYourName: 'введите имя',
@@ -160,6 +165,7 @@ const ru: LocaleStrings = {
     clearAllEntries: 'удалить все записи?',
     yesClear: 'да, удалить',
     cancel: 'отмена',
+    editLayout: 'Редактировать макет',
   },
   connection: {
     selectPort: '-- выбрать порт --',
@@ -188,6 +194,7 @@ const kz: LocaleStrings = {
     score: 'ұпай',
     hits: 'соққы',
     endGame: 'Ойынды аяқтау',
+    done: 'Дайын',
     gameOver: 'ойын аяқталды',
     points: 'ұпай',
     enterYourName: 'атыңызды енгізіңіз',
@@ -221,6 +228,7 @@ const kz: LocaleStrings = {
     clearAllEntries: 'барлық жазбаларды жою?',
     yesClear: 'иә, жою',
     cancel: 'болдырмау',
+    editLayout: 'Макетті өңдеу',
   },
   connection: {
     selectPort: '-- порт таңдау --',

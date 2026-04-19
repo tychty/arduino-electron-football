@@ -8,7 +8,7 @@ import LeaderboardPage from './pages/LeaderboardPage'
 import GamePage from './pages/GamePage'
 import SettingsPage from './pages/SettingsPage'
 
-type Page = 'leaderboard' | 'game' | 'settings'
+type Page = 'leaderboard' | 'game' | 'settings' | 'layout'
 
 export default function App(): JSX.Element {
   const [page, setPage] = useState<Page>('leaderboard')
@@ -16,7 +16,10 @@ export default function App(): JSX.Element {
 
   const { ports, selected, connected, error, setSelected, refresh, connect, disconnect } =
     useConnection()
-  const { scores, totalHits, flashingPins, isGameOver, reset, peaks, score } = useGame(connected, page === 'game' && !modalOpen)
+  const { scores, totalHits, flashingPins, isGameOver, reset, peaks, score } = useGame(
+    connected,
+    (page === 'game' || page === 'layout') && !modalOpen
+  )
 
   const { entries, append, reload } = useLeaderboardCtx()
 
@@ -42,6 +45,11 @@ export default function App(): JSX.Element {
     setPage('leaderboard')
   }
 
+  const handleEditLayout = (): void => {
+    reset()
+    setPage('layout')
+  }
+
   return (
     <>
       <ConnectionIndicator connected={connected} />
@@ -64,6 +72,18 @@ export default function App(): JSX.Element {
         />
       )}
 
+      {page === 'layout' && (
+        <GamePage
+          scores={scores}
+          totalHits={totalHits}
+          score={score}
+          flashingPins={flashingPins}
+          onEndGame={() => { reset(); setPage('settings') }}
+          endless
+          editLayout
+        />
+      )}
+
       {page === 'settings' && (
         <SettingsPage
           ports={ports}
@@ -76,6 +96,7 @@ export default function App(): JSX.Element {
           onConnect={connect}
           onDisconnect={() => void disconnect()}
           onBack={() => setPage('leaderboard')}
+          onEditLayout={handleEditLayout}
         />
       )}
 
