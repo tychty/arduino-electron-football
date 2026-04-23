@@ -36,6 +36,7 @@ export default function SliderSetting({
         />
         <input
           type="number"
+          min={0}
           value={value}
           style={{ width: inputWidth }}
           onChange={(e) => onChange(Number(e.target.value))}

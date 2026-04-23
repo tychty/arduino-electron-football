@@ -2,16 +2,11 @@ import { useState, useEffect } from 'react'
 import { arduinoService } from '../services/arduinoService'
 import {
   HIT_DEBOUNCE_DEFAULT,
-  HIT_DEBOUNCE_MIN,
   FLASH_DURATION_DEFAULT,
-  FLASH_DURATION_MIN,
   HIT_LIMIT_DEFAULT,
   DEBOUNCE_DEFAULT,
-  DEBOUNCE_MIN,
   NOISE_DEFAULT,
-  NOISE_MIN,
   SCORE_POINTS_DEFAULT,
-  SCORE_POINTS_MIN,
 } from '../../../shared/config'
 
 export interface PinConfig {
@@ -48,9 +43,9 @@ const GAME_KEYS: Record<keyof GameSettings, string> = {
 }
 
 const GAME_CLAMP: Record<keyof GameSettings, (v: number) => number> = {
-  hitDebounceMs: (v) => Math.max(HIT_DEBOUNCE_MIN, isNaN(v) ? HIT_DEBOUNCE_DEFAULT : v),
-  flashDuration: (v) => Math.max(FLASH_DURATION_MIN, isNaN(v) ? FLASH_DURATION_DEFAULT : v),
-  hitLimit: (v) => Math.max(1, Math.floor(isNaN(v) ? HIT_LIMIT_DEFAULT : v)),
+  hitDebounceMs: (v) => (isNaN(v) ? HIT_DEBOUNCE_DEFAULT : v),
+  flashDuration: (v) => (isNaN(v) ? FLASH_DURATION_DEFAULT : v),
+  hitLimit: (v) => Math.floor(isNaN(v) ? HIT_LIMIT_DEFAULT : v),
 }
 
 function load<K extends keyof GameSettings>(key: K, def: GameSettings[K]): GameSettings[K] {
@@ -69,17 +64,14 @@ function readPinConfig(pin: number): PinConfig {
   return {
     active: localStorage.getItem(`pin_${pin}_active`) !== 'false',
     miss: localStorage.getItem(`pin_${pin}_miss`) === 'true',
-    scorePoints: Math.max(
-      SCORE_POINTS_MIN,
-      Number(localStorage.getItem(`pin_${pin}_scorePoints`) ?? SCORE_POINTS_DEFAULT)
-    ),
+    scorePoints: Number(localStorage.getItem(`pin_${pin}_scorePoints`) ?? SCORE_POINTS_DEFAULT),
   }
 }
 
 function readPinHardware(pin: number): PinHardware {
   return {
-    debounce: Math.max(DEBOUNCE_MIN, Number(localStorage.getItem(`pin_${pin}_debounce`) ?? DEBOUNCE_DEFAULT)),
-    noise: Math.max(NOISE_MIN, Number(localStorage.getItem(`pin_${pin}_noise`) ?? NOISE_DEFAULT)),
+    debounce: Number(localStorage.getItem(`pin_${pin}_debounce`) ?? DEBOUNCE_DEFAULT),
+    noise: Number(localStorage.getItem(`pin_${pin}_noise`) ?? NOISE_DEFAULT),
   }
 }
 
@@ -124,12 +116,12 @@ export function useSettings(allPins: number[]): SettingsService {
   ): Promise<void> => {
     const clamped: Partial<PinHardware> = {}
     if (updates.debounce !== undefined) {
-      clamped.debounce = Math.max(DEBOUNCE_MIN, updates.debounce)
+      clamped.debounce = updates.debounce
       localStorage.setItem(`pin_${pin}_debounce`, String(clamped.debounce))
       if (connected) await arduinoService.setDebounce(clamped.debounce, pin)
     }
     if (updates.noise !== undefined) {
-      clamped.noise = Math.max(NOISE_MIN, updates.noise)
+      clamped.noise = updates.noise
       localStorage.setItem(`pin_${pin}_noise`, String(clamped.noise))
       if (connected) await arduinoService.setNoiseTolerance(clamped.noise, pin)
     }

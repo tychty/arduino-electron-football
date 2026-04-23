@@ -17,7 +17,7 @@ export default function HitLimitSettings({ value, onChange }: Props): JSX.Elemen
         value={value}
         onChange={(e) => {
           const n = parseInt(e.target.value, 10)
-          if (!isNaN(n) && n >= 1) onChange(n)
+          if (!isNaN(n)) onChange(n)
         }}
         style={{ width: 70, padding: '3px 6px', fontSize: 13, borderRadius: 4, border: '1px solid #ccc' }}
       />
