@@ -3,17 +3,13 @@ import { arduinoService } from '../services/arduinoService'
 import {
   HIT_DEBOUNCE_DEFAULT,
   HIT_DEBOUNCE_MIN,
-  HIT_DEBOUNCE_MAX,
   FLASH_DURATION_DEFAULT,
   FLASH_DURATION_MIN,
-  FLASH_DURATION_MAX,
   HIT_LIMIT_DEFAULT,
   DEBOUNCE_DEFAULT,
   DEBOUNCE_MIN,
-  DEBOUNCE_MAX,
   NOISE_DEFAULT,
   NOISE_MIN,
-  NOISE_MAX,
   SCORE_POINTS_DEFAULT,
   SCORE_POINTS_MIN,
 } from '../../../shared/config'
@@ -52,10 +48,8 @@ const GAME_KEYS: Record<keyof GameSettings, string> = {
 }
 
 const GAME_CLAMP: Record<keyof GameSettings, (v: number) => number> = {
-  hitDebounceMs: (v) =>
-    Math.max(HIT_DEBOUNCE_MIN, Math.min(HIT_DEBOUNCE_MAX, isNaN(v) ? HIT_DEBOUNCE_DEFAULT : v)),
-  flashDuration: (v) =>
-    Math.max(FLASH_DURATION_MIN, Math.min(FLASH_DURATION_MAX, isNaN(v) ? FLASH_DURATION_DEFAULT : v)),
+  hitDebounceMs: (v) => Math.max(HIT_DEBOUNCE_MIN, isNaN(v) ? HIT_DEBOUNCE_DEFAULT : v),
+  flashDuration: (v) => Math.max(FLASH_DURATION_MIN, isNaN(v) ? FLASH_DURATION_DEFAULT : v),
   hitLimit: (v) => Math.max(1, Math.floor(isNaN(v) ? HIT_LIMIT_DEFAULT : v)),
 }
 
@@ -84,14 +78,8 @@ function readPinConfig(pin: number): PinConfig {
 
 function readPinHardware(pin: number): PinHardware {
   return {
-    debounce: Math.max(
-      DEBOUNCE_MIN,
-      Math.min(DEBOUNCE_MAX, Number(localStorage.getItem(`pin_${pin}_debounce`) ?? DEBOUNCE_DEFAULT))
-    ),
-    noise: Math.max(
-      NOISE_MIN,
-      Math.min(NOISE_MAX, Number(localStorage.getItem(`pin_${pin}_noise`) ?? NOISE_DEFAULT))
-    ),
+    debounce: Math.max(DEBOUNCE_MIN, Number(localStorage.getItem(`pin_${pin}_debounce`) ?? DEBOUNCE_DEFAULT)),
+    noise: Math.max(NOISE_MIN, Number(localStorage.getItem(`pin_${pin}_noise`) ?? NOISE_DEFAULT)),
   }
 }
 
@@ -136,12 +124,12 @@ export function useSettings(allPins: number[]): SettingsService {
   ): Promise<void> => {
     const clamped: Partial<PinHardware> = {}
     if (updates.debounce !== undefined) {
-      clamped.debounce = Math.max(DEBOUNCE_MIN, Math.min(DEBOUNCE_MAX, updates.debounce))
+      clamped.debounce = Math.max(DEBOUNCE_MIN, updates.debounce)
       localStorage.setItem(`pin_${pin}_debounce`, String(clamped.debounce))
       if (connected) await arduinoService.setDebounce(clamped.debounce, pin)
     }
     if (updates.noise !== undefined) {
-      clamped.noise = Math.max(NOISE_MIN, Math.min(NOISE_MAX, updates.noise))
+      clamped.noise = Math.max(NOISE_MIN, updates.noise)
       localStorage.setItem(`pin_${pin}_noise`, String(clamped.noise))
       if (connected) await arduinoService.setNoiseTolerance(clamped.noise, pin)
     }

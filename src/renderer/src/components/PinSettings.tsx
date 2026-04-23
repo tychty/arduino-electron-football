@@ -122,7 +122,7 @@ export default function PinSettings({
 
         <SliderSetting
           label={t((l) => l.pins.noise)}
-          value={Math.min(hardware.noise, NOISE_MAX)}
+          value={hardware.noise}
           min={NOISE_MIN}
           max={NOISE_MAX}
           step={NOISE_STEP}
