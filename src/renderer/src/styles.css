@@ -40,3 +40,18 @@ html, body, #root {
   background: #1a0000;
   color: #fff;
 }
+
+.bg-blue { background: #11184F; }
+.bg-red  { background: linear-gradient(to bottom, #4F1111, #B52727); }
+
+.bg-blue::before,
+.bg-red::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('../media/bg.svg');
+  background-size: cover;
+  opacity: 1;
+  mix-blend-mode: multiply;
+  pointer-events: none;
+}

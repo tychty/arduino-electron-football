@@ -5,7 +5,6 @@ import { VIRTUAL_MISS_PIN } from '../../../shared/config'
 import logoUrl from '../../media/logo.svg'
 import goalBgUrl from '../../media/goal.svg'
 import gameBgUrl from '../../media/game_bg.png'
-import bgUrl from '../../media/bg.svg'
 
 interface Props {
   scores: Readonly<Record<number, number>>
@@ -128,17 +127,16 @@ export default function GamePage({
       {/* Idle overlay */}
       {showIdle && (
         <div
+          className="bg-red"
           style={{
             position: 'absolute',
             inset: 0,
-            background: 'linear-gradient(to bottom, #4F1111, #B52727)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             zIndex: 30,
           }}
         >
-          <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${bgUrl})`, backgroundSize: 'cover', opacity: 0.2, pointerEvents: 'none' }} />
           <div style={{ position: 'relative', fontSize: 'clamp(20px, 3vw, 40px)', fontWeight: 900, letterSpacing: 6, textTransform: 'uppercase' }}>
             PRESS SPACE TO START
           </div>
@@ -174,10 +172,10 @@ export default function GamePage({
       {/* Round result overlay */}
       {showResult && (
         <div
+          className={lastRoundResult!.isMiss ? 'bg-red' : 'bg-blue'}
           style={{
             position: 'absolute',
             inset: 0,
-            background: lastRoundResult!.isMiss ? 'linear-gradient(to bottom, #4F1111, #B52727)' : '#11184F',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -186,7 +184,6 @@ export default function GamePage({
             zIndex: 30,
           }}
         >
-          <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${bgUrl})`, backgroundSize: 'cover', opacity: 0.2, pointerEvents: 'none', zIndex: 0 }} />
           <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 20 }}>
             <div
               style={{
@@ -242,10 +239,10 @@ export default function GamePage({
       {/* Game over / summary overlay */}
       {showSummary && (
         <div
+          className="bg-blue"
           style={{
             position: 'absolute',
             inset: 0,
-            background: '#11184F',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -254,7 +251,6 @@ export default function GamePage({
             zIndex: 30,
           }}
         >
-          <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${bgUrl})`, backgroundSize: 'cover', opacity: 0.2, pointerEvents: 'none', zIndex: 0 }} />
           <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
             <div style={{ fontSize: 'clamp(14px, 2vw, 22px)', letterSpacing: 4, opacity: 0.7, textTransform: 'uppercase' }}>
               Game Over

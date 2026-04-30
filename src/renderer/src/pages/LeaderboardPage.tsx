@@ -1,7 +1,6 @@
 import type { LeaderboardEntry } from '../services/arduinoService'
 import { useSettingsCtx } from '../context/SettingsContext'
 import logoUrl from '../../media/logo.svg'
-import bgUrl from '../../media/bg.svg'
 
 interface Props {
   entries: LeaderboardEntry[]
@@ -12,10 +11,10 @@ export default function LeaderboardPage({ entries, onNewGame }: Props): JSX.Elem
   const { leaderboardLimit } = useSettingsCtx()
   return (
     <div
+      className="bg-red"
       style={{
         position: 'fixed',
         inset: 0,
-        background: 'linear-gradient(to bottom, #4F1111, #B52727)',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -23,7 +22,6 @@ export default function LeaderboardPage({ entries, onNewGame }: Props): JSX.Elem
         overflowY: 'auto',
       }}
     >
-      <div style={{ position: 'fixed', inset: 0, backgroundImage: `url(${bgUrl})`, backgroundSize: 'cover', opacity: 0.2, pointerEvents: 'none' }} />
       {/* Logos */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 24, marginBottom: 32 }}>
         <img src={logoUrl} alt="Lenovo" style={{ height: 36 }} />

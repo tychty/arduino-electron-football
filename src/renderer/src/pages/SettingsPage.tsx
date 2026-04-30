@@ -1,4 +1,3 @@
-import bgUrl from '../../media/bg.svg'
 import ConnectionPanel from '../components/ConnectionPanel'
 import PinsGrid from '../components/PinsGrid'
 import HitLimitSettings from '../components/HitLimitSettings'
@@ -47,8 +46,7 @@ export default function SettingsPage({
   const { t, language, setLanguage } = useLocaleCtx()
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: '#11184F', overflowY: 'auto', color: '#fff' }}>
-      <div style={{ position: 'fixed', inset: 0, backgroundImage: `url(${bgUrl})`, backgroundSize: 'cover', opacity: 0.2, pointerEvents: 'none' }} />
+    <div className="bg-blue" style={{ position: 'fixed', inset: 0, overflowY: 'auto', color: '#fff' }}>
     <div
       style={{
         position: 'relative',
