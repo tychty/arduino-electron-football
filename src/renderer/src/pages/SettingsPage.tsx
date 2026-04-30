@@ -1,3 +1,4 @@
+import bgUrl from '../../media/bg.svg'
 import ConnectionPanel from '../components/ConnectionPanel'
 import PinsGrid from '../components/PinsGrid'
 import HitLimitSettings from '../components/HitLimitSettings'
@@ -46,8 +47,11 @@ export default function SettingsPage({
   const { t, language, setLanguage } = useLocaleCtx()
 
   return (
+    <div style={{ position: 'fixed', inset: 0, background: '#11184F', overflowY: 'auto', color: '#fff' }}>
+      <div style={{ position: 'fixed', inset: 0, backgroundImage: `url(${bgUrl})`, backgroundSize: 'cover', opacity: 0.2, pointerEvents: 'none' }} />
     <div
       style={{
+        position: 'relative',
         padding: '24px 32px',
         fontFamily: 'monospace',
         maxWidth: 900,
@@ -63,7 +67,7 @@ export default function SettingsPage({
             border: 'none',
             cursor: 'pointer',
             fontSize: 13,
-            color: '#888',
+            color: 'rgba(255,255,255,0.55)',
             padding: 0,
           }}
         >
@@ -76,9 +80,9 @@ export default function SettingsPage({
             fontSize: 12,
             cursor: 'pointer',
             borderRadius: 4,
-            border: '1px solid #ccc',
-            background: '#fff',
-            color: '#555',
+            border: '1px solid rgba(255,255,255,0.3)',
+            background: 'rgba(255,255,255,0.1)',
+            color: '#fff',
             fontFamily: 'monospace',
           }}
         >
@@ -89,7 +93,7 @@ export default function SettingsPage({
       <h2 style={{ margin: '0 0 24px', fontSize: 18 }}>{t((l) => l.settings.title)}</h2>
 
       <section style={{ marginBottom: 32 }}>
-        <h3 style={{ margin: '0 0 12px', fontSize: 14, color: '#555', fontWeight: 600 }}>
+        <h3 style={{ margin: '0 0 12px', fontSize: 14, color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>
           {t((l) => l.settings.language)}
         </h3>
         <div style={{ display: 'flex', gap: 4 }}>
@@ -102,9 +106,9 @@ export default function SettingsPage({
                 fontSize: 12,
                 cursor: 'pointer',
                 borderRadius: 4,
-                border: '1px solid #ccc',
-                background: language === lang ? '#333' : '#fff',
-                color: language === lang ? '#fff' : '#555',
+                border: '1px solid rgba(255,255,255,0.3)',
+                background: language === lang ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.08)',
+                color: '#fff',
                 fontFamily: 'monospace',
               }}
             >
@@ -115,7 +119,7 @@ export default function SettingsPage({
       </section>
 
       <section style={{ marginBottom: 32 }}>
-        <h3 style={{ margin: '0 0 12px', fontSize: 14, color: '#555', fontWeight: 600 }}>
+        <h3 style={{ margin: '0 0 12px', fontSize: 14, color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>
           {t((l) => l.settings.connection)}
         </h3>
         <ConnectionPanel
@@ -131,7 +135,7 @@ export default function SettingsPage({
       </section>
 
       <section style={{ marginBottom: 32 }}>
-        <h3 style={{ margin: '0 0 12px', fontSize: 14, color: '#555', fontWeight: 600 }}>
+        <h3 style={{ margin: '0 0 12px', fontSize: 14, color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>
           {t((l) => l.settings.game)}
         </h3>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -159,7 +163,7 @@ export default function SettingsPage({
       <LeaderboardSettings />
 
       <section>
-        <h3 style={{ margin: '0 0 12px', fontSize: 14, color: '#555', fontWeight: 600 }}>
+        <h3 style={{ margin: '0 0 12px', fontSize: 14, color: 'rgba(255,255,255,0.7)', fontWeight: 600 }}>
           {t((l) => l.settings.pins)}
         </h3>
         <PinsGrid
@@ -172,6 +176,7 @@ export default function SettingsPage({
           onDeletePin={deletePin}
         />
       </section>
+    </div>
     </div>
   )
 }

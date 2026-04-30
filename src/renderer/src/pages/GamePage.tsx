@@ -4,6 +4,8 @@ import type { RoundPhase } from '../hooks/useGame'
 import { VIRTUAL_MISS_PIN } from '../../../shared/config'
 import logoUrl from '../../media/logo.svg'
 import goalBgUrl from '../../media/goal.svg'
+import gameBgUrl from '../../media/game_bg.png'
+import bgUrl from '../../media/bg.svg'
 
 interface Props {
   scores: Readonly<Record<number, number>>
@@ -19,11 +21,6 @@ interface Props {
   editLayout?: boolean
   playerName?: string
 }
-
-const TRIANGLE_PATTERN = [
-  'repeating-linear-gradient(60deg, transparent, transparent 30px, rgba(0,0,0,0.07) 30px, rgba(0,0,0,0.07) 32px)',
-  'repeating-linear-gradient(-60deg, transparent, transparent 30px, rgba(0,0,0,0.07) 30px, rgba(0,0,0,0.07) 32px)',
-].join(', ')
 
 export default function GamePage({
   scores,
@@ -48,7 +45,7 @@ export default function GamePage({
   const showSummary = !!summaryData && !editLayout
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: '#0d200d', overflow: 'hidden' }}>
+    <div style={{ position: 'fixed', inset: 0, backgroundImage: `url(${gameBgUrl})`, backgroundSize: 'cover', overflow: 'hidden' }}>
 
       {/* Miss flash */}
       {flashMiss && (
@@ -134,15 +131,15 @@ export default function GamePage({
           style={{
             position: 'absolute',
             inset: 0,
-            background: '#6B0000',
-            backgroundImage: TRIANGLE_PATTERN,
+            background: 'linear-gradient(to bottom, #4F1111, #B52727)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             zIndex: 30,
           }}
         >
-          <div style={{ fontSize: 'clamp(20px, 3vw, 40px)', fontWeight: 900, letterSpacing: 6, textTransform: 'uppercase' }}>
+          <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${bgUrl})`, backgroundSize: 'cover', opacity: 0.2, pointerEvents: 'none' }} />
+          <div style={{ position: 'relative', fontSize: 'clamp(20px, 3vw, 40px)', fontWeight: 900, letterSpacing: 6, textTransform: 'uppercase' }}>
             PRESS SPACE TO START
           </div>
         </div>
@@ -180,8 +177,7 @@ export default function GamePage({
           style={{
             position: 'absolute',
             inset: 0,
-            background: lastRoundResult!.isMiss ? '#6B0000' : '#0d1b3e',
-            backgroundImage: TRIANGLE_PATTERN,
+            background: lastRoundResult!.isMiss ? 'linear-gradient(to bottom, #4F1111, #B52727)' : '#11184F',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -190,52 +186,55 @@ export default function GamePage({
             zIndex: 30,
           }}
         >
-          <div
-            style={{
-              fontSize: 'clamp(40px, 8vw, 96px)',
-              fontWeight: 900,
-              letterSpacing: 4,
-              textTransform: 'uppercase',
-              textShadow: '0 4px 20px rgba(0,0,0,0.5)',
-            }}
-          >
-            {lastRoundResult!.isMiss ? 'MISS!' : 'GOOOAAAL!'}
-          </div>
-          <div style={{ fontSize: 'clamp(12px, 1.8vw, 20px)', letterSpacing: 3, textTransform: 'uppercase', opacity: 0.85 }}>
-            {lastRoundResult!.isMiss
-              ? `${playerName.toUpperCase()} MISSES!`
-              : `${playerName.toUpperCase()} SCORES BIG!`}
-          </div>
-          <div
-            style={{
-              width: 'clamp(100px, 14vw, 160px)',
-              height: 'clamp(100px, 14vw, 160px)',
-              borderRadius: '50%',
-              background: '#CC0000',
-              border: '4px solid rgba(255,255,255,0.25)',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginTop: 8,
-            }}
-          >
-            <div style={{ fontSize: 'clamp(36px, 6vw, 64px)', fontWeight: 900, lineHeight: 1 }}>
-              {lastRoundResult!.points}
+          <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${bgUrl})`, backgroundSize: 'cover', opacity: 0.2, pointerEvents: 'none', zIndex: 0 }} />
+          <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 20 }}>
+            <div
+              style={{
+                fontSize: 'clamp(40px, 8vw, 96px)',
+                fontWeight: 900,
+                letterSpacing: 4,
+                textTransform: 'uppercase',
+                textShadow: '0 4px 20px rgba(0,0,0,0.5)',
+              }}
+            >
+              {lastRoundResult!.isMiss ? 'MISS!' : 'GOOOAAAL!'}
             </div>
-            <div style={{ fontSize: 'clamp(9px, 1.2vw, 14px)', letterSpacing: 2, opacity: 0.8 }}>POINTS</div>
-          </div>
-          <div
-            style={{
-              marginTop: 24,
-              fontSize: 'clamp(12px, 1.8vw, 22px)',
-              fontWeight: 700,
-              letterSpacing: 5,
-              textTransform: 'uppercase',
-              opacity: 0.8,
-            }}
-          >
-            PRESS SPACE TO START
+            <div style={{ fontSize: 'clamp(12px, 1.8vw, 20px)', letterSpacing: 3, textTransform: 'uppercase', opacity: 0.85 }}>
+              {lastRoundResult!.isMiss
+                ? `${playerName.toUpperCase()} MISSES!`
+                : `${playerName.toUpperCase()} SCORES BIG!`}
+            </div>
+            <div
+              style={{
+                width: 'clamp(100px, 14vw, 160px)',
+                height: 'clamp(100px, 14vw, 160px)',
+                borderRadius: '50%',
+                background: '#CC0000',
+                border: '4px solid rgba(255,255,255,0.25)',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginTop: 8,
+              }}
+            >
+              <div style={{ fontSize: 'clamp(36px, 6vw, 64px)', fontWeight: 900, lineHeight: 1 }}>
+                {lastRoundResult!.points}
+              </div>
+              <div style={{ fontSize: 'clamp(9px, 1.2vw, 14px)', letterSpacing: 2, opacity: 0.8 }}>POINTS</div>
+            </div>
+            <div
+              style={{
+                marginTop: 24,
+                fontSize: 'clamp(12px, 1.8vw, 22px)',
+                fontWeight: 700,
+                letterSpacing: 5,
+                textTransform: 'uppercase',
+                opacity: 0.8,
+              }}
+            >
+              PRESS SPACE TO START
+            </div>
           </div>
         </div>
       )}
@@ -246,8 +245,7 @@ export default function GamePage({
           style={{
             position: 'absolute',
             inset: 0,
-            background: '#0d1b3e',
-            backgroundImage: TRIANGLE_PATTERN,
+            background: '#11184F',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
@@ -256,29 +254,32 @@ export default function GamePage({
             zIndex: 30,
           }}
         >
-          <div style={{ fontSize: 'clamp(14px, 2vw, 22px)', letterSpacing: 4, opacity: 0.7, textTransform: 'uppercase' }}>
-            Game Over
-          </div>
-          <div style={{ fontSize: 'clamp(60px, 12vw, 120px)', fontWeight: 900, lineHeight: 1 }}>
-            {summaryData!.score}
-          </div>
-          <div style={{ fontSize: 'clamp(9px, 1.2vw, 14px)', letterSpacing: 3, opacity: 0.6, textTransform: 'uppercase' }}>
-            Points
-          </div>
-          <div style={{ fontSize: 'clamp(20px, 3vw, 36px)', fontWeight: 700, letterSpacing: 2, marginTop: 8 }}>
-            RANK #{summaryData!.rank}
-          </div>
-          <div
-            style={{
-              marginTop: 32,
-              fontSize: 'clamp(12px, 1.8vw, 20px)',
-              fontWeight: 700,
-              letterSpacing: 5,
-              textTransform: 'uppercase',
-              opacity: 0.8,
-            }}
-          >
-            PRESS SPACE TO CONTINUE
+          <div style={{ position: 'absolute', inset: 0, backgroundImage: `url(${bgUrl})`, backgroundSize: 'cover', opacity: 0.2, pointerEvents: 'none', zIndex: 0 }} />
+          <div style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
+            <div style={{ fontSize: 'clamp(14px, 2vw, 22px)', letterSpacing: 4, opacity: 0.7, textTransform: 'uppercase' }}>
+              Game Over
+            </div>
+            <div style={{ fontSize: 'clamp(60px, 12vw, 120px)', fontWeight: 900, lineHeight: 1 }}>
+              {summaryData!.score}
+            </div>
+            <div style={{ fontSize: 'clamp(9px, 1.2vw, 14px)', letterSpacing: 3, opacity: 0.6, textTransform: 'uppercase' }}>
+              Points
+            </div>
+            <div style={{ fontSize: 'clamp(20px, 3vw, 36px)', fontWeight: 700, letterSpacing: 2, marginTop: 8 }}>
+              RANK #{summaryData!.rank}
+            </div>
+            <div
+              style={{
+                marginTop: 32,
+                fontSize: 'clamp(12px, 1.8vw, 20px)',
+                fontWeight: 700,
+                letterSpacing: 5,
+                textTransform: 'uppercase',
+                opacity: 0.8,
+              }}
+            >
+              PRESS SPACE TO CONTINUE
+            </div>
           </div>
         </div>
       )}

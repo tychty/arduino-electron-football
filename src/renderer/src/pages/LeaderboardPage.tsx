@@ -1,15 +1,11 @@
 import type { LeaderboardEntry } from '../services/arduinoService'
 import logoUrl from '../../media/logo.svg'
+import bgUrl from '../../media/bg.svg'
 
 interface Props {
   entries: LeaderboardEntry[]
   onNewGame: () => void
 }
-
-const TRIANGLE_PATTERN = [
-  'repeating-linear-gradient(60deg, transparent, transparent 30px, rgba(0,0,0,0.08) 30px, rgba(0,0,0,0.08) 32px)',
-  'repeating-linear-gradient(-60deg, transparent, transparent 30px, rgba(0,0,0,0.08) 30px, rgba(0,0,0,0.08) 32px)',
-].join(', ')
 
 export default function LeaderboardPage({ entries, onNewGame }: Props): JSX.Element {
   return (
@@ -17,8 +13,7 @@ export default function LeaderboardPage({ entries, onNewGame }: Props): JSX.Elem
       style={{
         position: 'fixed',
         inset: 0,
-        background: '#6B0000',
-        backgroundImage: TRIANGLE_PATTERN,
+        background: 'linear-gradient(to bottom, #4F1111, #B52727)',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -26,6 +21,7 @@ export default function LeaderboardPage({ entries, onNewGame }: Props): JSX.Elem
         overflowY: 'auto',
       }}
     >
+      <div style={{ position: 'fixed', inset: 0, backgroundImage: `url(${bgUrl})`, backgroundSize: 'cover', opacity: 0.2, pointerEvents: 'none' }} />
       {/* Logos */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 24, marginBottom: 32 }}>
         <img src={logoUrl} alt="Lenovo" style={{ height: 36 }} />
