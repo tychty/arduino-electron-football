@@ -19,10 +19,12 @@ export interface GameState {
 export interface GameMachineCallbacks {
   onStateChange: (state: GameState) => void
   onGameOver: (finalState: GameState) => void
+  onRoundResult?: (isMiss: boolean, points: number, isGameOver: boolean) => void
 }
 
 export interface GameStateMachine {
   hit(pin: number, peak: number, timestampMs: number): void
+  hitImmediate(pin: number): void
   getState(): GameState
   reset(): void
   destroy(): void
@@ -82,6 +84,8 @@ export function createGameStateMachine(
       isGameOver = true
     }
 
+    const roundPoints = isMiss ? 0 : (cfg?.scorePoints ?? 1)
+
     const flashTarget = isMiss ? VIRTUAL_MISS_PIN : pin
     const prevFlash = flashTimers.get(flashTarget)
     if (prevFlash) clearTimeout(prevFlash)
@@ -102,6 +106,12 @@ export function createGameStateMachine(
     )
 
     emit()
+    callbacks.onRoundResult?.(isMiss, roundPoints, isGameOver)
+  }
+
+  function hitImmediate(pin: number): void {
+    if (destroyed || isGameOver) return
+    resolveHit(pin)
   }
 
   function hit(pin: number, peak: number, _timestampMs: number): void {
@@ -157,5 +167,5 @@ export function createGameStateMachine(
     flashTimers.clear()
   }
 
-  return { hit, getState, reset, destroy }
+  return { hit, hitImmediate, getState, reset, destroy }
 }

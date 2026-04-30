@@ -4,7 +4,7 @@ import type { LeaderboardEntry } from '../services/arduinoService'
 
 interface UseLeaderboard {
   entries: LeaderboardEntry[]
-  append: (name: string, score: number) => Promise<void>
+  append: (name: string, company: string, email: string, score: number) => Promise<void>
   reload: () => Promise<void>
   clear: () => Promise<void>
 }
@@ -21,9 +21,9 @@ export function useLeaderboard(): UseLeaderboard {
     reload()
   }, [])
 
-  const append = async (name: string, score: number): Promise<void> => {
+  const append = async (name: string, company: string, email: string, score: number): Promise<void> => {
     const date = new Date().toISOString()
-    await arduinoService.appendLeaderboard(name, score, date)
+    await arduinoService.appendLeaderboard(name, company, email, score, date)
     await reload()
   }
 

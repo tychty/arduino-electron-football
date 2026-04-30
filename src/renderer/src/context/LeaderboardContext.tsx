@@ -4,7 +4,7 @@ import type { LeaderboardEntry } from '../services/arduinoService'
 
 interface LeaderboardContextValue {
   entries: LeaderboardEntry[]
-  append: (name: string, score: number) => Promise<void>
+  append: (name: string, company: string, email: string, score: number) => Promise<void>
   reload: () => Promise<void>
   clear: () => Promise<void>
 }

@@ -8,6 +8,8 @@ export interface PortInfo {
 
 export interface LeaderboardEntry {
   name: string
+  company: string
+  email: string
   score: number
   date: string
 }
@@ -22,7 +24,7 @@ export interface IArduinoService {
   setDebounce(ms: number, pin: number): Promise<void>
   setNoiseTolerance(val: number, pin: number): Promise<void>
   readLeaderboard(): Promise<LeaderboardEntry[]>
-  appendLeaderboard(name: string, score: number, date: string): Promise<void>
+  appendLeaderboard(name: string, company: string, email: string, score: number, date: string): Promise<void>
   clearLeaderboard(): Promise<void>
   getLeaderboardPath(): Promise<string>
 }
@@ -38,8 +40,8 @@ class ElectronArduinoService implements IArduinoService {
   setNoiseTolerance = (val: number, pin: number): Promise<void> =>
     window.arduino.setNoiseTolerance(val, pin)
   readLeaderboard = (): Promise<LeaderboardEntry[]> => window.arduino.leaderboard.read()
-  appendLeaderboard = (name: string, score: number, date: string): Promise<void> =>
-    window.arduino.leaderboard.append(name, score, date)
+  appendLeaderboard = (name: string, company: string, email: string, score: number, date: string): Promise<void> =>
+    window.arduino.leaderboard.append(name, company, email, score, date)
   clearLeaderboard = (): Promise<void> => window.arduino.leaderboard.clear()
   getLeaderboardPath = (): Promise<string> => window.arduino.leaderboard.path()
 }
@@ -71,8 +73,8 @@ export class MockArduinoService implements IArduinoService {
   setDebounce = async (): Promise<void> => {}
   setNoiseTolerance = async (): Promise<void> => {}
   readLeaderboard = async (): Promise<LeaderboardEntry[]> => [...this._entries]
-  appendLeaderboard = async (name: string, score: number, date: string): Promise<void> => {
-    this._entries.push({ name, score, date })
+  appendLeaderboard = async (name: string, company: string, email: string, score: number, date: string): Promise<void> => {
+    this._entries.push({ name, company, email, score, date })
   }
   clearLeaderboard = async (): Promise<void> => {
     this._entries = []

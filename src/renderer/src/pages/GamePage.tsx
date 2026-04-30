@@ -1,11 +1,16 @@
 import FootballGoal from '../components/FootballGoal'
 import { useSettingsCtx } from '../context/SettingsContext'
+import type { RoundPhase } from '../hooks/useGame'
 
 interface Props {
   scores: Readonly<Record<number, number>>
   totalHits: number
   score: number
   flashingPins: ReadonlySet<number>
+  roundPhase: RoundPhase
+  countdownValue: number
+  lastRoundResult?: { isMiss: boolean; points: number } | null
+  summaryData?: { score: number; rank: number } | null
   onEndGame: () => void
   endless?: boolean
   editLayout?: boolean
@@ -16,6 +21,10 @@ export default function GamePage({
   totalHits,
   score,
   flashingPins,
+  roundPhase,
+  countdownValue,
+  lastRoundResult,
+  summaryData,
   onEndGame,
   endless,
   editLayout,
@@ -35,6 +44,10 @@ export default function GamePage({
         hitLimit={hitLimit}
         endless={endless}
         onEndGame={onEndGame}
+        roundPhase={roundPhase}
+        countdownValue={countdownValue}
+        lastRoundResult={lastRoundResult}
+        summaryData={summaryData}
       />
     </div>
   )

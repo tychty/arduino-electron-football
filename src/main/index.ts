@@ -89,13 +89,18 @@ ipcMain.handle('leaderboard:read', () => {
     .split('\n')
     .filter(Boolean)
     .map((line) => {
-      const [name, score, date] = line.split(',')
-      return { name, score: Number(score), date }
+      const parts = line.split(',')
+      if (parts.length >= 5) {
+        const [name, company, email, score, date] = parts
+        return { name, company, email, score: Number(score), date }
+      }
+      const [name, score, date] = parts
+      return { name, company: '', email: '', score: Number(score), date }
     })
 })
 
-ipcMain.handle('leaderboard:append', (_event, name: string, score: number, date: string) => {
-  appendFileSync(leaderboardPath(), `${name},${score},${date}\n`, 'utf8')
+ipcMain.handle('leaderboard:append', (_event, name: string, company: string, email: string, score: number, date: string) => {
+  appendFileSync(leaderboardPath(), `${name},${company},${email},${score},${date}\n`, 'utf8')
 })
 
 ipcMain.handle('leaderboard:path', () => leaderboardPath())

@@ -45,5 +45,9 @@ export const FLASH_DURATION_STEP = 10
 // Hit limit (game length)
 export const HIT_LIMIT_DEFAULT = 5
 
+// Round mechanic
+export const COUNTDOWN_DURATION_S = 3
+export const HIT_WINDOW_MS = 1000
+
 // Language
 export const LANGUAGE_DEFAULT = 'ru'

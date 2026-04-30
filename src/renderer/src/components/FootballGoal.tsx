@@ -4,6 +4,7 @@ import { PinConfig } from '../hooks/useSettings'
 import { GoalRect, PinRect, useGoalLayout } from '../hooks/useGoalLayout'
 import { VIRTUAL_MISS_PIN } from '../../../shared/config'
 import { useLocaleCtx } from '../context/LocaleContext'
+import type { RoundPhase } from '../hooks/useGame'
 
 const HANDLE = 10
 const HALF = HANDLE / 2
@@ -21,6 +22,10 @@ interface Props {
   hitLimit: number
   endless?: boolean
   onEndGame: () => void
+  roundPhase?: RoundPhase
+  countdownValue?: number
+  lastRoundResult?: { isMiss: boolean; points: number } | null
+  summaryData?: { score: number; rank: number } | null
 }
 
 type DragTarget =
@@ -78,6 +83,10 @@ export default function FootballGoal({
   hitLimit,
   endless,
   onEndGame,
+  roundPhase,
+  countdownValue,
+  lastRoundResult,
+  summaryData,
 }: Props): JSX.Element {
   const { t } = useLocaleCtx()
 
@@ -90,12 +99,13 @@ export default function FootballGoal({
   const flashMiss = flashingPins.has(VIRTUAL_MISS_PIN)
 
   useEffect(() => {
+    if (!editMode) return
     const onKey = (e: KeyboardEvent): void => {
       if (e.key === 'Escape') onEndGame()
     }
     document.addEventListener('keydown', onKey)
     return () => document.removeEventListener('keydown', onKey)
-  }, [onEndGame])
+  }, [onEndGame, editMode])
 
   const dragRef = useRef<DragState | null>(null)
   const goalRef = useRef(goal)
@@ -292,6 +302,114 @@ export default function FootballGoal({
         </div>
       )}
 
+      {roundPhase === 'idle' && (
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            pointerEvents: 'none',
+          }}
+        >
+          <div
+            style={{
+              fontSize: Math.max(12, goal.w * 0.07),
+              fontWeight: 900,
+              color: '#fff',
+              textAlign: 'center',
+              textTransform: 'uppercase',
+              letterSpacing: 2,
+              textShadow: '0 2px 8px rgba(0,0,0,0.5)',
+            }}
+          >
+            {t((l) => l.game.pressSpaceToStart)}
+          </div>
+        </div>
+      )}
+
+      {roundPhase === 'countdown' && (
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            pointerEvents: 'none',
+          }}
+        >
+          <div
+            style={{
+              fontSize: Math.max(32, goal.h * 0.45),
+              fontWeight: 900,
+              color: '#fff',
+              lineHeight: 1,
+              textShadow: '0 4px 16px rgba(0,0,0,0.6)',
+            }}
+          >
+            {countdownValue}
+          </div>
+        </div>
+      )}
+
+      {roundPhase === 'result' && lastRoundResult && (
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: Math.max(6, goal.h * 0.04),
+            pointerEvents: 'none',
+          }}
+        >
+          <div style={{ fontSize: Math.max(16, goal.h * 0.18), fontWeight: 900, color: '#fff', textTransform: 'uppercase', textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>
+            {lastRoundResult.isMiss ? t((l) => l.game.miss) : t((l) => l.game.goal)}
+          </div>
+          <div style={{ fontSize: Math.max(28, goal.h * 0.32), fontWeight: 900, color: '#fff', lineHeight: 1, textShadow: '0 4px 16px rgba(0,0,0,0.6)' }}>
+            {lastRoundResult.points}
+          </div>
+          <div style={{ fontSize: Math.max(10, goal.h * 0.06), color: 'rgba(255,255,255,0.75)', textTransform: 'uppercase' }}>
+            {t((l) => l.game.points)}
+          </div>
+          <div style={{ fontSize: Math.max(8, goal.w * 0.055), fontWeight: 700, color: '#fff', textTransform: 'uppercase', letterSpacing: 1, marginTop: Math.max(4, goal.h * 0.04), textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>
+            {t((l) => l.game.pressSpaceToStart)}
+          </div>
+        </div>
+      )}
+
+      {summaryData && (
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: Math.max(6, goal.h * 0.04),
+            pointerEvents: 'none',
+          }}
+        >
+          <div style={{ fontSize: Math.max(28, goal.h * 0.32), fontWeight: 900, color: '#fff', lineHeight: 1, textShadow: '0 4px 16px rgba(0,0,0,0.6)' }}>
+            {summaryData.score}
+          </div>
+          <div style={{ fontSize: Math.max(10, goal.h * 0.06), color: 'rgba(255,255,255,0.75)', textTransform: 'uppercase' }}>
+            {t((l) => l.game.points)}
+          </div>
+          <div style={{ fontSize: Math.max(14, goal.h * 0.12), fontWeight: 700, color: '#fff', textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>
+            #{summaryData.rank} {t((l) => l.game.place)}
+          </div>
+          <div style={{ fontSize: Math.max(8, goal.w * 0.055), fontWeight: 700, color: '#fff', textTransform: 'uppercase', letterSpacing: 1, marginTop: Math.max(4, goal.h * 0.04), textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>
+            {t((l) => l.game.pressSpaceToLeaderboard)}
+          </div>
+        </div>
+      )}
+
       <div
         style={{
           position: 'absolute',
@@ -319,22 +437,24 @@ export default function FootballGoal({
             </div>
           </div>
         )}
-        <button
-          onClick={onEndGame}
-          onMouseDown={(e) => e.stopPropagation()}
-          style={{
-            padding: '6px 16px',
-            fontSize: 12,
-            cursor: 'pointer',
-            borderRadius: 4,
-            border: '1px solid rgba(255,255,255,0.4)',
-            background: 'rgba(255,255,255,0.15)',
-            color: '#fff',
-            pointerEvents: 'auto',
-          }}
-        >
-          {endless ? t((l) => l.game.done) : t((l) => l.game.endGame)}
-        </button>
+        {editMode && (
+          <button
+            onClick={onEndGame}
+            onMouseDown={(e) => e.stopPropagation()}
+            style={{
+              padding: '6px 16px',
+              fontSize: 12,
+              cursor: 'pointer',
+              borderRadius: 4,
+              border: '1px solid rgba(255,255,255,0.4)',
+              background: 'rgba(255,255,255,0.15)',
+              color: '#fff',
+              pointerEvents: 'auto',
+            }}
+          >
+            {t((l) => l.game.done)}
+          </button>
+        )}
       </div>
     </div>
   )

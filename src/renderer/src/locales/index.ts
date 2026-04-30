@@ -10,6 +10,19 @@ export interface LocaleStrings {
     saveScore: string
     noActiveScoringPins: string
     miss: string
+    goal: string
+    pressSpaceToStart: string
+    pressSpaceToLeaderboard: string
+    place: string
+  }
+  playerInfo: {
+    title: string
+    name: string
+    company: string
+    email: string
+    emailInvalid: string
+    required: string
+    start: string
   }
   leaderboard: {
     title: string
@@ -75,6 +88,19 @@ const en: LocaleStrings = {
     saveScore: 'Save Score',
     noActiveScoringPins: 'no active scoring pins',
     miss: 'MISS',
+    goal: 'GOOOAAAL!',
+    pressSpaceToStart: 'PRESS SPACE TO START',
+    pressSpaceToLeaderboard: 'PRESS SPACE TO GO TO LEADERBOARD',
+    place: 'place',
+  },
+  playerInfo: {
+    title: 'Player Info',
+    name: 'Name',
+    company: 'Company',
+    email: 'Email',
+    emailInvalid: 'Enter a valid email',
+    required: 'Required',
+    start: 'Start Game',
   },
   leaderboard: {
     title: 'Leaderboard',
@@ -138,6 +164,19 @@ const ru: LocaleStrings = {
     saveScore: 'Сохранить',
     noActiveScoringPins: 'нет активных пинов',
     miss: 'МИМО',
+    goal: 'ГОЛ!',
+    pressSpaceToStart: 'НАЖМИТЕ ПРОБЕЛ',
+    pressSpaceToLeaderboard: 'НАЖМИТЕ ПРОБЕЛ ДЛЯ ПЕРЕХОДА К РЕКОРДАМ',
+    place: 'место',
+  },
+  playerInfo: {
+    title: 'Данные игрока',
+    name: 'Имя',
+    company: 'Компания',
+    email: 'Email',
+    emailInvalid: 'Введите корректный email',
+    required: 'Обязательное поле',
+    start: 'Начать игру',
   },
   leaderboard: {
     title: 'Таблица рекордов',
@@ -201,6 +240,19 @@ const kz: LocaleStrings = {
     saveScore: 'Нәтижені сақтау',
     noActiveScoringPins: 'белсенді пиндер жоқ',
     miss: 'ЖАҢЫЛЫС',
+    goal: 'ГОЛ!',
+    pressSpaceToStart: 'БАСТАУ ҮШІН БОС ОРЫНДЫ БАСЫҢЫЗ',
+    pressSpaceToLeaderboard: 'РЕКОРДТАРҒА ӨТУ ҮШІН БОС ОРЫНДЫ БАСЫҢЫЗ',
+    place: 'орын',
+  },
+  playerInfo: {
+    title: 'Ойыншы туралы ақпарат',
+    name: 'Аты',
+    company: 'Компания',
+    email: 'Email',
+    emailInvalid: 'Жарамды email енгізіңіз',
+    required: 'Міндетті өріс',
+    start: 'Ойынды бастау',
   },
   leaderboard: {
     title: 'Рекордтар тізімі',

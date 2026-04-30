@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useConnection } from './hooks/useConnection'
 import { useGame } from './hooks/useGame'
 import { useLeaderboardCtx } from './context/LeaderboardContext'
+import { arduinoService } from './services/arduinoService'
 import ConnectionIndicator from './components/ConnectionIndicator'
-import EndGameModal from './components/EndGameModal'
+import PlayerInfoModal, { PlayerInfo } from './components/PlayerInfoModal'
+
 import LeaderboardPage from './pages/LeaderboardPage'
 import GamePage from './pages/GamePage'
 import SettingsPage from './pages/SettingsPage'
@@ -12,37 +14,64 @@ type Page = 'leaderboard' | 'game' | 'settings' | 'layout'
 
 export default function App(): JSX.Element {
   const [page, setPage] = useState<Page>('leaderboard')
-  const [modalOpen, setModalOpen] = useState(false)
+  const [showPlayerInfo, setShowPlayerInfo] = useState(false)
+  const [playerInfo, setPlayerInfo] = useState<PlayerInfo | null>(null)
+  const [summaryData, setSummaryData] = useState<{ score: number; rank: number } | null>(null)
+  const savingRef = useRef(false)
 
   const { ports, selected, connected, error, setSelected, refresh, connect, disconnect } =
     useConnection()
-  const { scores, totalHits, flashingPins, isGameOver, reset, peaks, score } = useGame(
+
+  const { entries, reload } = useLeaderboardCtx()
+
+  const handleAbandon = useCallback((): void => {
+    setSummaryData(null)
+    setPage('leaderboard')
+  }, [])
+
+  const handleSummaryDismiss = useCallback((): void => {
+    setSummaryData(null)
+    setPage('leaderboard')
+  }, [])
+
+  const { scores, totalHits, flashingPins, reset, peaks, score, roundPhase, countdownValue, lastRoundResult } = useGame(
     connected,
-    (page === 'game' || page === 'layout') && !modalOpen
+    page === 'game',
+    false,
+    { onAbandon: handleAbandon, onSummaryDismiss: handleSummaryDismiss }
   )
 
-  const { entries, append, reload } = useLeaderboardCtx()
+  const reloadRef = useRef(reload)
+  useEffect(() => { reloadRef.current = reload }, [reload])
+  const scoreRef = useRef(score)
+  useEffect(() => { scoreRef.current = score }, [score])
 
+  // Auto-save and show summary when last round resolves
   useEffect(() => {
-    if (isGameOver && page === 'game' && !modalOpen) {
-      setModalOpen(true)
+    if (roundPhase !== 'gameover' || page !== 'game' || !playerInfo || savingRef.current) return
+    savingRef.current = true
+    const doSave = async (): Promise<void> => {
+      const s = scoreRef.current
+      const date = new Date().toISOString()
+      await arduinoService.appendLeaderboard(playerInfo.name, playerInfo.company, playerInfo.email, s, date)
+      const data = await arduinoService.readLeaderboard()
+      const rank = data.filter((e) => e.score > s).length + 1
+      await reloadRef.current()
+      setSummaryData({ score: s, rank })
     }
-  }, [isGameOver, page, modalOpen])
+    doSave()
+  }, [roundPhase, page, playerInfo])
 
   const handleNewGame = (): void => {
-    reset()
-    setPage('game')
+    setShowPlayerInfo(true)
   }
 
-  const handleModalDone = async (name: string | null): Promise<void> => {
-    if (name) {
-      await append(name, score)
-    } else {
-      await reload()
-    }
-    setModalOpen(false)
+  const handlePlayerInfoConfirm = (info: PlayerInfo): void => {
+    setPlayerInfo(info)
+    setShowPlayerInfo(false)
+    savingRef.current = false
     reset()
-    setPage('leaderboard')
+    setPage('game')
   }
 
   const handleEditLayout = (): void => {
@@ -68,7 +97,11 @@ export default function App(): JSX.Element {
           totalHits={totalHits}
           score={score}
           flashingPins={flashingPins}
-          onEndGame={() => setModalOpen(true)}
+          roundPhase={roundPhase}
+          countdownValue={countdownValue}
+          lastRoundResult={lastRoundResult}
+          summaryData={summaryData}
+          onEndGame={() => {}}
         />
       )}
 
@@ -78,6 +111,8 @@ export default function App(): JSX.Element {
           totalHits={totalHits}
           score={score}
           flashingPins={flashingPins}
+          roundPhase={roundPhase}
+          countdownValue={countdownValue}
           onEndGame={() => { reset(); setPage('settings') }}
           endless
           editLayout
@@ -100,7 +135,7 @@ export default function App(): JSX.Element {
         />
       )}
 
-      {modalOpen && <EndGameModal score={score} onDone={handleModalDone} />}
+      {showPlayerInfo && <PlayerInfoModal onConfirm={handlePlayerInfoConfirm} onCancel={() => setShowPlayerInfo(false)} />}
     </>
   )
 }
