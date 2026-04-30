@@ -1,4 +1,5 @@
 import type { LeaderboardEntry } from '../services/arduinoService'
+import { useSettingsCtx } from '../context/SettingsContext'
 import logoUrl from '../../media/logo.svg'
 import bgUrl from '../../media/bg.svg'
 
@@ -8,6 +9,7 @@ interface Props {
 }
 
 export default function LeaderboardPage({ entries, onNewGame }: Props): JSX.Element {
+  const { leaderboardLimit } = useSettingsCtx()
   return (
     <div
       style={{
@@ -54,7 +56,7 @@ export default function LeaderboardPage({ entries, onNewGame }: Props): JSX.Elem
           textAlign: 'center',
         }}
       >
-        TOP SCORERS OF THE DAY
+        TOP {leaderboardLimit} SCORERS OF THE DAY
       </div>
 
       {/* Table */}
@@ -79,7 +81,7 @@ export default function LeaderboardPage({ entries, onNewGame }: Props): JSX.Elem
             No scores yet
           </div>
         ) : (
-          entries.map((entry, i) => (
+          entries.slice(0, leaderboardLimit).map((entry, i) => (
             <div
               key={i}
               style={{

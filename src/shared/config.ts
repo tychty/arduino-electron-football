@@ -8,6 +8,7 @@ export const SERIAL_DELIMITER = '\r\n'
 
 // Leaderboard
 export const LEADERBOARD_FILENAME = 'leaderboard.csv'
+export const LEADERBOARD_LIMIT_DEFAULT = 8
 
 // Pin limits
 export const MAX_PINS = 8

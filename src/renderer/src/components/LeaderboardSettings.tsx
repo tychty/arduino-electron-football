@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react'
 import { useLeaderboardCtx } from '../context/LeaderboardContext'
 import { arduinoService } from '../services/arduinoService'
 import { useLocaleCtx } from '../context/LocaleContext'
+import { useSettingsCtx } from '../context/SettingsContext'
 
 export default function LeaderboardSettings(): JSX.Element {
   const { clear } = useLeaderboardCtx()
   const { t } = useLocaleCtx()
+  const { leaderboardLimit, setLeaderboardLimit } = useSettingsCtx()
   const [confirming, setConfirming] = useState(false)
   const [leaderboardPath, setLeaderboardPath] = useState('')
 
@@ -19,6 +21,19 @@ export default function LeaderboardSettings(): JSX.Element {
         {t((l) => l.settings.leaderboard)}
       </h3>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13 }}>
+          <span style={{ width: 160, color: '#555' }}>{t((l) => l.settings.leaderboardLimit)}</span>
+          <input
+            type="number"
+            min={1}
+            value={leaderboardLimit}
+            onChange={(e) => {
+              const n = parseInt(e.target.value, 10)
+              if (!isNaN(n) && n >= 1) setLeaderboardLimit(n)
+            }}
+            style={{ width: 70, padding: '3px 6px', fontSize: 13, borderRadius: 4, border: '1px solid #ccc' }}
+          />
+        </div>
         {leaderboardPath ? (
           <button
             onClick={() => window.arduino.leaderboard.showInFolder()}

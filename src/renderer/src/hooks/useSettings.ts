@@ -4,6 +4,7 @@ import {
   HIT_DEBOUNCE_DEFAULT,
   FLASH_DURATION_DEFAULT,
   HIT_LIMIT_DEFAULT,
+  LEADERBOARD_LIMIT_DEFAULT,
   DEBOUNCE_DEFAULT,
   NOISE_DEFAULT,
   SCORE_POINTS_DEFAULT,
@@ -24,6 +25,7 @@ export interface GameSettings {
   hitDebounceMs: number
   flashDuration: number
   hitLimit: number
+  leaderboardLimit: number
 }
 
 export interface SettingsService {
@@ -40,12 +42,14 @@ const GAME_KEYS: Record<keyof GameSettings, string> = {
   hitDebounceMs: 'hitDebounceMs',
   flashDuration: 'flashDuration',
   hitLimit: 'hitLimit',
+  leaderboardLimit: 'leaderboardLimit',
 }
 
 const GAME_CLAMP: Record<keyof GameSettings, (v: number) => number> = {
   hitDebounceMs: (v) => (isNaN(v) ? HIT_DEBOUNCE_DEFAULT : v),
   flashDuration: (v) => (isNaN(v) ? FLASH_DURATION_DEFAULT : v),
   hitLimit: (v) => Math.floor(isNaN(v) ? HIT_LIMIT_DEFAULT : v),
+  leaderboardLimit: (v) => Math.max(1, Math.floor(isNaN(v) ? LEADERBOARD_LIMIT_DEFAULT : v)),
 }
 
 function load<K extends keyof GameSettings>(key: K, def: GameSettings[K]): GameSettings[K] {
@@ -57,6 +61,7 @@ function loadGame(): GameSettings {
     hitDebounceMs: load('hitDebounceMs', HIT_DEBOUNCE_DEFAULT),
     flashDuration: load('flashDuration', FLASH_DURATION_DEFAULT),
     hitLimit: load('hitLimit', HIT_LIMIT_DEFAULT),
+    leaderboardLimit: load('leaderboardLimit', LEADERBOARD_LIMIT_DEFAULT),
   }
 }
 

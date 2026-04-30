@@ -14,6 +14,8 @@ interface SettingsContextValue {
   setFlashDuration: (v: number) => void
   hitLimit: number
   setHitLimit: (v: number) => void
+  leaderboardLimit: number
+  setLeaderboardLimit: (v: number) => void
   settings: SettingsService
 }
 
@@ -35,6 +37,8 @@ export function SettingsProvider({ children }: { children: ReactNode }): JSX.Ele
     setFlashDuration: (v) => settings.setGame('flashDuration', v),
     hitLimit: settings.game.hitLimit,
     setHitLimit: (v) => settings.setGame('hitLimit', v),
+    leaderboardLimit: settings.game.leaderboardLimit,
+    setLeaderboardLimit: (v) => settings.setGame('leaderboardLimit', v),
     settings,
   }
 

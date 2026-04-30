@@ -46,6 +46,7 @@ export interface LocaleStrings {
     hits: string
     hitDebounce: string
     flashDuration: string
+    leaderboardLimit: string
     resetLeaderboard: string
     clearAllEntries: string
     yesClear: string
@@ -124,6 +125,7 @@ const en: LocaleStrings = {
     hits: 'hits',
     hitDebounce: 'hit debounce',
     flashDuration: 'flash duration',
+    leaderboardLimit: 'leaderboard limit',
     resetLeaderboard: 'reset leaderboard',
     clearAllEntries: 'clear all entries?',
     yesClear: 'yes, clear',
@@ -200,6 +202,7 @@ const ru: LocaleStrings = {
     hits: 'ударов',
     hitDebounce: 'задержка удара',
     flashDuration: 'длительность вспышки',
+    leaderboardLimit: 'лимит таблицы',
     resetLeaderboard: 'сбросить рекорды',
     clearAllEntries: 'удалить все записи?',
     yesClear: 'да, удалить',
@@ -276,6 +279,7 @@ const kz: LocaleStrings = {
     hits: 'соққы',
     hitDebounce: 'соққы кешігуі',
     flashDuration: 'жыпылықтау ұзақтығы',
+    leaderboardLimit: 'кесте шегі',
     resetLeaderboard: 'рекордтарды тазалау',
     clearAllEntries: 'барлық жазбаларды жою?',
     yesClear: 'иә, жою',
