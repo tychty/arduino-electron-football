@@ -1,112 +1,133 @@
+import { useEffect } from 'react'
 import type { LeaderboardEntry } from '../services/arduinoService'
-import { useLocaleCtx } from '../context/LocaleContext'
+import logoUrl from '../../media/logo.svg'
 
 interface Props {
   entries: LeaderboardEntry[]
   onNewGame: () => void
-  onSettings: () => void
 }
 
-function formatDate(iso: string): string {
-  try {
-    const d = new Date(iso)
-    return d.toLocaleDateString(undefined, { day: '2-digit', month: '2-digit', year: 'numeric' })
-  } catch {
-    return iso
-  }
-}
+const TRIANGLE_PATTERN = [
+  'repeating-linear-gradient(60deg, transparent, transparent 30px, rgba(0,0,0,0.08) 30px, rgba(0,0,0,0.08) 32px)',
+  'repeating-linear-gradient(-60deg, transparent, transparent 30px, rgba(0,0,0,0.08) 30px, rgba(0,0,0,0.08) 32px)',
+].join(', ')
 
-export default function LeaderboardPage({ entries, onNewGame, onSettings }: Props): JSX.Element {
-  const { t } = useLocaleCtx()
+export default function LeaderboardPage({ entries, onNewGame }: Props): JSX.Element {
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent): void => {
+      if (e.key === ' ' || e.code === 'Space') {
+        e.preventDefault()
+        onNewGame()
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onNewGame])
 
   return (
     <div
       style={{
-        minHeight: '100vh',
+        position: 'fixed',
+        inset: 0,
+        background: '#6B0000',
+        backgroundImage: TRIANGLE_PATTERN,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        padding: '48px 24px 32px',
-        fontFamily: 'sans-serif',
-        boxSizing: 'border-box',
+        padding: '40px 24px 32px',
+        overflowY: 'auto',
       }}
     >
-      <h1 style={{ margin: '0 0 32px', fontSize: 28, fontWeight: 'bold', letterSpacing: 1 }}>
-        {t((l) => l.leaderboard.title)}
-      </h1>
-
-      {entries.length === 0 ? (
-        <div style={{ color: '#aaa', fontSize: 14, marginBottom: 32 }}>
-          {t((l) => l.leaderboard.noScoresYet)}
+      {/* Logos */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 24, marginBottom: 32 }}>
+        <img src={logoUrl} alt="Lenovo" style={{ height: 36 }} />
+        <div style={{ width: 1, height: 36, background: 'rgba(255,255,255,0.3)' }} />
+        <div style={{ fontSize: 13, letterSpacing: 2, textAlign: 'center', lineHeight: 1.4, opacity: 0.85 }}>
+          FIFA<br />WORLD CUP 26™
         </div>
-      ) : (
-        <table
-          style={{
-            width: '100%',
-            maxWidth: 480,
-            borderCollapse: 'collapse',
-            marginBottom: 32,
-            fontSize: 14,
-          }}
-        >
-          <thead>
-            <tr style={{ borderBottom: '2px solid #eee', color: '#888', textAlign: 'left' }}>
-              <th style={{ padding: '6px 12px', fontWeight: 600 }}>{t((l) => l.leaderboard.colNumber)}</th>
-              <th style={{ padding: '6px 12px', fontWeight: 600 }}>{t((l) => l.leaderboard.colName)}</th>
-              <th style={{ padding: '6px 12px', fontWeight: 600, textAlign: 'right' }}>{t((l) => l.leaderboard.colScore)}</th>
-              <th style={{ padding: '6px 12px', fontWeight: 600, textAlign: 'right' }}>{t((l) => l.leaderboard.colDate)}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {entries.map((entry, i) => (
-              <tr
-                key={i}
-                style={{ borderBottom: '1px solid #f0f0f0', background: i % 2 === 0 ? '#fafafa' : '#fff' }}
-              >
-                <td style={{ padding: '8px 12px', color: '#aaa' }}>{i + 1}</td>
-                <td style={{ padding: '8px 12px', fontWeight: i === 0 ? 700 : 400 }}>{entry.name}</td>
-                <td style={{ padding: '8px 12px', textAlign: 'right', fontWeight: 'bold' }}>
-                  {entry.score}
-                </td>
-                <td style={{ padding: '8px 12px', textAlign: 'right', color: '#aaa' }}>
-                  {formatDate(entry.date)}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+      </div>
 
-      <div style={{ display: 'flex', gap: 12 }}>
-        <button
-          onClick={onNewGame}
+      {/* Title */}
+      <h1
+        style={{
+          fontSize: 'clamp(32px, 5vw, 64px)',
+          fontWeight: 900,
+          letterSpacing: 6,
+          textTransform: 'uppercase',
+          marginBottom: 8,
+          textAlign: 'center',
+        }}
+      >
+        LEADERBOARD
+      </h1>
+      <div
+        style={{
+          fontSize: 'clamp(11px, 1.4vw, 18px)',
+          letterSpacing: 4,
+          textTransform: 'uppercase',
+          opacity: 0.75,
+          marginBottom: 36,
+          textAlign: 'center',
+        }}
+      >
+        TOP SCORERS OF THE DAY
+      </div>
+
+      {/* Table */}
+      <div style={{ width: '100%', maxWidth: 680 }}>
+        <div
           style={{
-            padding: '12px 32px',
-            fontSize: 15,
-            cursor: 'pointer',
-            borderRadius: 4,
-            border: 'none',
-            background: '#2d8a2d',
-            color: '#fff',
-            fontWeight: 600,
+            display: 'grid',
+            gridTemplateColumns: '80px 1fr 100px',
+            gap: '0 16px',
+            borderBottom: '2px solid rgba(255,255,255,0.3)',
+            paddingBottom: 10,
+            marginBottom: 4,
           }}
         >
-          {t((l) => l.leaderboard.newGame)}
-        </button>
-        <button
-          onClick={onSettings}
-          style={{
-            padding: '12px 24px',
-            fontSize: 15,
-            cursor: 'pointer',
-            borderRadius: 4,
-            border: '1px solid #ccc',
-            background: '#fff',
-            color: '#333',
-          }}
-        >
-          {t((l) => l.leaderboard.settings)}
-        </button>
+          <div style={{ fontSize: 12, letterSpacing: 3, opacity: 0.65, textTransform: 'uppercase' }}>Rank</div>
+          <div style={{ fontSize: 12, letterSpacing: 3, opacity: 0.65, textTransform: 'uppercase' }}>Player Name</div>
+          <div style={{ fontSize: 12, letterSpacing: 3, opacity: 0.65, textTransform: 'uppercase', textAlign: 'right' }}>Score</div>
+        </div>
+
+        {entries.length === 0 ? (
+          <div style={{ textAlign: 'center', opacity: 0.4, fontSize: 14, padding: '24px 0' }}>
+            No scores yet
+          </div>
+        ) : (
+          entries.map((entry, i) => (
+            <div
+              key={i}
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '80px 1fr 100px',
+                gap: '0 16px',
+                padding: '10px 0',
+                borderBottom: '1px solid rgba(255,255,255,0.1)',
+              }}
+            >
+              <div style={{ fontSize: 20, fontWeight: 700 }}>{i + 1}</div>
+              <div style={{ fontSize: 20, fontWeight: 700, textTransform: 'uppercase' }}>{entry.name}</div>
+              <div style={{ fontSize: 20, fontWeight: 700, textAlign: 'right' }}>{entry.score}</div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* Press space */}
+      <div
+        style={{
+          marginTop: 'auto',
+          paddingTop: 48,
+          fontSize: 'clamp(14px, 2vw, 24px)',
+          fontWeight: 900,
+          letterSpacing: 5,
+          textTransform: 'uppercase',
+          opacity: 0.9,
+          textAlign: 'center',
+        }}
+      >
+        PRESS SPACE TO START
       </div>
     </div>
   )

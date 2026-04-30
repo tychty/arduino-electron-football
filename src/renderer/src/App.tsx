@@ -62,6 +62,14 @@ export default function App(): JSX.Element {
     doSave()
   }, [roundPhase, page, playerInfo])
 
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent): void => {
+      if (e.key === 'F2' && page === 'leaderboard') setPage('settings')
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [page])
+
   const handleNewGame = (): void => {
     setShowPlayerInfo(true)
   }
@@ -87,7 +95,6 @@ export default function App(): JSX.Element {
         <LeaderboardPage
           entries={entries}
           onNewGame={handleNewGame}
-          onSettings={() => setPage('settings')}
         />
       )}
 
@@ -102,6 +109,7 @@ export default function App(): JSX.Element {
           lastRoundResult={lastRoundResult}
           summaryData={summaryData}
           onEndGame={() => {}}
+          playerName={playerInfo?.name ?? ''}
         />
       )}
 

@@ -2,9 +2,7 @@ import { useRef, useEffect } from 'react'
 import GoalCircle from './GoalCircle'
 import { PinConfig } from '../hooks/useSettings'
 import { GoalRect, PinRect, useGoalLayout } from '../hooks/useGoalLayout'
-import { VIRTUAL_MISS_PIN } from '../../../shared/config'
 import { useLocaleCtx } from '../context/LocaleContext'
-import type { RoundPhase } from '../hooks/useGame'
 
 const HANDLE = 10
 const HALF = HANDLE / 2
@@ -17,15 +15,8 @@ interface Props {
   scores: Readonly<Record<number, number>>
   flashingPins: ReadonlySet<number>
   editMode?: boolean
-  score: number
-  totalHits: number
-  hitLimit: number
-  endless?: boolean
   onEndGame: () => void
-  roundPhase?: RoundPhase
-  countdownValue?: number
-  lastRoundResult?: { isMiss: boolean; points: number } | null
-  summaryData?: { score: number; rank: number } | null
+  goalBgUrl: string
 }
 
 type DragTarget =
@@ -78,15 +69,8 @@ export default function FootballGoal({
   scores,
   flashingPins,
   editMode,
-  score,
-  totalHits,
-  hitLimit,
-  endless,
   onEndGame,
-  roundPhase,
-  countdownValue,
-  lastRoundResult,
-  summaryData,
+  goalBgUrl,
 }: Props): JSX.Element {
   const { t } = useLocaleCtx()
 
@@ -96,7 +80,6 @@ export default function FootballGoal({
   })
 
   const { goal, setGoal, getPinRect, setPinRect } = useGoalLayout(activeScoringPins)
-  const flashMiss = flashingPins.has(VIRTUAL_MISS_PIN)
 
   useEffect(() => {
     if (!editMode) return
@@ -173,9 +156,7 @@ export default function FootballGoal({
       }
     }
 
-    const onUp = (): void => {
-      dragRef.current = null
-    }
+    const onUp = (): void => { dragRef.current = null }
 
     document.addEventListener('mousemove', onMove)
     document.addEventListener('mouseup', onUp)
@@ -206,14 +187,15 @@ export default function FootballGoal({
         top: goal.y,
         width: goal.w,
         height: goal.h,
-        backgroundColor: flashMiss ? '#cc2222' : '#2d8a2d',
-        transition: flashMiss ? 'none' : 'background-color 0.35s',
-        borderRadius: editMode ? 4 : 8,
+        backgroundImage: `url(${goalBgUrl})`,
+        backgroundSize: '100% 100%',
+        backgroundRepeat: 'no-repeat',
+        borderRadius: editMode ? 4 : 0,
         border: editMode ? '2px dashed rgba(255,255,255,0.6)' : 'none',
         boxSizing: 'border-box',
         cursor: editMode ? 'move' : 'default',
         userSelect: 'none',
-        pointerEvents: 'auto',
+        pointerEvents: editMode ? 'auto' : 'none',
       }}
       onMouseDown={editMode ? (e) => startDrag(e, { kind: 'goal-move' }) : undefined}
     >
@@ -257,6 +239,7 @@ export default function FootballGoal({
                 width: `${(r.x2 - r.x1) * 100}%`,
                 height: `${(r.y2 - r.y1) * 100}%`,
                 cursor: editMode ? 'move' : 'default',
+                pointerEvents: editMode ? 'auto' : 'none',
               }}
               onMouseDown={editMode ? (e) => startDrag(e, { kind: 'pin-move', pin }) : undefined}
             >
@@ -284,178 +267,27 @@ export default function FootballGoal({
         })
       )}
 
-      {flashMiss && (
-        <div
+      {editMode && (
+        <button
+          onClick={onEndGame}
+          onMouseDown={(e) => e.stopPropagation()}
           style={{
             position: 'absolute',
-            inset: 0,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: 32,
-            fontWeight: 'bold',
-            color: '#ffffff',
-            pointerEvents: 'none',
+            bottom: 8,
+            right: 8,
+            padding: '6px 16px',
+            fontSize: 12,
+            cursor: 'pointer',
+            borderRadius: 4,
+            border: '1px solid rgba(255,255,255,0.4)',
+            background: 'rgba(255,255,255,0.15)',
+            color: '#fff',
+            zIndex: 20,
           }}
         >
-          {t((l) => l.game.miss)}
-        </div>
+          {t((l) => l.game.done)}
+        </button>
       )}
-
-      {roundPhase === 'idle' && (
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            pointerEvents: 'none',
-          }}
-        >
-          <div
-            style={{
-              fontSize: Math.max(12, goal.w * 0.07),
-              fontWeight: 900,
-              color: '#fff',
-              textAlign: 'center',
-              textTransform: 'uppercase',
-              letterSpacing: 2,
-              textShadow: '0 2px 8px rgba(0,0,0,0.5)',
-            }}
-          >
-            {t((l) => l.game.pressSpaceToStart)}
-          </div>
-        </div>
-      )}
-
-      {roundPhase === 'countdown' && (
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            pointerEvents: 'none',
-          }}
-        >
-          <div
-            style={{
-              fontSize: Math.max(32, goal.h * 0.45),
-              fontWeight: 900,
-              color: '#fff',
-              lineHeight: 1,
-              textShadow: '0 4px 16px rgba(0,0,0,0.6)',
-            }}
-          >
-            {countdownValue}
-          </div>
-        </div>
-      )}
-
-      {roundPhase === 'result' && lastRoundResult && (
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: Math.max(6, goal.h * 0.04),
-            pointerEvents: 'none',
-          }}
-        >
-          <div style={{ fontSize: Math.max(16, goal.h * 0.18), fontWeight: 900, color: '#fff', textTransform: 'uppercase', textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>
-            {lastRoundResult.isMiss ? t((l) => l.game.miss) : t((l) => l.game.goal)}
-          </div>
-          <div style={{ fontSize: Math.max(28, goal.h * 0.32), fontWeight: 900, color: '#fff', lineHeight: 1, textShadow: '0 4px 16px rgba(0,0,0,0.6)' }}>
-            {lastRoundResult.points}
-          </div>
-          <div style={{ fontSize: Math.max(10, goal.h * 0.06), color: 'rgba(255,255,255,0.75)', textTransform: 'uppercase' }}>
-            {t((l) => l.game.points)}
-          </div>
-          <div style={{ fontSize: Math.max(8, goal.w * 0.055), fontWeight: 700, color: '#fff', textTransform: 'uppercase', letterSpacing: 1, marginTop: Math.max(4, goal.h * 0.04), textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>
-            {t((l) => l.game.pressSpaceToStart)}
-          </div>
-        </div>
-      )}
-
-      {summaryData && (
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: Math.max(6, goal.h * 0.04),
-            pointerEvents: 'none',
-          }}
-        >
-          <div style={{ fontSize: Math.max(28, goal.h * 0.32), fontWeight: 900, color: '#fff', lineHeight: 1, textShadow: '0 4px 16px rgba(0,0,0,0.6)' }}>
-            {summaryData.score}
-          </div>
-          <div style={{ fontSize: Math.max(10, goal.h * 0.06), color: 'rgba(255,255,255,0.75)', textTransform: 'uppercase' }}>
-            {t((l) => l.game.points)}
-          </div>
-          <div style={{ fontSize: Math.max(14, goal.h * 0.12), fontWeight: 700, color: '#fff', textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>
-            #{summaryData.rank} {t((l) => l.game.place)}
-          </div>
-          <div style={{ fontSize: Math.max(8, goal.w * 0.055), fontWeight: 700, color: '#fff', textTransform: 'uppercase', letterSpacing: 1, marginTop: Math.max(4, goal.h * 0.04), textShadow: '0 2px 8px rgba(0,0,0,0.5)' }}>
-            {t((l) => l.game.pressSpaceToLeaderboard)}
-          </div>
-        </div>
-      )}
-
-      <div
-        style={{
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 24,
-          padding: '8px 16px',
-          pointerEvents: 'none',
-        }}
-      >
-        <div style={{ textAlign: 'center', color: '#fff' }}>
-          <div style={{ fontSize: 10, opacity: 0.7 }}>{t((l) => l.game.score)}</div>
-          <div style={{ fontSize: 28, fontWeight: 'bold', lineHeight: 1 }}>{score}</div>
-        </div>
-        {!endless && (
-          <div style={{ textAlign: 'center', color: '#fff' }}>
-            <div style={{ fontSize: 10, opacity: 0.7 }}>{t((l) => l.game.hits)}</div>
-            <div style={{ fontSize: 28, fontWeight: 'bold', lineHeight: 1 }}>
-              {totalHits}
-              <span style={{ fontSize: 14, opacity: 0.6, fontWeight: 400 }}>/{hitLimit}</span>
-            </div>
-          </div>
-        )}
-        {editMode && (
-          <button
-            onClick={onEndGame}
-            onMouseDown={(e) => e.stopPropagation()}
-            style={{
-              padding: '6px 16px',
-              fontSize: 12,
-              cursor: 'pointer',
-              borderRadius: 4,
-              border: '1px solid rgba(255,255,255,0.4)',
-              background: 'rgba(255,255,255,0.15)',
-              color: '#fff',
-              pointerEvents: 'auto',
-            }}
-          >
-            {t((l) => l.game.done)}
-          </button>
-        )}
-      </div>
     </div>
   )
 }
