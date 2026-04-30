@@ -1,4 +1,3 @@
-import { useEffect } from 'react'
 import type { LeaderboardEntry } from '../services/arduinoService'
 import logoUrl from '../../media/logo.svg'
 
@@ -13,17 +12,6 @@ const TRIANGLE_PATTERN = [
 ].join(', ')
 
 export default function LeaderboardPage({ entries, onNewGame }: Props): JSX.Element {
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent): void => {
-      if (e.key === ' ' || e.code === 'Space') {
-        e.preventDefault()
-        onNewGame()
-      }
-    }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [onNewGame])
-
   return (
     <div
       style={{

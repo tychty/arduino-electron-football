@@ -64,11 +64,20 @@ export default function App(): JSX.Element {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent): void => {
-      if (e.key === 'F2' && page === 'leaderboard') setPage('settings')
+      if (page === 'leaderboard') {
+        if (!showPlayerInfo && e.key === 'F2') { setPage('settings'); return }
+        if (!showPlayerInfo && (e.key === ' ' || e.code === 'Space')) {
+          e.preventDefault()
+          handleNewGame()
+        }
+      }
+      if (page === 'settings' && e.key === 'Escape') {
+        setPage('leaderboard')
+      }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [page])
+  }, [page, showPlayerInfo])
 
   const handleNewGame = (): void => {
     setShowPlayerInfo(true)
