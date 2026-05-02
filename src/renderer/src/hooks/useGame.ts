@@ -26,9 +26,9 @@ export function useGame(connected: boolean, keyboardEnabled: boolean, endless?: 
     () => ({
       pinConfig: configs,
       flashDurationMs: flashDuration,
-      hitLimit,
+      hitLimit: endless ? Infinity : hitLimit,
     }),
-    [configs, flashDuration, hitLimit]
+    [configs, flashDuration, hitLimit, endless]
   )
 
   const [gameState, setGameState] = useState<GameState>(INITIAL_STATE)

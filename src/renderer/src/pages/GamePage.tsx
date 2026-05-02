@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState, useMemo } from 'react'
 import FootballGoal from '../components/FootballGoal'
 import { useSettingsCtx } from '../context/SettingsContext'
+import { useLocaleCtx } from '../context/LocaleContext'
 import type { RoundPhase } from '../hooks/useGame'
 import { VIRTUAL_MISS_PIN } from '../../../shared/config'
 import { useGoalLayout } from '../hooks/useGoalLayout'
@@ -38,6 +39,7 @@ export default function GamePage({
   playerName = '',
 }: Props): JSX.Element {
   const { allPins, configs, hitLimit, hudLeftBound, hudRightBound, setHudLeftBound, setHudRightBound, flashDuration } = useSettingsCtx()
+  const { t } = useLocaleCtx()
   const flashMiss = flashingPins.has(VIRTUAL_MISS_PIN)
   const flashHitPin = useMemo(() => [...flashingPins].find(p => p !== VIRTUAL_MISS_PIN) ?? null, [flashingPins])
 
@@ -206,8 +208,43 @@ export default function GamePage({
           setGoal={setGoal}
           getPinRect={getPinRect}
           setPinRect={setPinRect}
-          clearLayout={clearLayout}
         />
+
+        {/* Edit mode buttons — bottom-right of bounded container */}
+        {editLayout && (
+          <div
+            style={{ position: 'absolute', bottom: 16, right: 16, display: 'flex', gap: 8, zIndex: 100 }}
+          >
+            <button
+              onClick={clearLayout}
+              style={{
+                padding: '6px 16px',
+                fontSize: 12,
+                cursor: 'pointer',
+                borderRadius: 4,
+                border: '1px solid rgba(255,255,255,0.4)',
+                background: 'rgba(255,255,255,0.15)',
+                color: '#fff',
+              }}
+            >
+              {t((l) => l.game.resetLayout)}
+            </button>
+            <button
+              onClick={onEndGame}
+              style={{
+                padding: '6px 16px',
+                fontSize: 12,
+                cursor: 'pointer',
+                borderRadius: 4,
+                border: '1px solid rgba(255,255,255,0.4)',
+                background: 'rgba(255,255,255,0.15)',
+                color: '#fff',
+              }}
+            >
+              {t((l) => l.game.done)}
+            </button>
+          </div>
+        )}
 
         {/* Footer */}
         {!editLayout && (

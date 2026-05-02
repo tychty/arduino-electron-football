@@ -20,7 +20,6 @@ interface Props {
   setGoal: (r: GoalRect) => void
   getPinRect: (pin: number) => PinRect
   setPinRect: (pin: number, r: PinRect) => void
-  clearLayout: () => void
 }
 
 type DragTarget =
@@ -82,7 +81,6 @@ export default function FootballGoal({
   setGoal,
   getPinRect,
   setPinRect,
-  clearLayout,
 }: Props): JSX.Element {
   const { t } = useLocaleCtx()
 
@@ -290,41 +288,6 @@ export default function FootballGoal({
         })
       )}
 
-      {editMode && (
-        <div
-          style={{ position: 'fixed', bottom: 16, right: 16, display: 'flex', gap: 8, zIndex: 100 }}
-          onMouseDown={(e) => e.stopPropagation()}
-        >
-          <button
-            onClick={clearLayout}
-            style={{
-              padding: '6px 16px',
-              fontSize: 12,
-              cursor: 'pointer',
-              borderRadius: 4,
-              border: '1px solid rgba(255,255,255,0.4)',
-              background: 'rgba(255,255,255,0.15)',
-              color: '#fff',
-            }}
-          >
-            {t((l) => l.game.resetLayout)}
-          </button>
-          <button
-            onClick={onEndGame}
-            style={{
-              padding: '6px 16px',
-              fontSize: 12,
-              cursor: 'pointer',
-              borderRadius: 4,
-              border: '1px solid rgba(255,255,255,0.4)',
-              background: 'rgba(255,255,255,0.15)',
-              color: '#fff',
-            }}
-          >
-            {t((l) => l.game.done)}
-          </button>
-        </div>
-      )}
     </div>
   )
 }

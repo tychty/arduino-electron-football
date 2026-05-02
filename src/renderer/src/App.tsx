@@ -36,8 +36,8 @@ export default function App(): JSX.Element {
 
   const { scores, totalHits, flashingPins, reset, peaks, score, roundPhase, countdownValue, lastRoundResult } = useGame(
     connected,
-    page === 'game',
-    false,
+    page === 'game' || page === 'layout',
+    page === 'layout',
     { onAbandon: handleAbandon, onSummaryDismiss: handleSummaryDismiss }
   )
 
