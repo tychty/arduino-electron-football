@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import GoalCircle from './GoalCircle'
 import { PinConfig } from '../hooks/useSettings'
 import { GoalRect, PinRect, useGoalLayout } from '../hooks/useGoalLayout'
@@ -84,6 +84,13 @@ export default function FootballGoal({
   })
 
   const { goal, setGoal, getPinRect, setPinRect, clearLayout } = useGoalLayout(activeScoringPins)
+
+  const [, setTick] = useState(0)
+  useEffect(() => {
+    const onResize = (): void => setTick((n) => n + 1)
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
 
   useEffect(() => {
     if (!editMode) return
