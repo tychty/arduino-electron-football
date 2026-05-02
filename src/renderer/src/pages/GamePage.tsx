@@ -44,7 +44,7 @@ export default function GamePage({
   const showSummary = !!summaryData && !editLayout
 
   return (
-    <div style={{ position: 'fixed', inset: 0, backgroundImage: `url(${gameBgUrl})`, backgroundSize: 'cover', overflow: 'hidden' }}>
+    <div style={{ position: 'fixed', inset: 0, backgroundImage: `url(${gameBgUrl})`, backgroundSize: 'cover', backgroundPosition: 'center', overflow: 'hidden' }}>
 
       {/* Miss flash */}
       {flashMiss && (
