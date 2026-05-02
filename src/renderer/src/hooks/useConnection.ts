@@ -10,6 +10,7 @@ export interface Connection {
   selected: string
   connected: boolean
   tryingPort: string | null
+  error: string | null
   setSelected: (port: string) => void
 }
 
@@ -19,6 +20,7 @@ export function useConnection(): Connection {
   const [selected, setSelected] = useState(() => localStorage.getItem(LAST_CONNECTED_PORT_KEY) ?? '')
   const [connected, setConnected] = useState(false)
   const [tryingPort, setTryingPort] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
 
   const connectedRef = useRef(false)
   const selectedRef = useRef(selected)
@@ -44,6 +46,7 @@ export function useConnection(): Connection {
     setSelected(portPath)
     setConnected(true)
     setTryingPort(null)
+    setError(null)
     await pushSettings(allPinsRef.current)
   }
 
@@ -93,7 +96,9 @@ export function useConnection(): Connection {
 
   // Hard disconnect on error — Arduino RAM is flushed, must resync on reconnect
   useEffect(() => {
-    return arduinoService.onError(() => {
+    return arduinoService.onError((msg) => {
+      const port = selectedRef.current
+      setError(`${port}: ${msg}`)
       connectedRef.current = false
       setConnected(false)
     })
@@ -121,5 +126,5 @@ export function useConnection(): Connection {
     }
   }
 
-  return { ports, selected, connected, tryingPort, setSelected: handleSetSelected }
+  return { ports, selected, connected, tryingPort, error, setSelected: handleSetSelected }
 }

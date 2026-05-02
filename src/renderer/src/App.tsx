@@ -19,7 +19,7 @@ export default function App(): JSX.Element {
   const [summaryData, setSummaryData] = useState<{ score: number; rank: number } | null>(null)
   const savingRef = useRef(false)
 
-  const { ports, selected, connected, tryingPort, setSelected } = useConnection()
+  const { ports, selected, connected, tryingPort, error, setSelected } = useConnection()
 
   const { entries, reload } = useLeaderboardCtx()
 
@@ -140,6 +140,7 @@ export default function App(): JSX.Element {
           ports={ports}
           selected={selected}
           connected={connected}
+          connectionError={error}
           peaks={peaks}
           onSetSelected={setSelected}
           onBack={() => setPage('leaderboard')}

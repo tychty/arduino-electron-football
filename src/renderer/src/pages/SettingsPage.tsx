@@ -16,6 +16,7 @@ interface Props {
   ports: PortInfo[]
   selected: string
   connected: boolean
+  connectionError: string | null
   peaks: Record<number, number>
   onSetSelected: (port: string) => void
   onBack: () => void
@@ -29,6 +30,7 @@ export default function SettingsPage({
   ports,
   selected,
   connected,
+  connectionError,
   peaks,
   onSetSelected,
   onBack,
@@ -115,6 +117,7 @@ export default function SettingsPage({
         <ConnectionPanel
           ports={ports}
           selected={selected}
+          error={connectionError}
           onSetSelected={onSetSelected}
         />
       </section>
