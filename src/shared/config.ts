@@ -33,7 +33,7 @@ export const HIT_WINDOW_SLIDER_MAX = 2000
 export const HIT_WINDOW_STEP = 50
 
 // Flash duration
-export const FLASH_DURATION_DEFAULT = 400
+export const FLASH_DURATION_DEFAULT = 500
 export const FLASH_DURATION_MIN = 100
 export const FLASH_DURATION_MAX = 1500
 export const FLASH_DURATION_STEP = 10

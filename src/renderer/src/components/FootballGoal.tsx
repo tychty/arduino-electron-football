@@ -1,7 +1,7 @@
 import { useRef, useEffect, useState } from 'react'
 import GoalCircle from './GoalCircle'
 import { PinConfig } from '../hooks/useSettings'
-import { GoalRect, PinRect, useGoalLayout } from '../hooks/useGoalLayout'
+import { GoalRect, PinRect } from '../hooks/useGoalLayout'
 import { useLocaleCtx } from '../context/LocaleContext'
 
 const HANDLE = 10
@@ -13,10 +13,14 @@ interface Props {
   allPins: number[]
   pinConfigs: Record<number, PinConfig>
   scores: Readonly<Record<number, number>>
-  flashingPins: ReadonlySet<number>
   editMode?: boolean
   onEndGame: () => void
   goalBgUrl: string
+  goal: GoalRect
+  setGoal: (r: GoalRect) => void
+  getPinRect: (pin: number) => PinRect
+  setPinRect: (pin: number, r: PinRect) => void
+  clearLayout: () => void
 }
 
 type DragTarget =
@@ -71,10 +75,14 @@ export default function FootballGoal({
   allPins,
   pinConfigs,
   scores,
-  flashingPins,
   editMode,
   onEndGame,
   goalBgUrl,
+  goal,
+  setGoal,
+  getPinRect,
+  setPinRect,
+  clearLayout,
 }: Props): JSX.Element {
   const { t } = useLocaleCtx()
 
@@ -82,8 +90,6 @@ export default function FootballGoal({
     const c = pinConfigs[pin]
     return c?.active && !c?.miss
   })
-
-  const { goal, setGoal, getPinRect, setPinRect, clearLayout } = useGoalLayout(activeScoringPins)
 
   const [, setTick] = useState(0)
   useEffect(() => {
@@ -264,7 +270,6 @@ export default function FootballGoal({
               <GoalCircle
                 scorePoints={pinConfigs[pin]?.scorePoints ?? 1}
                 hitCount={scores[pin] ?? 0}
-                flashing={flashingPins.has(pin)}
                 editMode={editMode}
                 pin={pin}
               />

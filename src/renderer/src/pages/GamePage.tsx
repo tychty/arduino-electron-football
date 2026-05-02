@@ -1,8 +1,9 @@
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useState, useMemo } from 'react'
 import FootballGoal from '../components/FootballGoal'
 import { useSettingsCtx } from '../context/SettingsContext'
 import type { RoundPhase } from '../hooks/useGame'
 import { VIRTUAL_MISS_PIN } from '../../../shared/config'
+import { useGoalLayout } from '../hooks/useGoalLayout'
 import logoUrl from '../../media/logo.svg'
 import goalBgUrl from '../../media/goal.svg'
 import gameBgUrl from '../../media/game_bg.png'
@@ -36,8 +37,22 @@ export default function GamePage({
   editLayout,
   playerName = '',
 }: Props): JSX.Element {
-  const { allPins, configs, hitLimit, hudLeftBound, hudRightBound, setHudLeftBound, setHudRightBound } = useSettingsCtx()
+  const { allPins, configs, hitLimit, hudLeftBound, hudRightBound, setHudLeftBound, setHudRightBound, flashDuration } = useSettingsCtx()
   const flashMiss = flashingPins.has(VIRTUAL_MISS_PIN)
+  const flashHitPin = useMemo(() => [...flashingPins].find(p => p !== VIRTUAL_MISS_PIN) ?? null, [flashingPins])
+
+  const activeScoringPins = useMemo(
+    () => allPins.filter(pin => configs[pin]?.active && !configs[pin]?.miss),
+    [allPins, configs]
+  )
+  const { goal, setGoal, getPinRect, setPinRect, clearLayout } = useGoalLayout(activeScoringPins)
+
+  const [resultVisible, setResultVisible] = useState(false)
+  useEffect(() => {
+    if (roundPhase !== 'result') { setResultVisible(false); return }
+    const t = setTimeout(() => setResultVisible(true), flashDuration)
+    return () => clearTimeout(t)
+  }, [roundPhase, flashDuration])
 
   const dragTarget = useRef<'left' | 'right' | null>(null)
   const hudLeftRef = useRef(hudLeftBound)
@@ -67,7 +82,7 @@ export default function GamePage({
 
   const showIdle = roundPhase === 'idle' && !editLayout
   const showCountdown = roundPhase === 'countdown' && !editLayout
-  const showResult = roundPhase === 'result' && lastRoundResult != null && !editLayout
+  const showResult = resultVisible && roundPhase === 'result' && lastRoundResult != null && !editLayout
   const showSummary = !!summaryData && !editLayout
   const showModal = showIdle || showResult || showSummary
 
@@ -80,6 +95,51 @@ export default function GamePage({
 
   return (
     <div style={{ position: 'fixed', inset: 0, backgroundImage: `url(${gameBgUrl})`, backgroundSize: 'cover', backgroundPosition: 'center', overflow: 'hidden' }}>
+
+      {/* Miss flash — full-screen radial gradient, exponential red vignette from viewport center */}
+      {flashMiss && (() => {
+        const fallMs = Math.max(0, flashDuration - 100)
+        return (
+          <div
+            style={{
+              position: 'fixed', inset: 0,
+              background: 'radial-gradient(ellipse at center, rgba(160,0,0,0) 0%, rgba(160,0,0,0) 20%, rgba(160,0,0,0.05) 40%, rgba(160,0,0,0.16) 60%, rgba(160,0,0,0.38) 80%, rgba(160,0,0,0.55) 90%, rgba(160,0,0,0.75) 100%)',
+              animation: `flash-rise 100ms ease-in, flash-fall ${fallMs}ms ease-out 100ms forwards`,
+              pointerEvents: 'none',
+              zIndex: 35,
+            }}
+          />
+        )
+      })()}
+
+      {/* Hit flash — full-screen elliptical glow matching the struck goal circle shape */}
+      {flashHitPin !== null && (() => {
+        const r = getPinRect(flashHitPin)
+        const gx = (hudLeftBound + goal.x) * window.innerWidth
+        const gy = goal.y * window.innerHeight
+        const gw = goal.w * window.innerWidth
+        const gh = goal.h * window.innerHeight
+        const cx = gx + (r.x1 + r.x2) / 2 * gw
+        const cy = gy + (r.y1 + r.y2) / 2 * gh
+        const rx = (r.x2 - r.x1) * gw / 2
+        const ry = (r.y2 - r.y1) * gh / 2
+        const glow = Math.min(window.innerWidth, window.innerHeight) * 0.05
+        const outerRx = rx + glow
+        const outerRy = ry + glow
+        const cutPct = ((rx / outerRx + ry / outerRy) / 2 * 100).toFixed(1)
+        const fallMs = Math.max(0, flashDuration - 100)
+        return (
+          <div
+            style={{
+              position: 'fixed', inset: 0,
+              background: `radial-gradient(ellipse ${outerRx}px ${outerRy}px at ${cx}px ${cy}px, transparent ${cutPct}%, rgba(0,200,80,0.85) ${cutPct}%, rgba(0,200,80,0) 100%)`,
+              animation: `flash-rise 100ms ease-in, flash-fall ${fallMs}ms ease-out 100ms forwards`,
+              pointerEvents: 'none',
+              zIndex: 35,
+            }}
+          />
+        )
+      })()}
 
       {/* Header HUD — full viewport width, no HUD bounds */}
       <div
@@ -133,19 +193,20 @@ export default function GamePage({
           zIndex: 29,
         }}
       >
-        {flashMiss && (
-          <div style={{ position: 'absolute', inset: 0, background: 'rgba(160, 0, 0, 0.45)', pointerEvents: 'none', zIndex: 5 }} />
-        )}
 
         {/* Football Goal (interactive area) */}
         <FootballGoal
           allPins={allPins}
           pinConfigs={configs}
           scores={scores}
-          flashingPins={flashingPins}
           editMode={editLayout}
           onEndGame={onEndGame}
           goalBgUrl={goalBgUrl}
+          goal={goal}
+          setGoal={setGoal}
+          getPinRect={getPinRect}
+          setPinRect={setPinRect}
+          clearLayout={clearLayout}
         />
 
         {/* Footer */}

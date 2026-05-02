@@ -44,6 +44,9 @@ html, body, #root {
 .bg-blue { background: #11184F; }
 .bg-red  { background: linear-gradient(to bottom, #4F1111, #B52727); }
 
+@keyframes flash-rise { from { opacity: 0; } to { opacity: 1; } }
+@keyframes flash-fall { from { opacity: 1; } to { opacity: 0; } }
+
 .bg-blue::before,
 .bg-red::before {
   content: '';
