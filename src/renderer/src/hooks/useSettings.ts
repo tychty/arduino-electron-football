@@ -37,6 +37,10 @@ export interface SettingsService {
   setPinHardware: (pin: number, updates: Partial<PinHardware>, connected: boolean) => Promise<void>
   globalNoise: number
   setAllNoise: (value: number, connected: boolean) => Promise<void>
+  hudLeftBound: number
+  hudRightBound: number
+  setHudLeftBound: (v: number) => void
+  setHudRightBound: (v: number) => void
 }
 
 const GAME_KEYS: Record<keyof GameSettings, string> = {
@@ -91,6 +95,14 @@ export function useSettings(allPins: number[]): SettingsService {
   const [globalNoise, setGlobalNoise] = useState<number>(() =>
     Number(localStorage.getItem('global_noise') ?? NOISE_DEFAULT)
   )
+  const [hudLeftBound, setHudLeftBoundState] = useState<number>(() => {
+    const v = Number(localStorage.getItem('hudLeftBound'))
+    return isNaN(v) ? 0 : v
+  })
+  const [hudRightBound, setHudRightBoundState] = useState<number>(() => {
+    const v = Number(localStorage.getItem('hudRightBound'))
+    return isNaN(v) || v === 0 ? 1 : v
+  })
 
   const pinKey = allPins.join(',')
   useEffect(() => {
@@ -144,5 +156,17 @@ export function useSettings(allPins: number[]): SettingsService {
     if (connected) await arduinoService.setNoiseTolerance(clamped)
   }
 
-  return { game, setGame, pinConfigs, pinConfig, setPinConfig, pinHardware, setPinHardware, globalNoise, setAllNoise }
+  const setHudLeftBound = (v: number): void => {
+    const clamped = Math.max(0, Math.min(1, v))
+    setHudLeftBoundState(clamped)
+    localStorage.setItem('hudLeftBound', String(clamped))
+  }
+
+  const setHudRightBound = (v: number): void => {
+    const clamped = Math.max(0, Math.min(1, v))
+    setHudRightBoundState(clamped)
+    localStorage.setItem('hudRightBound', String(clamped))
+  }
+
+  return { game, setGame, pinConfigs, pinConfig, setPinConfig, pinHardware, setPinHardware, globalNoise, setAllNoise, hudLeftBound, hudRightBound, setHudLeftBound, setHudRightBound }
 }

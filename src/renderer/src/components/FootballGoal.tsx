@@ -200,7 +200,7 @@ export default function FootballGoal({
   return (
     <div
       style={{
-        position: 'fixed',
+        position: 'absolute',
         left: goal.x * window.innerWidth,
         top: goal.y * window.innerHeight,
         width: goal.w * window.innerWidth,

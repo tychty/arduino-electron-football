@@ -17,6 +17,10 @@ interface SettingsContextValue {
   leaderboardLimit: number
   setLeaderboardLimit: (v: number) => void
   settings: SettingsService
+  hudLeftBound: number
+  hudRightBound: number
+  setHudLeftBound: (v: number) => void
+  setHudRightBound: (v: number) => void
 }
 
 const SettingsContext = createContext<SettingsContextValue | null>(null)
@@ -40,6 +44,10 @@ export function SettingsProvider({ children }: { children: ReactNode }): JSX.Ele
     leaderboardLimit: settings.game.leaderboardLimit,
     setLeaderboardLimit: (v) => settings.setGame('leaderboardLimit', v),
     settings,
+    hudLeftBound: settings.hudLeftBound,
+    hudRightBound: settings.hudRightBound,
+    setHudLeftBound: settings.setHudLeftBound,
+    setHudRightBound: settings.setHudRightBound,
   }
 
   return <SettingsContext.Provider value={value}>{children}</SettingsContext.Provider>
