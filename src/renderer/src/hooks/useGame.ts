@@ -131,7 +131,7 @@ export function useGame(connected: boolean, keyboardEnabled: boolean, endless?: 
   useEffect(() => {
     if (!connected) return
     return arduinoService.onHit((pin, peak) => {
-      setPeaks((prev) => ({ ...prev, [pin]: peak }))
+      setPeaks({ [pin]: peak })
       if (!allPinsRef.current.includes(pin)) return
 
       if (endless) {
