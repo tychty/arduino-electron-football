@@ -1,14 +1,5 @@
+/// <reference types="vite/client" />
 import type { HitHandler, ErrorHandler, PortInfo, LeaderboardEntry } from './services/arduinoService'
-
-declare module '*.png' {
-  const src: string
-  export default src
-}
-
-declare module '*.svg' {
-  const src: string
-  export default src
-}
 
 interface ArduinoAPI {
   listPorts: () => Promise<PortInfo[]>
