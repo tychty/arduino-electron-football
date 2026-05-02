@@ -2,10 +2,17 @@ import { useLocaleCtx } from '../context/LocaleContext'
 
 interface Props {
   connected: boolean
+  tryingPort: string | null
 }
 
-export default function ConnectionIndicator({ connected }: Props): JSX.Element {
+export default function ConnectionIndicator({ connected, tryingPort }: Props): JSX.Element {
   const { t } = useLocaleCtx()
+
+  const label = connected
+    ? t((l) => l.connection.deckConnected)
+    : tryingPort
+      ? tryingPort
+      : t((l) => l.connection.deckNotConnected)
 
   return (
     <div
@@ -17,7 +24,7 @@ export default function ConnectionIndicator({ connected }: Props): JSX.Element {
         alignItems: 'center',
         gap: 6,
         fontSize: 12,
-        color: connected ? '#2d8a2d' : '#888',
+        color: connected ? '#2d8a2d' : tryingPort ? '#e6a817' : '#888',
         zIndex: 1000,
         pointerEvents: 'none',
       }}
@@ -27,10 +34,10 @@ export default function ConnectionIndicator({ connected }: Props): JSX.Element {
           width: 8,
           height: 8,
           borderRadius: '50%',
-          backgroundColor: connected ? '#2d8a2d' : '#bbb',
+          backgroundColor: connected ? '#2d8a2d' : tryingPort ? '#e6a817' : '#bbb',
         }}
       />
-      {connected ? t((l) => l.connection.deckConnected) : t((l) => l.connection.deckNotConnected)}
+      {label}
     </div>
   )
 }

@@ -16,12 +16,8 @@ interface Props {
   ports: PortInfo[]
   selected: string
   connected: boolean
-  connectionError: string | null
   peaks: Record<number, number>
   onSetSelected: (port: string) => void
-  onRefresh: () => Promise<void>
-  onConnect: () => Promise<void>
-  onDisconnect: () => void
   onBack: () => void
   onEditLayout: () => void
 }
@@ -33,12 +29,8 @@ export default function SettingsPage({
   ports,
   selected,
   connected,
-  connectionError,
   peaks,
   onSetSelected,
-  onRefresh,
-  onConnect,
-  onDisconnect,
   onBack,
   onEditLayout,
 }: Props): JSX.Element {
@@ -123,12 +115,7 @@ export default function SettingsPage({
         <ConnectionPanel
           ports={ports}
           selected={selected}
-          connected={connected}
-          error={connectionError}
           onSetSelected={onSetSelected}
-          onRefresh={onRefresh}
-          onConnect={onConnect}
-          onDisconnect={onDisconnect}
         />
       </section>
 

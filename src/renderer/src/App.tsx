@@ -19,8 +19,7 @@ export default function App(): JSX.Element {
   const [summaryData, setSummaryData] = useState<{ score: number; rank: number } | null>(null)
   const savingRef = useRef(false)
 
-  const { ports, selected, connected, error, setSelected, refresh, connect, disconnect } =
-    useConnection()
+  const { ports, selected, connected, tryingPort, setSelected } = useConnection()
 
   const { entries, reload } = useLeaderboardCtx()
 
@@ -98,7 +97,7 @@ export default function App(): JSX.Element {
 
   return (
     <>
-      <ConnectionIndicator connected={connected} />
+      <ConnectionIndicator connected={connected} tryingPort={tryingPort} />
 
       {page === 'leaderboard' && (
         <LeaderboardPage
@@ -141,12 +140,8 @@ export default function App(): JSX.Element {
           ports={ports}
           selected={selected}
           connected={connected}
-          connectionError={error}
           peaks={peaks}
           onSetSelected={setSelected}
-          onRefresh={refresh}
-          onConnect={connect}
-          onDisconnect={() => void disconnect()}
           onBack={() => setPage('leaderboard')}
           onEditLayout={handleEditLayout}
         />

@@ -5,6 +5,7 @@ export const WINDOW_HEIGHT = 600
 // Serial
 export const BAUD_RATE = 57600
 export const SERIAL_DELIMITER = '\r\n'
+export const SERIAL_RETRY_INTERVAL_MS = 3000
 
 // Leaderboard
 export const LEADERBOARD_FILENAME = 'leaderboard.csv'
