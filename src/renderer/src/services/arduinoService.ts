@@ -21,8 +21,9 @@ export interface IArduinoService {
   autoConnect(): Promise<string | null>
   onHit(handler: HitHandler): () => void
   onError(handler: ErrorHandler): () => void
-  setDebounce(ms: number, pin: number): Promise<void>
   setNoiseTolerance(val: number, pin: number): Promise<void>
+  setWindow(ms: number): Promise<void>
+  setIgnore(on: boolean): Promise<void>
   readLeaderboard(): Promise<LeaderboardEntry[]>
   appendLeaderboard(name: string, company: string, email: string, score: number, date: string): Promise<void>
   clearLeaderboard(): Promise<void>
@@ -36,9 +37,10 @@ class ElectronArduinoService implements IArduinoService {
   autoConnect = (): Promise<string | null> => window.arduino.autoConnect()
   onHit = (cb: HitHandler): (() => void) => window.arduino.onData(cb)
   onError = (cb: ErrorHandler): (() => void) => window.arduino.onError(cb)
-  setDebounce = (ms: number, pin: number): Promise<void> => window.arduino.setDebounce(ms, pin)
   setNoiseTolerance = (val: number, pin: number): Promise<void> =>
     window.arduino.setNoiseTolerance(val, pin)
+  setWindow = (ms: number): Promise<void> => window.arduino.setWindow(ms)
+  setIgnore = (on: boolean): Promise<void> => window.arduino.setIgnore(on)
   readLeaderboard = (): Promise<LeaderboardEntry[]> => window.arduino.leaderboard.read()
   appendLeaderboard = (name: string, company: string, email: string, score: number, date: string): Promise<void> =>
     window.arduino.leaderboard.append(name, company, email, score, date)
@@ -70,8 +72,9 @@ export class MockArduinoService implements IArduinoService {
     this.errorHandlers.add(h)
     return () => this.errorHandlers.delete(h)
   }
-  setDebounce = async (): Promise<void> => {}
   setNoiseTolerance = async (): Promise<void> => {}
+  setWindow = async (): Promise<void> => {}
+  setIgnore = async (): Promise<void> => {}
   readLeaderboard = async (): Promise<LeaderboardEntry[]> => [...this._entries]
   appendLeaderboard = async (name: string, company: string, email: string, score: number, date: string): Promise<void> => {
     this._entries.push({ name, company, email, score, date })

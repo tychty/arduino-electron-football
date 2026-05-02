@@ -8,7 +8,7 @@ import { useSettingsCtx } from '../context/SettingsContext'
 import { useLocaleCtx } from '../context/LocaleContext'
 import { Language } from '../locales'
 import {
-  HIT_DEBOUNCE_MIN, HIT_DEBOUNCE_MAX, HIT_DEBOUNCE_STEP,
+  HIT_WINDOW_MIN, HIT_WINDOW_SLIDER_MAX, HIT_WINDOW_STEP,
   FLASH_DURATION_MIN, FLASH_DURATION_MAX, FLASH_DURATION_STEP,
 } from '../../../shared/config'
 
@@ -142,11 +142,11 @@ export default function SettingsPage({
             onChange={(v) => settings.setGame('hitLimit', v)}
           />
           <SliderSetting
-            label={t((l) => l.settings.hitDebounce)}
-            value={settings.game.hitDebounceMs}
-            min={HIT_DEBOUNCE_MIN} max={HIT_DEBOUNCE_MAX} step={HIT_DEBOUNCE_STEP}
+            label={t((l) => l.settings.hitWindow)}
+            value={settings.game.hitWindowMs}
+            min={HIT_WINDOW_MIN} max={HIT_WINDOW_SLIDER_MAX} step={HIT_WINDOW_STEP}
             unit="ms"
-            onChange={(v) => settings.setGame('hitDebounceMs', v)}
+            onChange={(v) => settings.setGame('hitWindowMs', v)}
           />
           <SliderSetting
             label={t((l) => l.settings.flashDuration)}

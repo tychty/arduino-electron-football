@@ -15,12 +15,6 @@ export const MAX_PINS = 8
 export const VIRTUAL_MISS_PIN = -1
 export const KB_SYNTHETIC_PEAK = 9999
 
-// Per-pin: debounce (Arduino setting)
-export const DEBOUNCE_DEFAULT = 200
-export const DEBOUNCE_MIN = 100
-export const DEBOUNCE_MAX = 500
-export const DEBOUNCE_STEP = 10
-
 // Per-pin: noise tolerance (Arduino setting)
 export const NOISE_DEFAULT = 5
 export const NOISE_MIN = 0
@@ -31,11 +25,11 @@ export const NOISE_STEP = 1
 export const SCORE_POINTS_DEFAULT = 1
 export const SCORE_POINTS_MIN = 1
 
-// Hit debounce window (hardware hits)
-export const HIT_DEBOUNCE_DEFAULT = 500
-export const HIT_DEBOUNCE_MIN = 10
-export const HIT_DEBOUNCE_MAX = 1000
-export const HIT_DEBOUNCE_STEP = 10
+// Hit window (sent to Arduino; first hit wins, then ignore for this duration)
+export const HIT_WINDOW_DEFAULT = 1000
+export const HIT_WINDOW_MIN = 200
+export const HIT_WINDOW_SLIDER_MAX = 2000
+export const HIT_WINDOW_STEP = 50
 
 // Flash duration
 export const FLASH_DURATION_DEFAULT = 400
@@ -48,7 +42,6 @@ export const HIT_LIMIT_DEFAULT = 5
 
 // Round mechanic
 export const COUNTDOWN_DURATION_S = 3
-export const HIT_WINDOW_MS = 1000
 
 // Language
 export const LANGUAGE_DEFAULT = 'ru'

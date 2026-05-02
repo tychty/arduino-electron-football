@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { createGameStateMachine, GameConfig, GameState, GameStateMachine } from '../game/gameStateMachine'
 import { useSettingsCtx } from '../context/SettingsContext'
 import { arduinoService } from '../services/arduinoService'
-import { VIRTUAL_MISS_PIN, KB_SYNTHETIC_PEAK, COUNTDOWN_DURATION_S, HIT_WINDOW_MS } from '../../../shared/config'
+import { VIRTUAL_MISS_PIN, COUNTDOWN_DURATION_S } from '../../../shared/config'
 
 export type RoundPhase = 'idle' | 'countdown' | 'window' | 'result' | 'gameover'
 
@@ -20,16 +20,15 @@ interface GameOptions {
 }
 
 export function useGame(connected: boolean, keyboardEnabled: boolean, endless?: boolean, options?: GameOptions) {
-  const { allPins, configs, hitDebounceMs, flashDuration, hitLimit } = useSettingsCtx()
+  const { allPins, configs, hitWindowMs, flashDuration, hitLimit } = useSettingsCtx()
 
   const config = useMemo<GameConfig>(
     () => ({
       pinConfig: configs,
-      hitDebounceMs,
       flashDurationMs: flashDuration,
       hitLimit,
     }),
-    [configs, hitDebounceMs, flashDuration, hitLimit]
+    [configs, flashDuration, hitLimit]
   )
 
   const [gameState, setGameState] = useState<GameState>(INITIAL_STATE)
@@ -68,19 +67,24 @@ export function useGame(connected: boolean, keyboardEnabled: boolean, endless?: 
     }
   }, [])
 
+  const hitWindowMsRef = useRef(hitWindowMs)
+  useEffect(() => { hitWindowMsRef.current = hitWindowMs }, [hitWindowMs])
+
   const openWindow = useCallback(() => {
     setRoundPhase('window')
+    if (connected) arduinoService.setIgnore(false)
     windowTimerRef.current = setTimeout(() => {
       windowTimerRef.current = null
       machineRef.current?.hitImmediate(VIRTUAL_MISS_PIN)
-    }, HIT_WINDOW_MS)
-  }, [setRoundPhase])
+    }, hitWindowMsRef.current)
+  }, [setRoundPhase, connected])
 
   const startCountdown = useCallback(() => {
     clearCountdownInterval()
     clearWindowTimer()
     setCountdownValue(COUNTDOWN_DURATION_S)
     setRoundPhase('countdown')
+    if (connected) arduinoService.setIgnore(true)
 
     let tick = COUNTDOWN_DURATION_S
     countdownIntervalRef.current = setInterval(() => {
@@ -93,7 +97,7 @@ export function useGame(connected: boolean, keyboardEnabled: boolean, endless?: 
         setCountdownValue(tick)
       }
     }, 1000)
-  }, [clearCountdownInterval, clearWindowTimer, openWindow, setRoundPhase])
+  }, [clearCountdownInterval, clearWindowTimer, openWindow, setRoundPhase, connected])
 
   useEffect(() => {
     const m = createGameStateMachine(config, {
@@ -108,8 +112,8 @@ export function useGame(connected: boolean, keyboardEnabled: boolean, endless?: 
     return () => m.destroy()
   }, [config, setRoundPhase])
 
-  const hit = useCallback((pin: number, peak: number): void => {
-    machineRef.current?.hit(pin, peak, Date.now())
+  const hit = useCallback((pin: number): void => {
+    machineRef.current?.hit(pin)
   }, [])
 
   const reset = useCallback((): void => {
@@ -120,7 +124,8 @@ export function useGame(connected: boolean, keyboardEnabled: boolean, endless?: 
     setCountdownValue(COUNTDOWN_DURATION_S)
     machineRef.current?.reset()
     setPeaks({})
-  }, [clearCountdownInterval, clearWindowTimer, setRoundPhase])
+    if (connected) arduinoService.setIgnore(false)
+  }, [clearCountdownInterval, clearWindowTimer, setRoundPhase, connected])
 
   // Arduino hit handler
   useEffect(() => {
@@ -130,7 +135,7 @@ export function useGame(connected: boolean, keyboardEnabled: boolean, endless?: 
       if (!allPinsRef.current.includes(pin)) return
 
       if (endless) {
-        hit(pin, peak)
+        hit(pin)
       } else if (phaseRef.current === 'window') {
         clearWindowTimer()
         machineRef.current?.hitImmediate(pin)
@@ -149,7 +154,7 @@ export function useGame(connected: boolean, keyboardEnabled: boolean, endless?: 
         if (e.key >= '0' && e.key <= '9') {
           const pin = (Number(e.key) - 1 + 10) % 10
           if (!allPinsRef.current.includes(pin)) return
-          hit(pin, KB_SYNTHETIC_PEAK)
+          hit(pin)
         }
         return
       }

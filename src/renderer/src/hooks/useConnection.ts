@@ -25,10 +25,10 @@ export function useConnection(): Connection {
     setPorts(list)
   }
 
-  const sendPinConfigs = async (pins: number[]): Promise<void> => {
+  const sendConfigsOnConnect = async (pins: number[]): Promise<void> => {
+    await arduinoService.setWindow(settings.game.hitWindowMs)
     for (const pin of pins) {
-      const { debounce, noise } = settings.pinHardware(pin)
-      await arduinoService.setDebounce(debounce, pin)
+      const { noise } = settings.pinHardware(pin)
       await arduinoService.setNoiseTolerance(noise, pin)
     }
   }
@@ -46,7 +46,7 @@ export function useConnection(): Connection {
       if (!portPath) return
       setSelected(portPath)
       setConnected(true)
-      await sendPinConfigs(allPins)
+      await sendConfigsOnConnect(allPins)
     })
   }, [])
 
@@ -55,8 +55,13 @@ export function useConnection(): Connection {
     setError(null)
     await arduinoService.connect(selected)
     setConnected(true)
-    await sendPinConfigs(allPins)
+    await sendConfigsOnConnect(allPins)
   }
+
+  useEffect(() => {
+    if (!connected) return
+    arduinoService.setWindow(settings.game.hitWindowMs)
+  }, [connected, settings.game.hitWindowMs])
 
   const disconnect = async (): Promise<void> => {
     await arduinoService.disconnect()

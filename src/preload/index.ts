@@ -26,11 +26,14 @@ contextBridge.exposeInMainWorld('arduino', {
     return () => ipcRenderer.off('serial:error', handler)
   },
 
-  setDebounce: (ms: number, pin?: number): Promise<void> =>
-    ipcRenderer.invoke('serial:command', pin !== undefined ? `D:${pin}:${ms}` : `D:${ms}`),
-
   setNoiseTolerance: (value: number, pin?: number): Promise<void> =>
     ipcRenderer.invoke('serial:command', pin !== undefined ? `N:${pin}:${value}` : `N:${value}`),
+
+  setWindow: (ms: number): Promise<void> =>
+    ipcRenderer.invoke('serial:command', `W:${ms}`),
+
+  setIgnore: (on: boolean): Promise<void> =>
+    ipcRenderer.invoke('serial:command', `I:${on ? 1 : 0}`),
 
   leaderboard: {
     read: (): Promise<{ name: string; score: number; date: string }[]> =>

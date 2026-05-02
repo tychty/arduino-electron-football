@@ -2,9 +2,6 @@ import { PinConfig, PinHardware } from '../hooks/useSettings'
 import SliderSetting from './SliderSetting'
 import { useLocaleCtx } from '../context/LocaleContext'
 import {
-  DEBOUNCE_MIN,
-  DEBOUNCE_MAX,
-  DEBOUNCE_STEP,
   NOISE_MIN,
   NOISE_MAX,
   NOISE_STEP,
@@ -108,17 +105,6 @@ export default function PinSettings({
             onChange={(e) => onConfigChange({ scorePoints: Number(e.target.value) })}
           />
         </div>
-
-        <SliderSetting
-          label={t((l) => l.pins.debounce)}
-          value={hardware.debounce}
-          min={DEBOUNCE_MIN}
-          max={DEBOUNCE_MAX}
-          step={DEBOUNCE_STEP}
-          unit="ms"
-          inputWidth={52}
-          onChange={(v) => onHardwareChange({ debounce: v })}
-        />
 
         <SliderSetting
           label={t((l) => l.pins.noise)}

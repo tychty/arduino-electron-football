@@ -8,8 +8,8 @@ interface SettingsContextValue {
   addPin: () => void
   deletePin: (pin: number) => void
   configs: Record<number, PinConfig>
-  hitDebounceMs: number
-  setHitDebounceMs: (v: number) => void
+  hitWindowMs: number
+  setHitWindowMs: (v: number) => void
   flashDuration: number
   setFlashDuration: (v: number) => void
   hitLimit: number
@@ -31,8 +31,8 @@ export function SettingsProvider({ children }: { children: ReactNode }): JSX.Ele
     addPin,
     deletePin,
     configs: settings.pinConfigs,
-    hitDebounceMs: settings.game.hitDebounceMs,
-    setHitDebounceMs: (v) => settings.setGame('hitDebounceMs', v),
+    hitWindowMs: settings.game.hitWindowMs,
+    setHitWindowMs: (v) => settings.setGame('hitWindowMs', v),
     flashDuration: settings.game.flashDuration,
     setFlashDuration: (v) => settings.setGame('flashDuration', v),
     hitLimit: settings.game.hitLimit,

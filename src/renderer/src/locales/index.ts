@@ -44,7 +44,7 @@ export interface LocaleStrings {
     language: string
     hitLimit: string
     hits: string
-    hitDebounce: string
+    hitWindow: string
     flashDuration: string
     leaderboardLimit: string
     resetLeaderboard: string
@@ -69,7 +69,6 @@ export interface LocaleStrings {
     active: string
     miss: string
     scorePoints: string
-    debounce: string
     noise: string
     addPin: string
   }
@@ -123,7 +122,7 @@ const en: LocaleStrings = {
     language: 'Language',
     hitLimit: 'hit limit',
     hits: 'hits',
-    hitDebounce: 'hit debounce',
+    hitWindow: 'hit window',
     flashDuration: 'flash duration',
     leaderboardLimit: 'leaderboard limit',
     resetLeaderboard: 'reset leaderboard',
@@ -148,7 +147,6 @@ const en: LocaleStrings = {
     active: 'active',
     miss: 'miss',
     scorePoints: 'score points',
-    debounce: 'debounce',
     noise: 'noise',
     addPin: '+ Add Pin',
   },
@@ -200,7 +198,7 @@ const ru: LocaleStrings = {
     language: 'Язык',
     hitLimit: 'лимит ударов',
     hits: 'ударов',
-    hitDebounce: 'задержка удара',
+    hitWindow: 'окно удара',
     flashDuration: 'длительность вспышки',
     leaderboardLimit: 'лимит таблицы',
     resetLeaderboard: 'сбросить рекорды',
@@ -225,7 +223,6 @@ const ru: LocaleStrings = {
     active: 'активен',
     miss: 'мимо',
     scorePoints: 'очки',
-    debounce: 'задержка',
     noise: 'шум',
     addPin: '+ Добавить пин',
   },
@@ -277,7 +274,7 @@ const kz: LocaleStrings = {
     language: 'Тіл',
     hitLimit: 'соққы шегі',
     hits: 'соққы',
-    hitDebounce: 'соққы кешігуі',
+    hitWindow: 'соққы терезесі',
     flashDuration: 'жыпылықтау ұзақтығы',
     leaderboardLimit: 'кесте шегі',
     resetLeaderboard: 'рекордтарды тазалау',
@@ -302,7 +299,6 @@ const kz: LocaleStrings = {
     active: 'белсенді',
     miss: 'жаңылыс',
     scorePoints: 'ұпай',
-    debounce: 'кешігу',
     noise: 'шуыл',
     addPin: '+ Пин қосу',
   },

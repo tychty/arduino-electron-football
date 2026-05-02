@@ -2,11 +2,11 @@ const int pins[] = {A0, A1, A2, A3, A4, A5, A6, A7};
 const int pinCount = sizeof(pins) / sizeof(pins[0]);
 
 int prev[pinCount];
-int peak[pinCount];
-unsigned long lastActivity[pinCount];
-
-int debounceMs[pinCount];
 int noiseTollerance[pinCount];
+
+int windowMs = 1000;
+unsigned long windowStart = 0;
+bool ignoreMode = false;
 
 void setup()
 {
@@ -14,9 +14,6 @@ void setup()
     for (int i = 0; i < pinCount; i++)
     {
         prev[i] = 0;
-        peak[i] = 0;
-        lastActivity[i] = 0;
-        debounceMs[i] = 200;
         noiseTollerance[i] = 5;
     }
 }
@@ -31,31 +28,37 @@ void readCommands()
 
         char key = line.charAt(0);
         if (line.charAt(1) != ':') continue;
-        if (key != 'D' && key != 'N') continue;
 
         String rest = line.substring(2);
-        int colonIdx = rest.indexOf(':');
 
+        if (key == 'I')
+        {
+            ignoreMode = rest.toInt() != 0;
+            if (!ignoreMode) windowStart = 0;
+            continue;
+        }
+
+        if (key == 'W')
+        {
+            windowMs = rest.toInt();
+            continue;
+        }
+
+        if (key != 'N') continue;
+
+        int colonIdx = rest.indexOf(':');
         if (colonIdx == -1)
         {
-            // global: D:200 or N:5
             int value = rest.toInt();
             for (int i = 0; i < pinCount; i++)
-            {
-                if (key == 'D') debounceMs[i] = value;
-                else noiseTollerance[i] = value;
-            }
+                noiseTollerance[i] = value;
         }
         else
         {
-            // per-pin: D:0:200 or N:0:5
             int pin = rest.substring(0, colonIdx).toInt();
             int value = rest.substring(colonIdx + 1).toInt();
             if (pin >= 0 && pin < pinCount)
-            {
-                if (key == 'D') debounceMs[pin] = value;
-                else noiseTollerance[pin] = value;
-            }
+                noiseTollerance[pin] = value;
         }
     }
 }
@@ -66,29 +69,29 @@ void loop()
 
     unsigned long now = millis();
 
+    if (windowStart > 0 && (now - windowStart >= (unsigned long)windowMs))
+        windowStart = 0;
+
+    // while ignoring or in post-hit window, keep prev updated to avoid false triggers on resume
+    if (ignoreMode || windowStart > 0)
+    {
+        for (int i = 0; i < pinCount; i++)
+            prev[i] = analogRead(pins[i]);
+        return;
+    }
+
     for (int i = 0; i < pinCount; i++)
     {
         int current = analogRead(pins[i]);
 
-        // detect meaningful change above noise floor
         if (abs(current - prev[i]) > noiseTollerance[i])
-        {
-            // only extend debounce window when a new peak is found
-            if (current > peak[i])
-            {
-                peak[i] = current;
-                lastActivity[i] = now;
-            }
-        }
-
-        // signal has been quiet long enough → finalize peak
-        if (peak[i] > 0 && (now - lastActivity[i] > (unsigned long)debounceMs[i]))
         {
             Serial.print(i);
             Serial.print(":");
-            Serial.println(peak[i]);
-
-            peak[i] = 0;
+            Serial.println(current);
+            windowStart = now;
+            prev[i] = current;
+            return;
         }
 
         prev[i] = current;

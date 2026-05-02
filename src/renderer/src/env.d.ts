@@ -7,8 +7,9 @@ interface ArduinoAPI {
   autoConnect: () => Promise<string | null>
   onData: (callback: HitHandler) => () => void
   onError: (callback: ErrorHandler) => () => void
-  setDebounce: (ms: number, pin?: number) => Promise<void>
   setNoiseTolerance: (value: number, pin?: number) => Promise<void>
+  setWindow: (ms: number) => Promise<void>
+  setIgnore: (on: boolean) => Promise<void>
   leaderboard: {
     read: () => Promise<LeaderboardEntry[]>
     append: (name: string, score: number, date: string) => Promise<void>
