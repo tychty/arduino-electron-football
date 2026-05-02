@@ -14,6 +14,7 @@ type Page = 'leaderboard' | 'game' | 'settings' | 'layout'
 
 export default function App(): JSX.Element {
   const [page, setPage] = useState<Page>('leaderboard')
+  const [showIndicator, setShowIndicator] = useState(false)
   const [showPlayerInfo, setShowPlayerInfo] = useState(false)
   const [playerInfo, setPlayerInfo] = useState<PlayerInfo | null>(null)
   const [summaryData, setSummaryData] = useState<{ score: number; rank: number } | null>(null)
@@ -63,6 +64,7 @@ export default function App(): JSX.Element {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent): void => {
+      if (e.key === 'F3') { setShowIndicator(v => !v); return }
       if (page === 'leaderboard') {
         if (!showPlayerInfo && e.key === 'F2') { setPage('settings'); return }
         if (!showPlayerInfo && (e.key === ' ' || e.code === 'Space')) {
@@ -97,7 +99,7 @@ export default function App(): JSX.Element {
 
   return (
     <>
-      <ConnectionIndicator connected={connected} tryingPort={tryingPort} />
+      {showIndicator && <ConnectionIndicator connected={connected} tryingPort={tryingPort} />}
 
       {page === 'leaderboard' && (
         <LeaderboardPage
