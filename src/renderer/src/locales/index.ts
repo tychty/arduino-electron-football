@@ -4,6 +4,7 @@ export interface LocaleStrings {
     hits: string
     endGame: string
     done: string
+    resetLayout: string
     gameOver: string
     points: string
     enterYourName: string
@@ -83,6 +84,7 @@ const en: LocaleStrings = {
     hits: 'hits',
     endGame: 'End Game',
     done: 'Done',
+    resetLayout: 'Reset Layout',
     gameOver: 'game over',
     points: 'points',
     enterYourName: 'enter your name',
@@ -160,6 +162,7 @@ const ru: LocaleStrings = {
     hits: 'удары',
     endGame: 'Завершить игру',
     done: 'Готово',
+    resetLayout: 'Сбросить расположение',
     gameOver: 'игра окончена',
     points: 'очков',
     enterYourName: 'введите имя',
@@ -237,6 +240,7 @@ const kz: LocaleStrings = {
     hits: 'соққы',
     endGame: 'Ойынды аяқтау',
     done: 'Дайын',
+    resetLayout: 'Орналасуды тазалау',
     gameOver: 'ойын аяқталды',
     points: 'ұпай',
     enterYourName: 'атыңызды енгізіңіз',

@@ -1,14 +1,14 @@
 import { useState, useCallback } from 'react'
 
-export interface GoalRect { x: number; y: number; w: number; h: number }
+export interface GoalRect { x: number; y: number; w: number; h: number }  // normalized 0-1 relative to window
 export interface PinRect { x1: number; y1: number; x2: number; y2: number }
 
 function defaultGoal(): GoalRect {
   return {
-    x: Math.round(window.innerWidth / 2 - 200),
-    y: Math.round(window.innerHeight / 2 - 100),
-    w: 400,
-    h: 200,
+    x: 0.5 - 200 / window.innerWidth,
+    y: 0.5 - 100 / window.innerHeight,
+    w: 400 / window.innerWidth,
+    h: 200 / window.innerHeight,
   }
 }
 
@@ -69,5 +69,18 @@ export function useGoalLayout(activePins: number[]) {
     [pinRects]
   )
 
-  return { goal, setGoal, getPinRect, setPinRect }
+  const clearLayout = useCallback(() => {
+    localStorage.removeItem('goalRect')
+    Object.keys(localStorage)
+      .filter((k) => k.startsWith('pin_') && k.endsWith('_rect'))
+      .forEach((k) => localStorage.removeItem(k))
+    setGoalState(defaultGoal())
+    const m: Record<number, PinRect> = {}
+    activePins.forEach((pin, idx) => {
+      m[pin] = defaultPinRectGrid(idx, activePins.length)
+    })
+    setPinRects(m)
+  }, [activePins])
+
+  return { goal, setGoal, getPinRect, setPinRect, clearLayout }
 }

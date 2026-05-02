@@ -35,7 +35,11 @@ interface DragState {
 }
 
 function clampGoal(g: GoalRect): GoalRect {
-  return { ...g, w: Math.max(MIN_GOAL, g.w), h: Math.max(MIN_GOAL, g.h) }
+  return {
+    ...g,
+    w: Math.max(MIN_GOAL / window.innerWidth, g.w),
+    h: Math.max(MIN_GOAL / window.innerHeight, g.h),
+  }
 }
 
 function clampPin(p: PinRect): PinRect {
@@ -79,7 +83,7 @@ export default function FootballGoal({
     return c?.active && !c?.miss
   })
 
-  const { goal, setGoal, getPinRect, setPinRect } = useGoalLayout(activeScoringPins)
+  const { goal, setGoal, getPinRect, setPinRect, clearLayout } = useGoalLayout(activeScoringPins)
 
   useEffect(() => {
     if (!editMode) return
@@ -106,51 +110,58 @@ export default function FootballGoal({
       const dy = e.clientY - d.my0
       const g = d.g0
 
+      const iW = window.innerWidth
+      const iH = window.innerHeight
+      const ndx = dx / iW
+      const ndy = dy / iH
+      const gpw = g.w * iW
+      const gph = g.h * iH
+
       switch (d.target.kind) {
         case 'goal-move':
-          setGoal({ ...g, x: g.x + dx, y: g.y + dy })
+          setGoal({ ...g, x: g.x + ndx, y: g.y + ndy })
           break
         case 'goal-nw':
-          setGoal(clampGoal({ x: g.x + dx, y: g.y + dy, w: g.w - dx, h: g.h - dy }))
+          setGoal(clampGoal({ x: g.x + ndx, y: g.y + ndy, w: g.w - ndx, h: g.h - ndy }))
           break
         case 'goal-ne':
-          setGoal(clampGoal({ x: g.x, y: g.y + dy, w: g.w + dx, h: g.h - dy }))
+          setGoal(clampGoal({ x: g.x, y: g.y + ndy, w: g.w + ndx, h: g.h - ndy }))
           break
         case 'goal-sw':
-          setGoal(clampGoal({ x: g.x + dx, y: g.y, w: g.w - dx, h: g.h + dy }))
+          setGoal(clampGoal({ x: g.x + ndx, y: g.y, w: g.w - ndx, h: g.h + ndy }))
           break
         case 'goal-se':
-          setGoal(clampGoal({ ...g, w: g.w + dx, h: g.h + dy }))
+          setGoal(clampGoal({ ...g, w: g.w + ndx, h: g.h + ndy }))
           break
         case 'goal-n':
-          setGoal(clampGoal({ ...g, y: g.y + dy, h: g.h - dy }))
+          setGoal(clampGoal({ ...g, y: g.y + ndy, h: g.h - ndy }))
           break
         case 'goal-s':
-          setGoal(clampGoal({ ...g, h: g.h + dy }))
+          setGoal(clampGoal({ ...g, h: g.h + ndy }))
           break
         case 'goal-w':
-          setGoal(clampGoal({ ...g, x: g.x + dx, w: g.w - dx }))
+          setGoal(clampGoal({ ...g, x: g.x + ndx, w: g.w - ndx }))
           break
         case 'goal-e':
-          setGoal(clampGoal({ ...g, w: g.w + dx }))
+          setGoal(clampGoal({ ...g, w: g.w + ndx }))
           break
         case 'pin-move': {
           const p = d.p0!
           const pw = p.x2 - p.x1
           const ph = p.y2 - p.y1
-          const x1 = Math.max(0, Math.min(1 - pw, p.x1 + dx / g.w))
-          const y1 = Math.max(0, Math.min(1 - ph, p.y1 + dy / g.h))
+          const x1 = Math.max(0, Math.min(1 - pw, p.x1 + dx / gpw))
+          const y1 = Math.max(0, Math.min(1 - ph, p.y1 + dy / gph))
           setPinRect(d.target.pin, { x1, y1, x2: x1 + pw, y2: y1 + ph })
           break
         }
         case 'pin-tl': {
           const p = d.p0!
-          setPinRect(d.target.pin, clampPin({ ...p, x1: p.x1 + dx / g.w, y1: p.y1 + dy / g.h }))
+          setPinRect(d.target.pin, clampPin({ ...p, x1: p.x1 + dx / gpw, y1: p.y1 + dy / gph }))
           break
         }
         case 'pin-br': {
           const p = d.p0!
-          setPinRect(d.target.pin, clampPin({ ...p, x2: p.x2 + dx / g.w, y2: p.y2 + dy / g.h }))
+          setPinRect(d.target.pin, clampPin({ ...p, x2: p.x2 + dx / gpw, y2: p.y2 + dy / gph }))
           break
         }
       }
@@ -183,10 +194,10 @@ export default function FootballGoal({
     <div
       style={{
         position: 'fixed',
-        left: goal.x,
-        top: goal.y,
-        width: goal.w,
-        height: goal.h,
+        left: goal.x * window.innerWidth,
+        top: goal.y * window.innerHeight,
+        width: goal.w * window.innerWidth,
+        height: goal.h * window.innerHeight,
         backgroundImage: `url(${goalBgUrl})`,
         backgroundSize: '100% 100%',
         backgroundRepeat: 'no-repeat',
@@ -268,25 +279,39 @@ export default function FootballGoal({
       )}
 
       {editMode && (
-        <button
-          onClick={onEndGame}
+        <div
+          style={{ position: 'fixed', bottom: 16, right: 16, display: 'flex', gap: 8, zIndex: 100 }}
           onMouseDown={(e) => e.stopPropagation()}
-          style={{
-            position: 'absolute',
-            bottom: 8,
-            right: 8,
-            padding: '6px 16px',
-            fontSize: 12,
-            cursor: 'pointer',
-            borderRadius: 4,
-            border: '1px solid rgba(255,255,255,0.4)',
-            background: 'rgba(255,255,255,0.15)',
-            color: '#fff',
-            zIndex: 20,
-          }}
         >
-          {t((l) => l.game.done)}
-        </button>
+          <button
+            onClick={clearLayout}
+            style={{
+              padding: '6px 16px',
+              fontSize: 12,
+              cursor: 'pointer',
+              borderRadius: 4,
+              border: '1px solid rgba(255,255,255,0.4)',
+              background: 'rgba(255,255,255,0.15)',
+              color: '#fff',
+            }}
+          >
+            {t((l) => l.game.resetLayout)}
+          </button>
+          <button
+            onClick={onEndGame}
+            style={{
+              padding: '6px 16px',
+              fontSize: 12,
+              cursor: 'pointer',
+              borderRadius: 4,
+              border: '1px solid rgba(255,255,255,0.4)',
+              background: 'rgba(255,255,255,0.15)',
+              color: '#fff',
+            }}
+          >
+            {t((l) => l.game.done)}
+          </button>
+        </div>
       )}
     </div>
   )
