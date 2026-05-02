@@ -21,7 +21,7 @@ export interface IArduinoService {
   autoConnect(): Promise<string | null>
   onHit(handler: HitHandler): () => void
   onError(handler: ErrorHandler): () => void
-  setNoiseTolerance(val: number, pin: number): Promise<void>
+  setNoiseTolerance(val: number, pin?: number): Promise<void>
   setWindow(ms: number): Promise<void>
   setIgnore(on: boolean): Promise<void>
   readLeaderboard(): Promise<LeaderboardEntry[]>
@@ -37,7 +37,7 @@ class ElectronArduinoService implements IArduinoService {
   autoConnect = (): Promise<string | null> => window.arduino.autoConnect()
   onHit = (cb: HitHandler): (() => void) => window.arduino.onData(cb)
   onError = (cb: ErrorHandler): (() => void) => window.arduino.onError(cb)
-  setNoiseTolerance = (val: number, pin: number): Promise<void> =>
+  setNoiseTolerance = (val: number, pin?: number): Promise<void> =>
     window.arduino.setNoiseTolerance(val, pin)
   setWindow = (ms: number): Promise<void> => window.arduino.setWindow(ms)
   setIgnore = (on: boolean): Promise<void> => window.arduino.setIgnore(on)

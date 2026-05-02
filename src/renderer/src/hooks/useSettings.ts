@@ -6,6 +6,8 @@ import {
   HIT_LIMIT_DEFAULT,
   LEADERBOARD_LIMIT_DEFAULT,
   NOISE_DEFAULT,
+  NOISE_MIN,
+  NOISE_MAX,
   SCORE_POINTS_DEFAULT,
 } from '../../../shared/config'
 
@@ -34,6 +36,8 @@ export interface SettingsService {
   setPinConfig: (pin: number, updates: Partial<PinConfig>) => void
   pinHardware: (pin: number) => PinHardware
   setPinHardware: (pin: number, updates: Partial<PinHardware>, connected: boolean) => Promise<void>
+  globalNoise: number
+  setAllNoise: (value: number, connected: boolean) => Promise<void>
 }
 
 const GAME_KEYS: Record<keyof GameSettings, string> = {
@@ -85,6 +89,9 @@ export function useSettings(allPins: number[]): SettingsService {
   const [pinHardwares, setPinHardwares] = useState<Record<number, PinHardware>>(() =>
     Object.fromEntries(allPins.map((p) => [p, readPinHardware(p)]))
   )
+  const [globalNoise, setGlobalNoise] = useState<number>(() =>
+    Number(localStorage.getItem('global_noise') ?? NOISE_DEFAULT)
+  )
 
   const pinKey = allPins.join(',')
   useEffect(() => {
@@ -125,5 +132,18 @@ export function useSettings(allPins: number[]): SettingsService {
     setPinHardwares((prev) => ({ ...prev, [pin]: { ...prev[pin], ...clamped } }))
   }
 
-  return { game, setGame, pinConfigs, pinConfig, setPinConfig, pinHardware, setPinHardware }
+  const setAllNoise = async (value: number, connected: boolean): Promise<void> => {
+    const clamped = Math.max(NOISE_MIN, Math.min(NOISE_MAX, value))
+    localStorage.setItem('global_noise', String(clamped))
+    const updates: Record<number, PinHardware> = {}
+    for (const pin of allPins) {
+      localStorage.setItem(`pin_${pin}_noise`, String(clamped))
+      updates[pin] = { noise: clamped }
+    }
+    setGlobalNoise(clamped)
+    setPinHardwares((prev) => ({ ...prev, ...updates }))
+    if (connected) await arduinoService.setNoiseTolerance(clamped)
+  }
+
+  return { game, setGame, pinConfigs, pinConfig, setPinConfig, pinHardware, setPinHardware, globalNoise, setAllNoise }
 }

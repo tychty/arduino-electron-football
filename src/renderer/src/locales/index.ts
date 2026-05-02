@@ -70,6 +70,7 @@ export interface LocaleStrings {
     miss: string
     scorePoints: string
     noise: string
+    allNoise: string
     addPin: string
   }
 }
@@ -148,6 +149,7 @@ const en: LocaleStrings = {
     miss: 'miss',
     scorePoints: 'score points',
     noise: 'noise',
+    allNoise: 'all pins noise',
     addPin: '+ Add Pin',
   },
 }
@@ -224,6 +226,7 @@ const ru: LocaleStrings = {
     miss: 'мимо',
     scorePoints: 'очки',
     noise: 'шум',
+    allNoise: 'шум всех пинов',
     addPin: '+ Добавить пин',
   },
 }
@@ -300,6 +303,7 @@ const kz: LocaleStrings = {
     miss: 'жаңылыс',
     scorePoints: 'ұпай',
     noise: 'шуыл',
+    allNoise: 'барлық пиндер шуылы',
     addPin: '+ Пин қосу',
   },
 }

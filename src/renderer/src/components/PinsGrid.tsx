@@ -1,6 +1,8 @@
 import PinSettings from './PinSettings'
+import SliderSetting from './SliderSetting'
 import { SettingsService } from '../hooks/useSettings'
 import { useLocaleCtx } from '../context/LocaleContext'
+import { NOISE_MIN, NOISE_MAX, NOISE_STEP } from '../../../shared/config'
 
 interface Props {
   allPins: number[]
@@ -25,6 +27,17 @@ export default function PinsGrid({
 
   return (
     <div>
+      <div style={{ marginBottom: 16 }}>
+        <SliderSetting
+          label={t((l) => l.pins.allNoise)}
+          value={settings.globalNoise}
+          min={NOISE_MIN}
+          max={NOISE_MAX}
+          step={NOISE_STEP}
+          inputWidth={52}
+          onChange={(v) => void settings.setAllNoise(v, connected)}
+        />
+      </div>
       <div
         style={{
           display: 'grid',
