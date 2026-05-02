@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, shell } from 'electron'
+import { app, BrowserWindow, ipcMain, shell, Menu } from 'electron'
 import { join } from 'path'
 import { readFileSync, appendFileSync, writeFileSync, copyFileSync, existsSync, statSync } from 'fs'
 import { SerialManager } from './serial'
@@ -15,12 +15,20 @@ function leaderboardPath(): string {
 }
 
 function createWindow(): void {
+  Menu.setApplicationMenu(null)
   mainWindow = new BrowserWindow({
     width: WINDOW_WIDTH,
     height: WINDOW_HEIGHT,
+    // frame: false,
     webPreferences: {
       preload: join(__dirname, 'preload.js'),
       sandbox: false
+    }
+  })
+
+  mainWindow.webContents.on('before-input-event', (_event, input) => {
+    if (input.type === 'keyDown' && input.key === 'F11') {
+      mainWindow?.setFullScreen(!mainWindow.isFullScreen())
     }
   })
 
