@@ -7,7 +7,6 @@ import {
   LEADERBOARD_LIMIT_DEFAULT,
   NOISE_DEFAULT,
   NOISE_MIN,
-  NOISE_MAX,
   SCORE_POINTS_DEFAULT,
 } from '../../../shared/config'
 
@@ -133,7 +132,7 @@ export function useSettings(allPins: number[]): SettingsService {
   }
 
   const setAllNoise = async (value: number, connected: boolean): Promise<void> => {
-    const clamped = Math.max(NOISE_MIN, Math.min(NOISE_MAX, value))
+    const clamped = Math.max(NOISE_MIN, value)
     localStorage.setItem('global_noise', String(clamped))
     const updates: Record<number, PinHardware> = {}
     for (const pin of allPins) {
