@@ -12,22 +12,18 @@ export default function GoalCircle({ scorePoints, hitCount, editMode, pin }: Pro
         width: '100%',
         height: '100%',
         borderRadius: '50%',
-        backgroundColor: '#CC0000',
-        boxShadow: '0 2px 12px rgba(0,0,0,0.6)',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        transition: 'background-color 0.3s',
         userSelect: 'none',
         pointerEvents: 'none',
-        overflow: 'hidden',
       }}
     >
-      <div style={{ fontSize: '2.2vw', fontWeight: 900, lineHeight: 1, color: '#fff' }}>
+      <div style={{ fontSize: '3.2vw', fontWeight: 900, lineHeight: 1, color: '#fff', textShadow: '-8px -8px 0 #000, 8px -8px 0 #000, -8px 8px 0 #000, 8px 8px 0 #000, 0 -8px 0 #000, 0 8px 0 #000, -8px 0 0 #000, 8px 0 0 #000, -5px -8px 0 #000, 5px -8px 0 #000, -5px 8px 0 #000, 5px 8px 0 #000, -8px -5px 0 #000, 8px -5px 0 #000, -8px 5px 0 #000, 8px 5px 0 #000, -3px -8px 0 #000, 3px -8px 0 #000, -3px 8px 0 #000, 3px 8px 0 #000, -8px -3px 0 #000, 8px -3px 0 #000, -8px 3px 0 #000, 8px 3px 0 #000' }}>
         {editMode ? `#${pin}` : scorePoints}
       </div>
-      <div style={{ fontSize: '1.1vw', color: 'rgba(255,255,255,0.75)', letterSpacing: 1, marginTop: '4%' }}>
+      <div style={{ fontSize: '2.2vw', fontWeight: 900, color: '#fff', marginTop: '4%', textShadow: '-5px -5px 0 #000, 5px -5px 0 #000, -5px 5px 0 #000, 5px 5px 0 #000, 0 -5px 0 #000, 0 5px 0 #000, -5px 0 0 #000, 5px 0 0 #000, -3px -5px 0 #000, 3px -5px 0 #000, -3px 5px 0 #000, 3px 5px 0 #000, -5px -3px 0 #000, 5px -3px 0 #000, -5px 3px 0 #000, 5px 3px 0 #000' }}>
         {editMode ? `×${hitCount}` : 'PTS'}
       </div>
     </div>

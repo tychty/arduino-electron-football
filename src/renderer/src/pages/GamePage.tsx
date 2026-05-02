@@ -114,7 +114,7 @@ export default function GamePage({
         )
       })()}
 
-      {/* Hit flash — full-screen elliptical glow matching the struck goal circle shape */}
+      {/* Hit flash — Gaussian glow from circle center, visible gradient inside and smooth fade outside */}
       {flashHitPin !== null && (() => {
         const r = getPinRect(flashHitPin)
         const gx = (hudLeftBound + goal.x) * window.innerWidth
@@ -125,19 +125,26 @@ export default function GamePage({
         const cy = gy + (r.y1 + r.y2) / 2 * gh
         const rx = (r.x2 - r.x1) * gw / 2
         const ry = (r.y2 - r.y1) * gh / 2
-        const glow = Math.min(window.innerWidth, window.innerHeight) * 0.05
-        const outerRx = rx + glow
-        const outerRy = ry + glow
-        const cutPct = ((rx / outerRx + ry / outerRy) / 2 * 100).toFixed(1)
+        const bleed = Math.min(window.innerWidth, window.innerHeight) * 0.12
+        const outerRx = rx + bleed
+        const outerRy = ry + bleed
+        // f = fraction of total gradient radius where circle edge sits (normalized r=1)
+        const f = (rx / outerRx + ry / outerRy) / 2
+        // Gaussian with sigma=1.6: stays bright well past circle edge, fades toward outer boundary
+        const sigma = 1.6
+        const gauss = (p: number) => Math.max(0, Math.exp(-((p / f) ** 2) / (sigma * sigma))).toFixed(3)
         const fallMs = Math.max(0, flashDuration - 100)
+        const gradient = Array.from({ length: 16 }, (_, i) => i / 15)
+          .map(p => `rgba(0,255,80,${gauss(p)}) ${(p * 100).toFixed(1)}%`)
+          .join(', ')
         return (
           <div
             style={{
               position: 'fixed', inset: 0,
-              background: `radial-gradient(ellipse ${outerRx}px ${outerRy}px at ${cx}px ${cy}px, transparent ${cutPct}%, rgba(0,200,80,0.85) ${cutPct}%, rgba(0,200,80,0) 100%)`,
+              background: `radial-gradient(ellipse ${outerRx}px ${outerRy}px at ${cx}px ${cy}px, ${gradient})`,
               animation: `flash-rise 100ms ease-in, flash-fall ${fallMs}ms ease-out 100ms forwards`,
               pointerEvents: 'none',
-              zIndex: 35,
+              zIndex: 15,
             }}
           />
         )
