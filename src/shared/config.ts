@@ -18,8 +18,8 @@ export const KB_SYNTHETIC_PEAK = 9999
 // Per-pin: noise tolerance (Arduino setting)
 export const NOISE_DEFAULT = 5
 export const NOISE_MIN = 0
-export const NOISE_MAX = 10
-export const NOISE_STEP = 1
+export const NOISE_MAX = 200
+export const NOISE_STEP = 5
 
 // Per-pin: score points
 export const SCORE_POINTS_DEFAULT = 1
