@@ -25,10 +25,10 @@ export default function GoalCircle({ scorePoints, hitCount, flashing, editMode, 
         overflow: 'hidden',
       }}
     >
-      <div style={{ fontSize: '38%', fontWeight: 900, lineHeight: 1, color: '#fff' }}>
+      <div style={{ fontSize: '2.2vw', fontWeight: 900, lineHeight: 1, color: '#fff' }}>
         {editMode ? `#${pin}` : scorePoints}
       </div>
-      <div style={{ fontSize: '20%', color: 'rgba(255,255,255,0.75)', letterSpacing: 1, marginTop: '4%' }}>
+      <div style={{ fontSize: '1.1vw', color: 'rgba(255,255,255,0.75)', letterSpacing: 1, marginTop: '4%' }}>
         {editMode ? `×${hitCount}` : 'PTS'}
       </div>
     </div>
