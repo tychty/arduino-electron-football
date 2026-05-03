@@ -40,8 +40,11 @@ export default function PlayerInfoModal({ onConfirm, onCancel }: Props): JSX.Ele
   const handleSubmit = (): void => {
     const errs: typeof errors = {}
     if (!name.trim()) errs.name = t((l) => l.playerInfo.required)
+    else if (name.includes(';')) errs.name = t((l) => l.playerInfo.invalidChar)
     if (!company.trim()) errs.company = t((l) => l.playerInfo.required)
+    else if (company.includes(';')) errs.company = t((l) => l.playerInfo.invalidChar)
     if (!email.trim()) errs.email = t((l) => l.playerInfo.required)
+    else if (email.includes(';')) errs.email = t((l) => l.playerInfo.invalidChar)
     else if (!isValidEmail(email.trim())) errs.email = t((l) => l.playerInfo.emailInvalid)
 
     if (Object.keys(errs).length > 0) {

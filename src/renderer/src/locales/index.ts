@@ -22,6 +22,7 @@ export interface LocaleStrings {
     company: string
     email: string
     emailInvalid: string
+    invalidChar: string
     required: string
     start: string
   }
@@ -102,6 +103,7 @@ const en: LocaleStrings = {
     company: 'Company',
     email: 'Email',
     emailInvalid: 'Enter a valid email',
+    invalidChar: 'Field must not contain ";"',
     required: 'Required',
     start: 'Start Game',
   },
@@ -180,6 +182,7 @@ const ru: LocaleStrings = {
     company: 'Компания',
     email: 'Email',
     emailInvalid: 'Введите корректный email',
+    invalidChar: 'Поле не должно содержать ";"',
     required: 'Обязательное поле',
     start: 'Начать игру',
   },
@@ -258,6 +261,7 @@ const kz: LocaleStrings = {
     company: 'Компания',
     email: 'Email',
     emailInvalid: 'Жарамды email енгізіңіз',
+    invalidChar: '";" таңбасын пайдалануға болмайды',
     required: 'Міндетті өріс',
     start: 'Ойынды бастау',
   },

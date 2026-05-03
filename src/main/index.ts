@@ -88,6 +88,11 @@ ipcMain.handle('serial:autoConnect', async () => {
   return null
 })
 
+const csvEscape = (val: string): string => {
+  if (/[;"'\n\r]/.test(val)) return `"${val.replace(/"/g, '""')}"`
+  return val
+}
+
 ipcMain.handle('leaderboard:read', () => {
   const path = leaderboardPath()
   if (!existsSync(path)) return []
@@ -97,9 +102,11 @@ ipcMain.handle('leaderboard:read', () => {
     .split('\n')
     .filter(Boolean)
     .map((line) => {
-      const parts = line.split(',')
+      const parts = line.split(';')
       if (parts.length >= 5) {
-        const [name, company, email, score, date] = parts
+        const [name, company, email, score, date] = parts.map((p) =>
+          p.startsWith('"') ? p.slice(1, -1).replace(/""/g, '"') : p
+        )
         return { name, company, email, score: Number(score), date }
       }
       const [name, score, date] = parts
@@ -108,7 +115,8 @@ ipcMain.handle('leaderboard:read', () => {
 })
 
 ipcMain.handle('leaderboard:append', (_event, name: string, company: string, email: string, score: number, date: string) => {
-  appendFileSync(leaderboardPath(), `${name},${company},${email},${score},${date}\n`, 'utf8')
+  const row = [name, company, email, String(score), date].map(csvEscape).join(';')
+  appendFileSync(leaderboardPath(), `${row}\n`, 'utf8')
 })
 
 ipcMain.handle('leaderboard:path', () => leaderboardPath())
