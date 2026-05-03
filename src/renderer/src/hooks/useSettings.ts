@@ -8,12 +8,13 @@ import {
   NOISE_DEFAULT,
   NOISE_MIN,
   SCORE_POINTS_DEFAULT,
+  SCORE_POINTS_MIN,
 } from '../../../shared/config'
 
 export interface PinConfig {
   active: boolean
   miss: boolean
-  scorePoints: number
+  scoreValues: number[]
 }
 
 export interface PinHardware {
@@ -70,11 +71,27 @@ function loadGame(): GameSettings {
   }
 }
 
+function parseScoreValues(raw: string): number[] {
+  const vals = raw.split(/[,\.;|\\\/]+/)
+    .map(s => Number(s.trim()))
+    .filter(n => !isNaN(n) && n >= SCORE_POINTS_MIN)
+  return vals.length > 0 ? vals : [SCORE_POINTS_DEFAULT]
+}
+
 function readPinConfig(pin: number): PinConfig {
+  const stored = localStorage.getItem(`pin_${pin}_scoreValues`)
+  let scoreValues: number[]
+  if (stored !== null) {
+    scoreValues = parseScoreValues(stored)
+  } else {
+    const old = localStorage.getItem(`pin_${pin}_scorePoints`)
+    const migrated = old !== null ? Number(old) : NaN
+    scoreValues = [isNaN(migrated) ? SCORE_POINTS_DEFAULT : migrated]
+  }
   return {
     active: localStorage.getItem(`pin_${pin}_active`) !== 'false',
     miss: localStorage.getItem(`pin_${pin}_miss`) === 'true',
-    scorePoints: Number(localStorage.getItem(`pin_${pin}_scorePoints`) ?? SCORE_POINTS_DEFAULT),
+    scoreValues,
   }
 }
 
@@ -123,8 +140,8 @@ export function useSettings(allPins: number[]): SettingsService {
     if (updates.active !== undefined)
       localStorage.setItem(`pin_${pin}_active`, String(updates.active))
     if (updates.miss !== undefined) localStorage.setItem(`pin_${pin}_miss`, String(updates.miss))
-    if (updates.scorePoints !== undefined)
-      localStorage.setItem(`pin_${pin}_scorePoints`, String(updates.scorePoints))
+    if (updates.scoreValues !== undefined)
+      localStorage.setItem(`pin_${pin}_scoreValues`, updates.scoreValues.join(','))
   }
 
   const pinHardware = (pin: number): PinHardware => pinHardwares[pin] ?? readPinHardware(pin)

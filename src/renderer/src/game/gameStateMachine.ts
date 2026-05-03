@@ -13,6 +13,7 @@ export interface GameState {
   flashingPins: ReadonlySet<number>
   isGameOver: boolean
   version: number
+  score: number
 }
 
 export interface GameMachineCallbacks {
@@ -40,6 +41,7 @@ export function createGameStateMachine(
   let version = 0
   let gameOverFired = false
   let destroyed = false
+  let score = 0
 
   const flashTimers = new Map<number, ReturnType<typeof setTimeout>>()
 
@@ -50,6 +52,7 @@ export function createGameStateMachine(
       flashingPins: new Set(flashingPins),
       isGameOver,
       version,
+      score,
     }
   }
 
@@ -66,21 +69,24 @@ export function createGameStateMachine(
   function resolveHit(pin: number): void {
     if (destroyed || isGameOver) return
 
+    const roundIdx = totalHits
     totalHits += 1
     version += 1
 
     const cfg = config.pinConfig[pin]
     const isMiss = pin === VIRTUAL_MISS_PIN || !cfg?.active || !!cfg?.miss
 
+    let roundPoints = 0
     if (!isMiss) {
+      const scoreValues = cfg?.scoreValues ?? [1]
+      roundPoints = scoreValues[roundIdx % scoreValues.length] ?? 1
       scores = { ...scores, [pin]: (scores[pin] ?? 0) + 1 }
+      score += roundPoints
     }
 
     if (totalHits >= config.hitLimit) {
       isGameOver = true
     }
-
-    const roundPoints = isMiss ? 0 : (cfg?.scorePoints ?? 1)
 
     const flashTarget = isMiss ? VIRTUAL_MISS_PIN : pin
     const prevFlash = flashTimers.get(flashTarget)
@@ -130,6 +136,7 @@ export function createGameStateMachine(
     flashingPins = new Set()
     isGameOver = false
     gameOverFired = false
+    score = 0
     version += 1
 
     callbacks.onStateChange(snapshot())

@@ -34,7 +34,7 @@ export default function App(): JSX.Element {
     setPage('leaderboard')
   }, [])
 
-  const { scores, totalHits, flashingPins, reset, peaks, score, roundPhase, countdownValue, lastRoundResult } = useGame(
+  const { scores, totalHits, flashingPins, reset, peaks, score, roundPhase, countdownValue, lastRoundResult, displayIdx } = useGame(
     connected,
     page === 'game' || page === 'layout',
     page === 'layout',
@@ -112,6 +112,7 @@ export default function App(): JSX.Element {
         <GamePage
           scores={scores}
           totalHits={totalHits}
+          displayIdx={displayIdx}
           score={score}
           flashingPins={flashingPins}
           roundPhase={roundPhase}
@@ -127,6 +128,7 @@ export default function App(): JSX.Element {
         <GamePage
           scores={scores}
           totalHits={totalHits}
+          displayIdx={displayIdx}
           score={score}
           flashingPins={flashingPins}
           roundPhase={roundPhase}

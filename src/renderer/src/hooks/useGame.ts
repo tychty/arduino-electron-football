@@ -12,6 +12,7 @@ const INITIAL_STATE: GameState = {
   flashingPins: new Set(),
   isGameOver: false,
   version: 0,
+  score: 0,
 }
 
 interface GameOptions {
@@ -41,6 +42,7 @@ export function useGame(connected: boolean, keyboardEnabled: boolean, endless?: 
   const [roundPhase, setRoundPhaseState] = useState<RoundPhase>('idle')
   const [countdownValue, setCountdownValue] = useState(COUNTDOWN_DURATION_S)
   const [lastRoundResult, setLastRoundResult] = useState<{ isMiss: boolean; points: number } | null>(null)
+  const [displayRoundIdx, setDisplayRoundIdx] = useState(0)
 
   const phaseRef = useRef<RoundPhase>('idle')
   const windowTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -83,6 +85,7 @@ export function useGame(connected: boolean, keyboardEnabled: boolean, endless?: 
     clearCountdownInterval()
     clearWindowTimer()
     setCountdownValue(COUNTDOWN_DURATION_S)
+    if (phaseRef.current === 'result') setDisplayRoundIdx((i) => i + 1)
     setRoundPhase('countdown')
     if (connected) arduinoService.setIgnore(true)
 
@@ -122,6 +125,7 @@ export function useGame(connected: boolean, keyboardEnabled: boolean, endless?: 
     setRoundPhase('idle')
     setLastRoundResult(null)
     setCountdownValue(COUNTDOWN_DURATION_S)
+    setDisplayRoundIdx(0)
     machineRef.current?.reset()
     setPeaks({})
     if (connected) arduinoService.setIgnore(false)
@@ -191,10 +195,6 @@ export function useGame(connected: boolean, keyboardEnabled: boolean, endless?: 
     return () => window.removeEventListener('keydown', handleKeyDown)
   }, [keyboardEnabled, endless, hit, startCountdown, clearWindowTimer])
 
-  const score = useMemo(
-    () => allPins.reduce((total, pin) => total + (gameState.scores[pin] ?? 0) * (configs[pin]?.scorePoints ?? 1), 0),
-    [gameState.scores, allPins, configs]
-  )
-
-  return { ...gameState, hit, reset, peaks, score, roundPhase, countdownValue, lastRoundResult }
+  const displayIdx = endless ? gameState.totalHits : displayRoundIdx
+  return { ...gameState, hit, reset, peaks, roundPhase, countdownValue, lastRoundResult, displayIdx }
 }

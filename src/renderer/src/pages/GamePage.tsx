@@ -12,6 +12,7 @@ import gameBgUrl from '../../media/game_bg.png'
 interface Props {
   scores: Readonly<Record<number, number>>
   totalHits: number
+  displayIdx: number
   score: number
   flashingPins: ReadonlySet<number>
   roundPhase: RoundPhase
@@ -27,6 +28,7 @@ interface Props {
 export default function GamePage({
   scores,
   totalHits,
+  displayIdx,
   score,
   flashingPins,
   roundPhase,
@@ -208,6 +210,7 @@ export default function GamePage({
           allPins={allPins}
           pinConfigs={configs}
           scores={scores}
+          totalHits={displayIdx}
           editMode={editLayout}
           onEndGame={onEndGame}
           goalBgUrl={goalBgUrl}

@@ -13,6 +13,7 @@ interface Props {
   allPins: number[]
   pinConfigs: Record<number, PinConfig>
   scores: Readonly<Record<number, number>>
+  totalHits: number
   editMode?: boolean
   onEndGame: () => void
   goalBgUrl: string
@@ -74,6 +75,7 @@ export default function FootballGoal({
   allPins,
   pinConfigs,
   scores,
+  totalHits,
   editMode,
   onEndGame,
   goalBgUrl,
@@ -266,7 +268,7 @@ export default function FootballGoal({
               onMouseDown={editMode ? (e) => startDrag(e, { kind: 'pin-move', pin }) : undefined}
             >
               <GoalCircle
-                scorePoints={pinConfigs[pin]?.scorePoints ?? 1}
+                currentValue={(() => { const sv = pinConfigs[pin]?.scoreValues ?? [1]; return sv[totalHits % sv.length] })()}
                 hitCount={scores[pin] ?? 0}
                 editMode={editMode}
                 pin={pin}

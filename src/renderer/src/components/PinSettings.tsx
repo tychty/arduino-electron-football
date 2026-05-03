@@ -1,11 +1,13 @@
 import { PinConfig, PinHardware } from '../hooks/useSettings'
 import SliderSetting from './SliderSetting'
 import { useLocaleCtx } from '../context/LocaleContext'
+import { useState } from 'react'
 import {
   NOISE_MIN,
   NOISE_MAX,
   NOISE_STEP,
   SCORE_POINTS_MIN,
+  SCORE_POINTS_DEFAULT,
 } from '../../../shared/config'
 
 interface Props {
@@ -31,6 +33,15 @@ export default function PinSettings({
 }: Props): JSX.Element {
   const { t } = useLocaleCtx()
   const pinTooHigh = pin > 9
+  const [scoreText, setScoreText] = useState(() => config.scoreValues.join(', '))
+
+  const handleScoreChange = (raw: string): void => {
+    setScoreText(raw)
+    const parsed = raw.split(/[,\.;|\\\/]+/)
+      .map(s => Number(s.trim()))
+      .filter(n => !isNaN(n) && n >= SCORE_POINTS_MIN)
+    onConfigChange({ scoreValues: parsed.length > 0 ? parsed : [SCORE_POINTS_DEFAULT] })
+  }
 
   return (
     <div style={{ padding: 16, border: '1px solid #ccc', borderRadius: 6 }}>
@@ -98,11 +109,10 @@ export default function PinSettings({
         <div>
           <div style={{ fontSize: 11, color: '#888', marginBottom: 2 }}>{t((l) => l.pins.scorePoints)}</div>
           <input
-            type="number"
-            min={SCORE_POINTS_MIN}
-            value={config.scorePoints}
-            style={{ width: 60 }}
-            onChange={(e) => onConfigChange({ scorePoints: Number(e.target.value) })}
+            type="text"
+            value={scoreText}
+            style={{ width: 120 }}
+            onChange={(e) => handleScoreChange(e.target.value)}
           />
         </div>
 
