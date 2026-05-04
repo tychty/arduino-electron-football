@@ -1,7 +1,7 @@
 {
   "author": "Madi",
   "name": "piezo-game",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Piezo Arduino input for game",
   "main": ".vite/build/main.js",
   "scripts": {
