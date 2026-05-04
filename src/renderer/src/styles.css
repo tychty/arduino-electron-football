@@ -1,4 +1,11 @@
 @font-face {
+  font-family: 'Futura';
+  src: url('../../fonts/Futura-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
   font-family: 'Montserrat';
   src: url('../../fonts/Montserrat-Regular.ttf') format('truetype');
   font-weight: 400;

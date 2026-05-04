@@ -5,6 +5,16 @@ interface Props {
   pin?: number
 }
 
+const futuraStyle: React.CSSProperties = {
+  fontFamily: 'Futura, Arial, sans-serif',
+  fontWeight: 700,
+  lineHeight: 1.1,
+  letterSpacing: '0.04em',
+  color: '#FFF',
+  WebkitTextStroke: '0.2em #E20518',
+  paintOrder: 'stroke fill',
+}
+
 export default function GoalCircle({ currentValue, hitCount, editMode, pin }: Props): JSX.Element {
   return (
     <div
@@ -20,11 +30,11 @@ export default function GoalCircle({ currentValue, hitCount, editMode, pin }: Pr
         pointerEvents: 'none',
       }}
     >
-      <div style={{ fontSize: '3.2vw', fontWeight: 900, lineHeight: 1, color: '#fff', textShadow: '-8px -8px 0 #000, 8px -8px 0 #000, -8px 8px 0 #000, 8px 8px 0 #000, 0 -8px 0 #000, 0 8px 0 #000, -8px 0 0 #000, 8px 0 0 #000, -5px -8px 0 #000, 5px -8px 0 #000, -5px 8px 0 #000, 5px 8px 0 #000, -8px -5px 0 #000, 8px -5px 0 #000, -8px 5px 0 #000, 8px 5px 0 #000, -3px -8px 0 #000, 3px -8px 0 #000, -3px 8px 0 #000, 3px 8px 0 #000, -8px -3px 0 #000, 8px -3px 0 #000, -8px 3px 0 #000, 8px 3px 0 #000' }}>
+      <div style={{ ...futuraStyle, fontSize: '3.2vw' }}>
         {editMode ? `#${pin}` : currentValue}
       </div>
-      <div style={{ fontSize: '2.2vw', fontWeight: 900, color: '#fff', marginTop: '4%', textShadow: '-5px -5px 0 #000, 5px -5px 0 #000, -5px 5px 0 #000, 5px 5px 0 #000, 0 -5px 0 #000, 0 5px 0 #000, -5px 0 0 #000, 5px 0 0 #000, -3px -5px 0 #000, 3px -5px 0 #000, -3px 5px 0 #000, 3px 5px 0 #000, -5px -3px 0 #000, 5px -3px 0 #000, -5px 3px 0 #000, 5px 3px 0 #000' }}>
-        {editMode ? `×${hitCount}` : 'PTS'}
+      <div style={{ ...futuraStyle, fontSize: '1.6vw', marginTop: '4%' }}>
+        {editMode ? `\u00D7${hitCount}` : 'POINTS'}
       </div>
     </div>
   )
